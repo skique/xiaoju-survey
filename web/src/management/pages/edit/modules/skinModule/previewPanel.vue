@@ -4,23 +4,20 @@
     <div class="operation-wrapper" ref="operationWrapper">
       <div class="box" ref="box">
         <banner
-          :bannerConf="bannerConf"
+          :bannerConf="skinConf.bannerConf"
           :is-selected="currentEditOne === 'banner'"
           @select="onSelectEditOne('banner')"
         />
         <div class="content">
           <mainTitle
+            :isSelected="false"
             :bannerConf="bannerConf"
             :is-selected="currentEditOne === 'mainTitle'"
             @select="onSelectEditOne('mainTitle')"
             @change="handleChange"
           />
           <materialGroup
-            :current-edit-one="parseInt(currentEditOne)"
             :questionDataList="questionDataList"
-            @select="onSelectEditOne"
-            @change="handleChange"
-            @changeSeq="onQuestionOperation"
             ref="materialGroup"
           />
           <submit
@@ -30,7 +27,7 @@
             @select="onSelectEditOne('submit')"
           />
           <logo
-            :bottom-conf="bottomConf"
+            :logo-conf="skinConf.logoConf"
             :is-selected="currentEditOne === 'logo'"
             @select="onSelectEditOne('logo')"
           />
@@ -50,7 +47,7 @@ import { mapState, mapGetters } from 'vuex';
 import { get as _get } from 'lodash-es';
 
 export default {
-  name: 'mainOperation',
+  name: 'previewPanel',
   components: {
     banner,
     mainTitle,
@@ -68,7 +65,7 @@ export default {
       bannerConf: (state) => _get(state, 'edit.schema.bannerConf'),
       submitConf: (state) => _get(state, 'edit.schema.submitConf'),
       skinConf: (state) => _get(state, 'edit.schema.skinConf'),
-      bottomConf: (state) => _get(state, 'edit.schema.bottomConf'),
+      bottomConf: (state) => _get(state, 'edit.schema.skinConf.logoConf'),
       questionDataList: (state) => _get(state, 'edit.schema.questionDataList'),
       currentEditOne: (state) => _get(state, 'edit.currentEditOne'),
     }),
@@ -207,7 +204,7 @@ export default {
 
   .box {
     background-color: #ccc;
-    padding: 0 20px;
+    padding: 0 0.3rem;
     .content{
       background: #FFFFFF;
       border-radius: 8px 8px 0 0;

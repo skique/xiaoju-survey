@@ -13,7 +13,7 @@
         :module-config="moduleConfig"
         @form-change="onFormChange"
       />
-      <bannerList v-if="currentEditOne === 'banner'" @change="onClickSkin" />
+      <!-- <bannerList v-if="currentEditOne === 'banner'" @change="onClickSkin" /> -->
     </template>
   </div>
 </template>
@@ -46,12 +46,12 @@ export default {
     setterField,
   },
   methods: {
-    onClickSkin(src) {
-      this.onFormChange({
-        key: 'bannerConfig.bgImage',
-        value: src,
-      });
-    },
+    // onClickSkin(src) {
+    //   this.onFormChange({
+    //     key: 'bannerConfig.bgImage',
+    //     value: src,
+    //   });
+    // },
     onFormChange(data) {
       const { key, value } = data;
       const resultKey = `${this.currentEditKey}.${key}`;

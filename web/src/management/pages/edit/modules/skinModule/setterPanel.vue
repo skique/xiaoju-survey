@@ -3,10 +3,70 @@
     <div class="setter-title">
       样式设置
     </div>
+    <div class="setter-content">
+      <el-collapse v-model="collapse">
+        <el-collapse-item
+          v-for="(collapse, index) in skinConfig"
+          :key="index"
+          :title="collapse.name"
+          :name="collapse.key"
+        >
+          <setterField
+            :form-config-list="collapse.formConfigList"
+            :module-config="skinConf[collapse.key]"
+            @form-change="(key) => onFormChange(key, collapse.key)"
+          /> 
+        </el-collapse-item>
+      </el-collapse>
+    </div>
+     <!-- -->
   </div>
 </template>
-<script setup>
-
+<script>
+import skinConfig from '@/management/config/setterConfig/skinConfig';
+import setterField from '../questionModule/components/setterField.vue';
+import { mapState, mapGetters } from 'vuex';
+import { get as _get } from 'lodash-es'
+export default {
+  name: 'setterPanel',
+  components: {
+    setterField,
+  },
+  data() {
+    return {
+      collapse: '',
+      skinConfig,
+      // groupList: []
+    };
+  },
+  computed: {
+    ...mapState({
+      skinConf: (state) => _get(state, 'edit.schema.skinConf'),
+    }),
+    ...mapGetters({
+      // formConfigList: 'edit/formConfigList',
+      moduleConfig: 'edit/moduleConfig',
+      // skinConf:'edit/schema/skinConf'
+      currentEditKey: 'edit/currentEditKey',
+      // currentEditMeta: 'edit/currentEditMeta',
+    }),
+    // moduleConfig() {
+    //   return this.skinConf[this.collapse]
+    // }
+  },
+  mounted() {
+    
+  },
+  methods: {
+    onFormChange(data,collapse) {
+      debugger
+      const { key, value } = data;
+      const currentEditKey = `skinConf.${collapse}`
+      const resultKey = `${currentEditKey}.${key}`;
+      this.$store.dispatch('edit/changeSchema', { key: resultKey, value });
+    },
+  },
+};
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
 .setter-wrapper {
@@ -26,7 +86,9 @@
   background: #f9fafc;
   border-bottom: 1px solid #edeffc;
 }
-
+.setter-content{
+  padding: 10px;
+}
 .no-select-question {
   padding-top: 125px;
   display: flex;

@@ -7,14 +7,14 @@
       <p>点击配置头图</p>
       <p>若不配置头图，将不在问卷中展示</p>
     </div>
-    <div class="banner" v-if="bannerConf.bannerConfig.videoLink">
+    <div class="banner" v-if="bannerConf.videoLink">
       <div class="video">
         <video
           class="custom-video"
-          :poster="bannerConf.bannerConfig.postImg"
+          :poster="bannerConf.postImg"
           preload="auto"
           controls
-          :src="bannerConf.bannerConfig.videoLink"
+          :src="bannerConf.videoLink"
         ></video>
       </div>
     </div>
@@ -31,6 +31,7 @@ export default {
   props: {
     bannerConf: {
       type: Object,
+      default: () => {}
     },
     isSelected: {
       type: Boolean,
@@ -38,7 +39,7 @@ export default {
   },
   computed: {
     bgImage() {
-      return _get(this.bannerConf, 'bannerConfig.bgImage', '');
+      return _get(this.bannerConf, 'bgImage', '');
     },
   },
   methods: {

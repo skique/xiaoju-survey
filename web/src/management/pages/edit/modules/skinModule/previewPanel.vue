@@ -2,48 +2,50 @@
   <div class="main-operation" @click="onMainClick" ref="mainOperation">
     <!-- <div class="toolbar"></div> -->
     <div class="operation-wrapper" ref="operationWrapper">
-      <div class="box content" ref="box">
-        <!-- <banner
+      <div class="box" ref="box">
+        <banner
           :bannerConf="bannerConf"
           :is-selected="currentEditOne === 'banner'"
           @select="onSelectEditOne('banner')"
-        /> -->
-        <mainTitle
-          :bannerConf="bannerConf"
-          :is-selected="currentEditOne === 'mainTitle'"
-          @select="onSelectEditOne('mainTitle')"
-          @change="handleChange"
         />
-        <materialGroup
-          :current-edit-one="parseInt(currentEditOne)"
-          :questionDataList="questionDataList"
-          @select="onSelectEditOne"
-          @change="handleChange"
-          @changeSeq="onQuestionOperation"
-          ref="materialGroup"
-        />
-        <submit
-          :submit-conf="submitConf"
-          :skin-conf="skinConf"
-          :is-selected="currentEditOne === 'submit'"
-          @select="onSelectEditOne('submit')"
-        />
-        <!-- <logo
-          :bottom-conf="bottomConf"
-          :is-selected="currentEditOne === 'logo'"
-          @select="onSelectEditOne('logo')"
-        /> -->
+        <div class="content">
+          <mainTitle
+            :bannerConf="bannerConf"
+            :is-selected="currentEditOne === 'mainTitle'"
+            @select="onSelectEditOne('mainTitle')"
+            @change="handleChange"
+          />
+          <materialGroup
+            :current-edit-one="parseInt(currentEditOne)"
+            :questionDataList="questionDataList"
+            @select="onSelectEditOne"
+            @change="handleChange"
+            @changeSeq="onQuestionOperation"
+            ref="materialGroup"
+          />
+          <submit
+            :submit-conf="submitConf"
+            :skin-conf="skinConf"
+            :is-selected="currentEditOne === 'submit'"
+            @select="onSelectEditOne('submit')"
+          />
+          <logo
+            :bottom-conf="bottomConf"
+            :is-selected="currentEditOne === 'logo'"
+            @select="onSelectEditOne('logo')"
+          />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import materialGroup from './components/materialGroup.vue';
-import banner from './components/banner.vue';
-import mainTitle from './components/mainTitle.vue';
-import submit from './components/submit.vue';
-import logo from './components/logo.vue';
+import materialGroup from '../questionModule/components/materialGroup.vue';
+import banner from '../questionModule/components/banner.vue';
+import mainTitle from '../questionModule/components/mainTitle.vue';
+import submit from '../questionModule/components/submit.vue';
+import logo from '../questionModule/components/logo.vue';
 import { mapState, mapGetters } from 'vuex';
 import { get as _get } from 'lodash-es';
 
@@ -203,8 +205,13 @@ export default {
     display: none;
   }
 
-  .content {
-    background-color: #fff;
+  .box {
+    background-color: #ccc;
+    padding: 0 20px;
+    .content{
+      background: #FFFFFF;
+      border-radius: 8px 8px 0 0;
+    }
   }
 }
 </style>

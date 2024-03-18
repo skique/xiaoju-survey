@@ -50,6 +50,17 @@ const routes = [
           ),
       },
       {
+        path: 'skinSetting',
+        name: 'SkinSetting',
+        meta: {
+          needLogin: true,
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "SkinSetting" */ '../pages/edit/pages/skinSetting.vue'
+          ),
+      },
+      {
         path: 'resultConfig',
         name: 'QuestionEditResultConfig',
         meta: {

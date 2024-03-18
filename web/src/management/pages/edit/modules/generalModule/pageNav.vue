@@ -21,7 +21,7 @@
 </template>
 <script>
 export default {
-  name: 'pageTitle',
+  name: 'pageNav',
   props: {},
   data() {
     return {
@@ -38,6 +38,13 @@ export default {
           text: '问卷设置',
           router: 'QuestionEditSetting',
           key: 'settings',
+          next: true,
+        },
+        {
+          icon: 'icon-wenjuanshezhi',
+          text: '皮肤设置',
+          router: 'SkinSetting',
+          key: 'skinsettings',
           next: true,
         },
         {

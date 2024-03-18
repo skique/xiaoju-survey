@@ -59,6 +59,7 @@ export default {
 
   .banner {
     width: 100%;
+    display: flex;
 
     img {
       width: 100%;

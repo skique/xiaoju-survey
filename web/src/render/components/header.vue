@@ -2,18 +2,18 @@
   <div class="question-header">
     <div
       class="banner"
-      v-if="bannerConf.bannerConfig && bannerConf.bannerConfig.bgImage"
+      v-if="bannerConf && bannerConf.bgImage"
     >
       <img
         class="banner-img"
-        :src="bannerConf.bannerConfig.bgImage"
-        :class="{ pointer: bannerConf.bannerConfig.bgImageAllowJump }"
+        :src="bannerConf.bgImage"
+        :class="{ pointer: bannerConf.bgImageAllowJump }"
         @click="onBannerClick"
       />
     </div>
     <div
       class="banner"
-      v-if="bannerConf.bannerConfig && bannerConf.bannerConfig.videoLink"
+      v-if="bannerConf && bannerConf.videoLink"
     >
       <div class="video">
         <video
@@ -21,13 +21,13 @@
           controls
           style="margin: 0 auto; width: 100%; display: block"
           preload="auto"
-          :poster="bannerConf.bannerConfig.postImg"
+          :poster="bannerConf.postImg"
         >
-          <source :src="bannerConf.bannerConfig.videoLink" type="video/mp4" />
+          <source :src="bannerConf.videoLink" type="video/mp4" />
         </video>
         <div
           class="video-modal"
-          :style="`background-image:url(${bannerConf.bannerConfig.postImg})`"
+          :style="`background-image:url(${bannerConf.postImg})`"
         ></div>
         <div class="iconfont icon-kaishi play-icon" @click="play()"></div>
       </div>
@@ -52,19 +52,22 @@ export default {
   name: 'TheHeader',
   computed: {
     bannerConf() {
-      return _get(this.$store, 'state.bannerConf', {});
+      return _get(this.$store, 'state.skinConf.bannerConf', {});
     },
+    titleConfig() {
+      return _get(this.$store, 'state.bannerConf.titleConfig', {});
+    }
   },
   methods: {
     onBannerClick() {
       const allow = _get(
         this.bannerConf,
-        'bannerConfig.bgImageAllowJump',
+        'bgImageAllowJump',
         false
       );
       const jumpLink = _get(
         this.bannerConf,
-        'bannerConfig.bgImageJumpLink',
+        'bgImageJumpLink',
         ''
       );
       if (!allow || !jumpLink) {

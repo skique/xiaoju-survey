@@ -13,10 +13,10 @@ export default {
   name: 'logoPreview',
   computed: {
     logoImage() {
-      return this.$store.state?.bottomConf?.logoImage;
+      return this.$store.state?.skinConf?.logoConf?.logoImage;
     },
     logoImageWidth() {
-      return this.$store.state?.bottomConf?.logoImageWidth;
+      return this.$store.state?.skinConf?.logoConf?.logoImageWidth;
     },
     isMobile() {
       return this.$store.state?.isMobile;

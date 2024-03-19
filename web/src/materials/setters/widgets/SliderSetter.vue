@@ -1,6 +1,6 @@
 <template>
   <el-form-item class="slider-wrap">
-    <el-slider :value="formConfig.value" @input="changeData"></el-slider>
+    <el-slider :value="formConfig.value" @input="changeData" :format-tooltip="formatTooltip"></el-slider>
   </el-form-item>
 </template>
 <script>
@@ -14,6 +14,9 @@ export default {
     },
   },
   methods: {
+    formatTooltip (val) {
+      return val + '%';
+    },
     changeData(value) {
       const key = this.formConfig.key;
       this.$emit(FORM_CHANGE_EVENT_KEY, {

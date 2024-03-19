@@ -72,38 +72,28 @@ export default {
     ...mapGetters({
       currentEditKey: 'edit/currentEditKey',
     }),
-    autoScrollData() {
-      return {
-        currentEditOne: this.currentEditOne,
-        len: this.questionDataList.length,
-      };
-    },
   },
   watch: {
-    autoScrollData(newVal) {
-      const { currentEditOne } = newVal;
-      if (typeof currentEditOne === 'number') {
-        setTimeout(() => {
-          // if (this.isAnimating) {
-          //   return;
-          // }
-          const field = this.questionDataList?.[currentEditOne]?.field;
-          if (field) {
-            const questionComp =
-              this.$refs.materialGroup.getQuestionRefByField(field);
-            if (questionComp && questionComp.$el) {
-              questionComp.$el.scrollIntoView({
-                behavior: 'smooth',
-              });
-              // this.isAnimating = true;
-              // const maxScrollTop = this.$refs.box.clientHeight - this.$refs.operationWrapper.clientHeight
-              // const targetVal = Math.min(questionComp.$el.offsetTop - this.$refs.operationWrapper.clientHeight / 2, maxScrollTop)
-              // this.animate(this.$refs.operationWrapper, 'scrollTop', targetVal)
-            }
-          }
-        }, 0);
-      }
-    },
+    skinConf: {
+      handler (skinConf)  {
+        debugger
+        console.log({skinConf})
+        const { themeConf, backgroundConf, contentConf} = skinConf
+        const root = document.documentElement;
+        if(themeConf?.color) {
+          root.style.setProperty('--primary-color', themeConf?.color); // 设置主题颜色
+        }
+        if(backgroundConf?.color) {
+          root.style.setProperty('--primary-background-color', backgroundConf?.color); // 设置背景颜色
+        }
+        if(contentConf?.opacity) {
+          root.style.setProperty('--opacity', contentConf?.opacity/100); // 设置全局透明度
+        }
+      },
+      immediate: true, // 立即触发回调函数
+      deep: true
+    }
+    
   },
   methods: {
     animate(dom, property, targetValue) {
@@ -203,11 +193,12 @@ export default {
   }
 
   .box {
-    background-color: #ccc;
-    padding: 0 0.3rem;
+    background-color: var(--primary-background-color);
     .content{
+      margin: 0 0.3rem;
       background: #FFFFFF;
       border-radius: 8px 8px 0 0;
+      opacity: var(--opacity);
     }
   }
 }

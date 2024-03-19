@@ -1,13 +1,18 @@
 <template>
   <div class="index">
     <progressBar />
-    <Header></Header>
-    <mainRenderer ref="main"></mainRenderer>
-    <submit
-      :validate="validate"
-      :renderData="renderData"
-      @submit="onSubmit"
-    ></submit>
+    <div class="wrapper" ref="box">
+      <Header></Header>
+      <div class="content">
+        <mainRenderer ref="main"></mainRenderer>
+        <submit
+          :validate="validate"
+          :renderData="renderData"
+          @submit="onSubmit"
+        ></submit>
+        <logo></logo>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -18,6 +23,7 @@ import mainRenderer from '../components/mainRenderer';
 import progressBar from '../components/progressBar';
 import { submitForm } from '@/render/api/survey';
 import encrypt from '../utils/encrypt';
+import logo from '../components/logo.vue';
 
 export default {
   name: 'indexPage',
@@ -36,6 +42,7 @@ export default {
     submit,
     mainRenderer,
     progressBar,
+    logo,
   },
   computed: {
     formModel() {
@@ -121,6 +128,21 @@ export default {
 
 <style scoped lang="scss">
 .index {
-  padding-bottom: 0.8rem;
+  // padding-bottom: 0.8rem;
+  min-height: 100%;
+  .wrapper{
+    min-height: 100%;
+    background-color: var(--primary-background-color);
+    display: flex;
+    flex-direction: column;
+    .content{
+      flex: 1;
+      margin: 0 0.3rem;
+      background: #FFFFFF;
+      border-radius: 8px 8px 0 0;
+      opacity: var(--opacity);
+      height: 100%;
+    }
+  }
 }
 </style>

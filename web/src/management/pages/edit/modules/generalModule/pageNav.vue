@@ -41,18 +41,12 @@ export default {
           next: true,
         },
         {
-          icon: 'icon-wenjuanshezhi',
+          icon: 'icon-yangshishezhi',
           text: '皮肤设置',
           router: 'SkinSetting',
           key: 'skinsettings',
           next: true,
         },
-        // {
-        //   icon: 'icon-jieguoyeshezhi',
-        //   text: '结果页设置',
-        //   router: 'QuestionEditResultConfig',
-        //   key: 'status',
-        // },
       ],
     };
   },

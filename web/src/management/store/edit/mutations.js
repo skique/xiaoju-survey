@@ -1,4 +1,4 @@
-import { set as _set, merge as _merge } from 'lodash-es';
+import { get as _get, set as _set, merge as _merge } from 'lodash-es';
 
 export default {
   setCurrentEditOne(state, data) {
@@ -22,6 +22,7 @@ export default {
       state.schema.bottomConf,
       codeData.bottomConf
     );
+    debugger
     state.schema.skinConf = _merge(
       {},
       state.schema.skinConf,
@@ -86,4 +87,12 @@ export default {
   changeSchema(state, { key, value }) {
     _set(state.schema, key, value);
   },
+  changeThemePreset(state, { bannerImg, themeColor, backgroundColor }) {
+    debugger
+    let skinConf = _get(state.schema, 'skinConf')
+    skinConf.bannerConf.bgImage = bannerImg
+    skinConf.themeConf.color = themeColor
+    skinConf.backgroundConf.color = backgroundColor
+    _set(state.schema, 'skinConf', skinConf);
+  }
 };

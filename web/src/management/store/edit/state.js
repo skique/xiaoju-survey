@@ -24,8 +24,24 @@ export default {
       logoImageWidth: '28%',
     },
     skinConf: {
-      skinColor: '#4a4c5b',
-      inputBgColor: '#ffffff',
+      bannerConf: {
+        bgImage: "/imgs/skin/17e06b7604a007e1d3e1453b9ddadc3c.webp",
+        videoLink: "",
+        postImg: ""
+      },
+      backgroundConf: {
+        color: "#fff"
+      },
+      themeConf: {
+        color: "#ffa600"
+      },
+      contentConf: {
+        opacity: 100
+      },
+      logoConf: {
+        logoImage: "/imgs/Logo.webp",
+        logoImageWidth: "60%"
+      }
     },
     baseConf: {
       begTime: '',

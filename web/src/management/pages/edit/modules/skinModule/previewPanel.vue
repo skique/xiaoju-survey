@@ -1,20 +1,14 @@
 <template>
-  <div class="main-operation" @click="onMainClick" ref="mainOperation">
-    <!-- <div class="toolbar"></div> -->
+  <div class="main-operation" ref="mainOperation">
     <div class="operation-wrapper" ref="operationWrapper">
       <div class="box" ref="box">
         <banner
           :bannerConf="skinConf.bannerConf"
-          :is-selected="currentEditOne === 'banner'"
-          @select="onSelectEditOne('banner')"
         />
         <div class="content">
           <mainTitle
             :isSelected="false"
             :bannerConf="bannerConf"
-            :is-selected="currentEditOne === 'mainTitle'"
-            @select="onSelectEditOne('mainTitle')"
-            @change="handleChange"
           />
           <materialGroup
             :questionDataList="questionDataList"
@@ -24,12 +18,10 @@
             :submit-conf="submitConf"
             :skin-conf="skinConf"
             :is-selected="currentEditOne === 'submit'"
-            @select="onSelectEditOne('submit')"
           />
           <logo
             :logo-conf="skinConf.logoConf"
             :is-selected="currentEditOne === 'logo'"
-            @select="onSelectEditOne('logo')"
           />
         </div>
       </div>
@@ -65,7 +57,6 @@ export default {
       bannerConf: (state) => _get(state, 'edit.schema.bannerConf'),
       submitConf: (state) => _get(state, 'edit.schema.submitConf'),
       skinConf: (state) => _get(state, 'edit.schema.skinConf'),
-      bottomConf: (state) => _get(state, 'edit.schema.skinConf.logoConf'),
       questionDataList: (state) => _get(state, 'edit.schema.questionDataList'),
       currentEditOne: (state) => _get(state, 'edit.currentEditOne'),
     }),
@@ -76,8 +67,6 @@ export default {
   watch: {
     skinConf: {
       handler (skinConf)  {
-        debugger
-        console.log({skinConf})
         const { themeConf, backgroundConf, contentConf} = skinConf
         const root = document.documentElement;
         if(themeConf?.color) {
@@ -118,40 +107,6 @@ export default {
       };
 
       requestAnimationFrame(run);
-    },
-    async onSelectEditOne(currentEditOne) {
-      this.$store.commit('edit/setCurrentEditOne', currentEditOne);
-    },
-    handleChange(data) {
-      if (this.currentEditOne === null) {
-        return;
-      }
-      const { key, value } = data;
-      const resultKey = `${this.currentEditKey}.${key}`;
-      this.$store.dispatch('edit/changeSchema', { key: resultKey, value });
-    },
-    onMainClick(e) {
-      if (e.target === this.$refs.mainOperation) {
-        this.$store.commit('edit/setCurrentEditOne', null);
-      }
-    },
-    onQuestionOperation(data) {
-      switch (data.type) {
-        case 'move':
-          this.$store.dispatch('edit/moveQuestion', {
-            index: data.index,
-            range: data.range,
-          });
-          break;
-        case 'delete':
-          this.$store.dispatch('edit/deleteQuestion', { index: data.index });
-          break;
-        case 'copy':
-          this.$store.dispatch('edit/copyQuestion', { index: data.index });
-          break;
-        default:
-          break;
-      }
     },
   },
 };

@@ -32,6 +32,8 @@
   </div>
 </template>
 <script>
+import { mapActions } from 'vuex'
+import skinPresets from '../../../../config/skinPresets.js'
 export default {
   name: 'catalogPanel',
   data() {
@@ -78,11 +80,25 @@ export default {
     
   },
   methods: {
+    ...mapActions({
+      changeThemePreset: 'edit/changeThemePreset',
+    }),
     changeGroup(value) {
       this.groupName = value
     },
-    changePreset(presets) {
+  changePreset(banner) {
+      const name = banner.group + '-' + banner.title
+      let presets = {
+        bannerImg: banner.src,
+        themeColor: '#FAA600',
+        backgroundColor: '#fff',
+      }
+      if(skinPresets[name]){
+        presets = Object.assign(presets, skinPresets[name])
+      }
+       
       
+      this.changeThemePreset(presets)
     }
   },
 };

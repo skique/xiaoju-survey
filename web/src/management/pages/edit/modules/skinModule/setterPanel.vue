@@ -59,7 +59,6 @@ export default {
   },
   methods: {
     onFormChange(data,collapse) {
-      debugger
       const { key, value } = data;
       const currentEditKey = `skinConf.${collapse}`
       const resultKey = `${currentEditKey}.${key}`;

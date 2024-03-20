@@ -66,4 +66,7 @@ export default {
     commit('changeSchema', { key, value });
     commit('updateSchemaUpdateTime', Date.now());
   },
+  changeThemePreset({ commit }, { bannerImg, themeColor, backgroundColor }) {
+    commit('changeThemePreset', { bannerImg, themeColor, backgroundColor })
+  },
 };

@@ -16,7 +16,7 @@ export default {
   props: {},
   data() {
     return {
-      activeRouter: 'QuestionSkinSetting',
+      activeRouter: this.$route.name,
       btnList: [
         {
           text: '内容页',
@@ -36,8 +36,7 @@ export default {
     activeRouter: {
       handler (val)  {
         this.$router.push({ name: val})
-      },
-      immediate: true
+      }
     }
   },
 };

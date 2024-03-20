@@ -70,7 +70,7 @@ export default {
     padding: 0 20px;
     cursor: pointer;
 
-    &.router-link-exact-active {
+    &.router-link-active {
       color: $font-color-title;
 
       &::before {

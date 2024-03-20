@@ -55,21 +55,31 @@ const routes = [
         meta: {
           needLogin: true,
         },
-        component: () =>
-          import(
-            /* webpackChunkName: "SkinSetting" */ '../pages/edit/pages/skinSetting.vue'
-          ),
-      },
-      {
-        path: 'resultConfig',
-        name: 'QuestionEditResultConfig',
-        meta: {
-          needLogin: true,
-        },
-        component: () =>
-          import(
-            /* webpackChunkName: "QuestionEditResultConfig" */ '../pages/edit/pages/resultConfig.vue'
-          ),
+        component: () => import(/* webpackChunkName: "skinConfig" */ '../pages/edit/pages/skinConfig.vue'),
+        children: [
+          {
+            path: 'setting',
+            name: 'QuestionSkinSetting',
+            meta: {
+              needLogin: true,
+            },
+            component: () =>
+              import(
+                /* webpackChunkName: "SkinSetting" */ '../pages/edit/pages/skinSetting.vue'
+              ),
+          },
+          {
+            path: 'resultConfig',
+            name: 'QuestionEditResultConfig',
+            meta: {
+              needLogin: true,
+            },
+            component: () =>
+              import(
+                /* webpackChunkName: "resultConfig" */ '../pages/edit/pages/resultConfig.vue'
+              ),
+          }
+        ],
       },
     ],
   },

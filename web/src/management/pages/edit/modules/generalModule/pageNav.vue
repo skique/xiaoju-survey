@@ -47,12 +47,12 @@ export default {
           key: 'skinsettings',
           next: true,
         },
-        {
-          icon: 'icon-jieguoyeshezhi',
-          text: '结果页设置',
-          router: 'QuestionEditResultConfig',
-          key: 'status',
-        },
+        // {
+        //   icon: 'icon-jieguoyeshezhi',
+        //   text: '结果页设置',
+        //   router: 'QuestionEditResultConfig',
+        //   key: 'status',
+        // },
       ],
     };
   },

@@ -53,7 +53,7 @@ export default {
 
 .status-preview {
   width: 90%;
-  margin-top: 38px;
+  margin-top: 50px;
   min-height: 812px;
   max-height: 812px;
   overflow-x: hidden;

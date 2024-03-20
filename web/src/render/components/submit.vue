@@ -2,7 +2,6 @@
   <div class="question-submit_wrapper">
     <button
       class="question-submit-btn"
-      :style="{ backgroundColor: skinConf.skinColor }"
       @click="submit"
     >
       {{ submitConf.submitTitle }}
@@ -60,7 +59,7 @@ export default {
     font-weight: 500;
     text-align: center;
     color: #fff;
-    background: $primary-color;
+    background: var(--primary-color);
     border-radius: 0.08rem;
     margin-top: 0.4rem;
     cursor: pointer;

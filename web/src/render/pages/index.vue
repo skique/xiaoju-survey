@@ -138,9 +138,8 @@ export default {
     .content{
       flex: 1;
       margin: 0 0.3rem;
-      background: #FFFFFF;
+      background: rgba(255, 255, 255, var(--opacity)); 
       border-radius: 8px 8px 0 0;
-      opacity: var(--opacity);
       height: 100%;
     }
   }

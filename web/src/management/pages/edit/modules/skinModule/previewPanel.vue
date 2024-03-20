@@ -159,11 +159,10 @@ export default {
       right: 0;
       z-index: 999;
     }
-    .content{
+    .content {
       margin: 0 0.3rem;
-      background: #FFFFFF;
+      background: rgba(255, 255, 255, var(--opacity));
       border-radius: 8px 8px 0 0;
-      opacity: var(--opacity);
     }
   }
 }

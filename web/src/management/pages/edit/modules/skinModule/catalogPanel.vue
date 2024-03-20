@@ -117,7 +117,7 @@ export default {
     font-size: 14px;
     color: $primary-color;
     padding-left: 20px;
-    background: #f9fafc;
+    // background: #f9fafc;
     border-bottom: 1px solid #edeffc;
   }
   .content{ 

@@ -1,7 +1,7 @@
 
 export default {
   'default-1': {
-    backgroundColor: '#A4C3FE',
+    backgroundColor: '#90b4fa',
     themeColor: '#FAA600',
   }
 }

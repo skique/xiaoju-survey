@@ -22,7 +22,6 @@ export default {
       state.schema.bottomConf,
       codeData.bottomConf
     );
-    debugger
     state.schema.skinConf = _merge(
       {},
       state.schema.skinConf,
@@ -88,7 +87,6 @@ export default {
     _set(state.schema, key, value);
   },
   changeThemePreset(state, { bannerImg, themeColor, backgroundColor }) {
-    debugger
     let skinConf = _get(state.schema, 'skinConf')
     skinConf.bannerConf.bgImage = bannerImg
     skinConf.themeConf.color = themeColor

@@ -93,6 +93,7 @@ export default {
   }
 
   .banner {
+    display: flex;
     .banner-img {
       width: 100%;
 

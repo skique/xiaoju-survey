@@ -1,6 +1,7 @@
 <template>
   <el-form-item class="slider-wrap">
-    <el-slider :value="formConfig.value" @input="changeData" :format-tooltip="formatTooltip"></el-slider>
+    <el-slider :value="formConfig.value" debounce @input="changeData" :format-tooltip="formatTooltip"></el-slider>
+    <!-- <span>{{ formConfig.value + '%'  }}</span> -->
   </el-form-item>
 </template>
 <script>
@@ -30,6 +31,7 @@ export default {
 <style>
 .slider-wrap{
   flex: 1;
+  /* display: flex; */
   padding: 0 20px;
 }
 </style>

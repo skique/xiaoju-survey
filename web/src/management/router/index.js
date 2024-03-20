@@ -55,7 +55,7 @@ const routes = [
         meta: {
           needLogin: true,
         },
-        component: () => import(/* webpackChunkName: "skinConfig" */ '../pages/edit/pages/skinConfig.vue'),
+        component: () => import(/* webpackChunkName: "skinConfig" */ '../pages/edit/pages/skinPage.vue'),
         children: [
           {
             path: 'setting',

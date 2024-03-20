@@ -3,19 +3,11 @@
     <div class="navbar-tab"> 
       <el-radio-group size="mini" style="margin-bottom: 30px;" v-for="btnItem in btnList" v-model="activeRouter">
         <el-radio-button :label="btnItem.router" :key="btnItem.router">
-          <!-- <router-link
-            :key="btnItem.router"
-            :to="{ name: btnItem.router }"
-            tag="span"
-            replace
-          >
-          <span>{{ btnItem.text }}</span>
-          </router-link> -->
           <span>{{ btnItem.text }}</span>
         </el-radio-button>
       </el-radio-group>
     </div>
-    <router-view slot="body"></router-view>
+    <router-view></router-view>
   </div>
 </template>
 <script>
@@ -41,8 +33,11 @@ export default {
     };
   },
   watch: {
-    activeRouter(val) {
-      this.$router.push({ name: this.activeRouter})
+    activeRouter: {
+      handler (val)  {
+        this.$router.push({ name: val})
+      },
+      immediate: true
     }
   },
 };
@@ -61,10 +56,14 @@ export default {
     top: 10px;
     cursor: pointer;
     z-index: 9999;
-    // .el-radio-button__inner{
-    //   color: $primary-color;
-    //   background-color: #fff;
-    // }
+    ::v-deep .el-radio-button__orig-radio:checked + .el-radio-button__inner{
+        color:  $primary-color;
+        background-color: #fff!important;
+        // &:active{
+        //   color: $primary-color;
+        // }
+    }
+    
   }
 }
 </style>

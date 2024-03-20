@@ -24,12 +24,12 @@ const routes = [
     meta: {
       needLogin: true,
     },
-    redirect: '/question',
+    // redirect: '/question',
     component: () =>
       import(/* webpackChunkName: "editPage" */ '../pages/edit/index.vue'),
     children: [
       {
-        path: 'question',
+        path: '',
         name: 'QuestionEditIndex',
         
         meta: {
@@ -57,11 +57,11 @@ const routes = [
         meta: {
           needLogin: true,
         },
-        redirect: 'skinSetting/setting',
+        // redirect: 'skinSetting/',
         component: () => import(/* webpackChunkName: "skinConfig" */ '../pages/edit/pages/skinPage.vue'),
         children: [
           {
-            path: 'setting',
+            path: '',
             name: 'QuestionSkinSetting',
             meta: {
               needLogin: true,

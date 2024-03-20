@@ -11,11 +11,11 @@
         <i class="iconfont" :class="[btnItem.icon]"></i>
         <span>{{ btnItem.text }}</span>
       </router-link>
-      <i
+      <!-- <i
         v-if="btnItem.next"
         :key="btnItem.key + '-next'"
         class="iconfont icon-jiantou next"
-      ></i>
+      ></i> -->
     </template>
   </div>
 </template>

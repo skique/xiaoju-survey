@@ -1,7 +1,8 @@
 <template>
-  <div class="main-operation" ref="mainOperation">
-    <div class="operation-wrapper" ref="operationWrapper">
+  <div class="main-operation">
+    <div class="operation-wrapper">
       <div class="box" ref="box">
+        <div class="mask"></div>
         <banner
           :bannerConf="skinConf.bannerConf"
         />
@@ -138,17 +139,26 @@ export default {
   overflow-x: hidden;
   overflow-y: auto;
   padding-right: 30px;
-  margin-right: -30px;
+  margin-right: 0px;
   scrollbar-width: none;
   width: 90%;
   -ms-overflow-style: none;
-
+  
   &::-webkit-scrollbar {
     display: none;
   }
 
   .box {
     background-color: var(--primary-background-color);
+    position: relative;
+    .mask{
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 999;
+    }
     .content{
       margin: 0 0.3rem;
       background: #FFFFFF;

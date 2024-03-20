@@ -87,6 +87,9 @@ export default {
 }
 .setter-content{
   padding: 10px;
+  .el-collapse {
+    border: none;
+  }
 }
 .no-select-question {
   padding-top: 125px;

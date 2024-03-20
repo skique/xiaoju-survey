@@ -86,7 +86,7 @@ export default {
   border-bottom: 1px solid #edeffc;
 }
 .setter-content{
-  padding: 10px;
+  padding: 10px 20px;
   .el-collapse {
     border: none;
    ::v-deep .el-collapse-item__header{

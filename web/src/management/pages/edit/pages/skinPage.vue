@@ -1,8 +1,8 @@
 <template>
   <div class="skin-content">
     <div class="navbar-tab"> 
-      <el-radio-group size="mini" style="margin-bottom: 30px;" v-for="btnItem in btnList" v-model="activeRouter">
-        <el-radio-button :label="btnItem.router" :key="btnItem.router">
+      <el-radio-group size="mini" style="margin-bottom: 30px;" v-model="activeRouter">
+        <el-radio-button :label="btnItem.router" :key="btnItem.router" v-for="btnItem in btnList" >
           <span>{{ btnItem.text }}</span>
         </el-radio-button>
       </el-radio-group>

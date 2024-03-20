@@ -24,7 +24,8 @@ export default [
   {
     label: '图片支持点击',
     type: 'CustomedSwitch',
-    direction: 'space_between',
+    direction: 'horizon',
+    labelStyle: { width: '120px' },
     key: 'bgImageAllowJump',
   },
   {

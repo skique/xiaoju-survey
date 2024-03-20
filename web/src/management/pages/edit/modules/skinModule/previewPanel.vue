@@ -83,7 +83,6 @@ export default {
       immediate: true, // 立即触发回调函数
       deep: true
     }
-    
   },
   methods: {
     animate(dom, property, targetValue) {

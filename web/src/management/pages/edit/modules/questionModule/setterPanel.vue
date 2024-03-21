@@ -97,6 +97,6 @@ export default {
 }
 
 .question-config-form {
-  padding: 30px 20px 50px 20px;
+  padding: 30px 20px 50px 20px!important;
 }
 </style>

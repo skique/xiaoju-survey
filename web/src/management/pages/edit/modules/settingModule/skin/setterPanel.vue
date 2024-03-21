@@ -24,7 +24,7 @@
 </template>
 <script>
 import skinConfig from '@/management/config/setterConfig/skinConfig';
-import setterField from '../questionModule/components/setterField.vue';
+import setterField from '../../questionModule/components/setterField.vue';
 import { mapState, mapGetters } from 'vuex';
 import { get as _get } from 'lodash-es'
 export default {

@@ -13,9 +13,9 @@
 </template>
 <script>
 import { mapState } from 'vuex';
-import success from './components/success';
-import overTime from './components/overTime';
-import { EDIT_STATUS_MAP } from './enum';
+import success from '../components/success';
+import overTime from '../components/overTime';
+import { EDIT_STATUS_MAP } from '../enum';
 import { get as _get } from 'lodash-es';
 
 export default {

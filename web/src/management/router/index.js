@@ -52,13 +52,12 @@ const routes = [
           ),
       },
       {
-        path: 'skinSetting',
+        path: 'skin',
         name: 'SkinSetting',
         meta: {
           needLogin: true,
         },
-        // redirect: 'skinSetting/',
-        component: () => import(/* webpackChunkName: "skinConfig" */ '../pages/edit/pages/skinPage.vue'),
+        component: () => import(/* webpackChunkName: "skin" */ '../pages/edit/pages/skin/index.vue'),
         children: [
           {
             path: '',
@@ -67,16 +66,16 @@ const routes = [
               needLogin: true,
             },
             component: () =>
-              import('../pages/edit/pages/skinSetting.vue'),
+              import('../pages/edit/pages/skin/content.vue'),
           },
           {
-            path: 'resultConfig',
+            path: 'result',
             name: 'QuestionEditResultConfig',
             meta: {
               needLogin: true,
             },
             component: () =>
-              import('../pages/edit/pages/resultConfig.vue'),
+              import('../pages/edit/pages/skin/result.vue'),
           }
         ],
       },

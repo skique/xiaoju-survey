@@ -71,6 +71,7 @@ export default {
 <style lang="scss" rel="stylesheet/scss" scoped>
 .custom-input{
   ::v-deep .el-input__inner{
+    width: 100px;
     padding-right: 0px;
   }
 }

@@ -33,7 +33,7 @@
 </template>
 <script>
 import { mapActions } from 'vuex'
-import skinPresets from '../../../../config/skinPresets.js'
+import skinPresets from '../../../../../config/skinPresets.js'
 export default {
   name: 'catalogPanel',
   data() {

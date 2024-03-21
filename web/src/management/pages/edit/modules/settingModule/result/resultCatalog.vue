@@ -18,7 +18,7 @@
 </template>
 <script>
 import { mapMutations } from 'vuex';
-import { EDIT_STATUS_MAP } from './enum';
+import { EDIT_STATUS_MAP } from '../enum';
 
 export default {
   name: 'resultConfigList',

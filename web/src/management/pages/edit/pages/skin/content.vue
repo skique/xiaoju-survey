@@ -6,10 +6,10 @@
     </commonTemplate>
   </template>
   <script>
-  import commonTemplate from '../components/commonTemplate.vue';
-  import catalogPanel from '../modules/skinModule/catalogPanel.vue';
-  import previewPanel from '../modules/skinModule/previewPanel.vue';
-  import setterPanel from '../modules/skinModule/setterPanel.vue';
+  import commonTemplate from '../../components/commonTemplate.vue';
+  import catalogPanel from '../../modules/settingModule/skin/catalogPanel.vue';
+  import previewPanel from '../../modules/settingModule/skin/previewPanel.vue';
+  import setterPanel from '../../modules/settingModule/skin/setterPanel.vue';
   
   export default {
     name: 'editIndex',

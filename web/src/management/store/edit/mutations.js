@@ -86,11 +86,9 @@ export default {
   changeSchema(state, { key, value }) {
     _set(state.schema, key, value);
   },
-  changeThemePreset(state, { bannerImg, themeColor, backgroundColor }) {
-    let skinConf = _get(state.schema, 'skinConf')
-    skinConf.bannerConf.bgImage = bannerImg
-    skinConf.themeConf.color = themeColor
-    skinConf.backgroundConf.color = backgroundColor
-    _set(state.schema, 'skinConf', skinConf);
+  changeThemePreset(state, presets) {
+    Object.keys(presets).forEach(key => {
+      _set(state.schema, key, presets[key]);
+    })
   }
 };

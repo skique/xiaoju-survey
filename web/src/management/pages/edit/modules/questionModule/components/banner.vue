@@ -7,14 +7,14 @@
       <p>点击配置头图</p>
       <p>若不配置头图，将不在问卷中展示</p>
     </div>
-    <div class="banner" v-if="bannerConf.videoLink">
+    <div class="banner" v-if="bannerConf.bannerConfig.videoLink">
       <div class="video">
         <video
           class="custom-video"
-          :poster="bannerConf.postImg"
+          :poster="bannerConf.bannerConfigpostImg"
           preload="auto"
           controls
-          :src="bannerConf.videoLink"
+          :src="bannerConf.bannerConfig.videoLink"
         ></video>
       </div>
     </div>
@@ -39,7 +39,7 @@ export default {
   },
   computed: {
     bgImage() {
-      return _get(this.bannerConf, 'bgImage', '');
+      return _get(this.bannerConf, 'bannerConfig.bgImage', '');
     },
   },
   methods: {

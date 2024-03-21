@@ -1,7 +1,7 @@
 
 export default {
   'default-1': {
-    backgroundColor: '#90b4fa',
-    themeColor: '#FAA600',
+    'skinConf.backgroundConf.color': '#90b4fa',
+    'skinConf.themeConf.color': '#FAA600',
   }
 }

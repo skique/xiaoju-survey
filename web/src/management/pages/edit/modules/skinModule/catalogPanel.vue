@@ -89,9 +89,9 @@ export default {
   changePreset(banner) {
       const name = banner.group + '-' + banner.title
       let presets = {
-        bannerImg: banner.src,
-        themeColor: '#FAA600',
-        backgroundColor: '#fff',
+        'bannerConf.bannerConfig.bgImage': banner.src,
+        'skinConf.themeConf.color': '#FAA600',
+        'skinConf.backgroundConf.color': '#fff',
       }
       if(skinPresets[name]){
         presets = Object.assign(presets, skinPresets[name])

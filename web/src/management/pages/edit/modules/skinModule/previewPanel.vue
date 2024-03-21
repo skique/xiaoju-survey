@@ -4,7 +4,7 @@
       <div class="box" ref="box">
         <div class="mask"></div>
         <banner
-          :bannerConf="skinConf.bannerConf"
+          :bannerConf="bannerConf"
         />
         <div class="content">
           <mainTitle
@@ -21,7 +21,7 @@
             :is-selected="currentEditOne === 'submit'"
           />
           <logo
-            :logo-conf="skinConf.logoConf"
+            :logo-conf="bottomConf"
             :is-selected="currentEditOne === 'logo'"
           />
         </div>
@@ -57,6 +57,7 @@ export default {
     ...mapState({
       bannerConf: (state) => _get(state, 'edit.schema.bannerConf'),
       submitConf: (state) => _get(state, 'edit.schema.submitConf'),
+      bottomConf: (state) => _get(state, 'edit.schema.bottomConf'),
       skinConf: (state) => _get(state, 'edit.schema.skinConf'),
       questionDataList: (state) => _get(state, 'edit.schema.questionDataList'),
       currentEditOne: (state) => _get(state, 'edit.currentEditOne'),

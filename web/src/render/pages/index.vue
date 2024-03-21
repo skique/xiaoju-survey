@@ -4,6 +4,7 @@
     <div class="wrapper" ref="box">
       <Header></Header>
       <div class="content">
+        <mainTitle></mainTitle>
         <mainRenderer ref="main"></mainRenderer>
         <submit
           :validate="validate"
@@ -18,6 +19,7 @@
 
 <script>
 import Header from '../components/header.vue';
+import mainTitle from '../components/mainTitle.vue'
 import submit from '../components/submit.vue';
 import mainRenderer from '../components/mainRenderer';
 import progressBar from '../components/progressBar';
@@ -39,6 +41,7 @@ export default {
   },
   components: {
     Header,
+    mainTitle,
     submit,
     mainRenderer,
     progressBar,

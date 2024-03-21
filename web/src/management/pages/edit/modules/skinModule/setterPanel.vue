@@ -13,8 +13,8 @@
         >
           <setterField
             :form-config-list="collapse.formConfigList"
-            :module-config="skinConf[collapse.key]"
-            @form-change="(key) => onFormChange(key, collapse.key)"
+            :module-config="_get(schema, collapse.key, {})"
+            @form-change="(key) => {debugger; onFormChange(key, collapse.key) }"
           /> 
         </el-collapse-item>
       </el-collapse>
@@ -36,31 +36,25 @@ export default {
     return {
       collapse: '',
       skinConfig,
-      // groupList: []
     };
   },
   computed: {
     ...mapState({
       skinConf: (state) => _get(state, 'edit.schema.skinConf'),
+      schema: (state) => _get(state, 'edit.schema'),
     }),
-    ...mapGetters({
-      // formConfigList: 'edit/formConfigList',
-      moduleConfig: 'edit/moduleConfig',
-      // skinConf:'edit/schema/skinConf'
-      currentEditKey: 'edit/currentEditKey',
-      // currentEditMeta: 'edit/currentEditMeta',
-    }),
-    // moduleConfig() {
-    //   return this.skinConf[this.collapse]
-    // }
   },
   mounted() {
+    this.$nextTick(() => {
+      console.log(this.$store.state.edit.schema)
+    })
     
   },
   methods: {
+    _get,
     onFormChange(data,collapse) {
       const { key, value } = data;
-      const currentEditKey = `skinConf.${collapse}`
+      const currentEditKey = `${collapse}`
       const resultKey = `${currentEditKey}.${key}`;
       this.$store.dispatch('edit/changeSchema', { key: resultKey, value });
     },

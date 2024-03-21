@@ -4,12 +4,12 @@ import logoConfig from "./logoConfig"
 export default [
   {
     name: '头图',
-    key: 'bannerConf',
+    key: 'bannerConf.bannerConfig',
     formConfigList: bannerConfig
   }, 
   {
     name: '背景',
-    key: 'backgroundConf',
+    key: 'skinConf.backgroundConf',
     formConfigList: [{
       direction: 'space_between',
       label: '背景颜色',
@@ -19,7 +19,7 @@ export default [
   },
   {
     name: '主题色',
-    key: 'themeConf',
+    key: 'skinConf.themeConf',
     formConfigList: [{
       direction: 'space_between',
       direction: 'space_between',
@@ -29,7 +29,7 @@ export default [
     }],
   },
   {
-    key: 'contentConf',
+    key: 'skinConf.contentConf',
     name: '内容区域',
     formConfigList: [{
       direction: 'space_between',
@@ -40,7 +40,7 @@ export default [
   },
   {
     name: '品牌logo',
-    key: 'logoConf',
+    key: 'bottomConf',
     formConfigList: logoConfig
   }
 ]

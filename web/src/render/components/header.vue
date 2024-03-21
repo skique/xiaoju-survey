@@ -2,18 +2,18 @@
   <div class="question-header">
     <div
       class="banner"
-      v-if="bannerConf && bannerConf.bgImage"
+      v-if="bannerConf.bannerConfig && bannerConf.bannerConfig.bgImage"
     >
       <img
         class="banner-img"
-        :src="bannerConf.bgImage"
-        :class="{ pointer: bannerConf.bgImageAllowJump }"
+        :src="bannerConf.bannerConfig.bgImage"
+        :class="{ pointer: bannerConf.bannerConfig.bgImageAllowJump }"
         @click="onBannerClick"
       />
     </div>
     <div
       class="banner"
-      v-if="bannerConf && bannerConf.videoLink"
+      v-if="bannerConf.bannerConfig && bannerConf.bannerConfig.videoLink"
     >
       <div class="video">
         <video
@@ -21,18 +21,18 @@
           controls
           style="margin: 0 auto; width: 100%; display: block"
           preload="auto"
-          :poster="bannerConf.postImg"
+          :poster="bannerConf.bannerConfig.postImg"
         >
-          <source :src="bannerConf.videoLink" type="video/mp4" />
+          <source :src="bannerConf.bannerConfig.videoLink" type="video/mp4" />
         </video>
         <div
           class="video-modal"
-          :style="`background-image:url(${bannerConf.postImg})`"
+          :style="`background-image:url(${bannerConf.bannerConfig.postImg})`"
         ></div>
         <div class="iconfont icon-kaishi play-icon" @click="play()"></div>
       </div>
     </div>
-    <div
+    <!-- <div
       class="titlePanel"
       v-if="bannerConf.titleConfig && bannerConf.titleConfig.mainTitle"
     >
@@ -41,7 +41,7 @@
         v-if="bannerConf.titleConfig.mainTitle"
         v-safe-html="bannerConf.titleConfig.mainTitle"
       ></div>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
@@ -52,22 +52,19 @@ export default {
   name: 'TheHeader',
   computed: {
     bannerConf() {
-      return _get(this.$store, 'state.skinConf.bannerConf', {});
-    },
-    titleConfig() {
-      return _get(this.$store, 'state.bannerConf.titleConfig', {});
+      return _get(this.$store, 'state.bannerConf', {});
     }
   },
   methods: {
     onBannerClick() {
       const allow = _get(
         this.bannerConf,
-        'bgImageAllowJump',
+        'bannerConfig.bgImageAllowJump',
         false
       );
       const jumpLink = _get(
         this.bannerConf,
-        'bgImageJumpLink',
+        'bannerConfig.bgImageJumpLink',
         ''
       );
       if (!allow || !jumpLink) {
@@ -88,6 +85,7 @@ export default {
 .question-header {
   .banner,
   .titlePanel {
+    background-color: #fff;
     position: relative;
     width: 100%;
   }
@@ -134,42 +132,6 @@ export default {
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     z-index: 101;
-  }
-}
-</style>
-
-<style lang="scss">
-@import '@/render/styles/variable.scss';
-
-.mainTitle {
-  font-size: 0.28rem;
-  line-height: 0.4rem;
-  color: $title-color;
-
-  ol {
-    list-style: decimal;
-  }
-
-  ul {
-    list-style: disc;
-  }
-
-  img {
-    width: 100%;
-  }
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  p {
-    line-height: 0.6rem;
-    color: $title-color-deep;
-    margin-bottom: 0.35rem;
-  }
-  p {
-    margin-bottom: 0;
   }
 }
 </style>

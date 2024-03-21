@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <Component v-if="$store.state.router" :is="$store.state.router"></Component>
-    <logo v-if="$store.state.router !== 'indexPage'"></logo>
+    <logo v-if="!['successPage', 'indexPage'].includes($store.state.router)"></logo>
   </div>
 </template>
 

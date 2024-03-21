@@ -28,7 +28,7 @@ export default {
 .container {
   display: flex;
   justify-content: center;
-  background-color:  var(--primary-background-color);;
+  background-color: #fff;
 }
 
 .logo-wrapper {

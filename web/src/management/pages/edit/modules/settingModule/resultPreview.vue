@@ -1,12 +1,14 @@
 <template>
   <div class="result-config-preview">
-    <div class="status-preview">
-      <component
-        :is="currentEditStatus"
-        :key="currentEditStatus"
-        :module-config="moduleConfig"
-      />
-    </div>
+    <div class="result-page-wrap">
+      <div class="result-page">
+        <component
+          :is="currentEditStatus"
+          :key="currentEditStatus"
+          :module-config="moduleConfig"
+        />
+      </div>
+    </div>  
   </div>
 </template>
 <script>
@@ -51,7 +53,7 @@ export default {
   background-color: #f6f7f9;
 }
 
-.status-preview {
+.result-page-wrap {
   width: 90%;
   margin-top: 50px;
   min-height: 812px;
@@ -59,5 +61,12 @@ export default {
   overflow-x: hidden;
   overflow-y: auto;
   background-color: var(--primary-background-color);
+  padding: 0 0.3rem;
+  .result-page{
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
 }
 </style>

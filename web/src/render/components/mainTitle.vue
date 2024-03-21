@@ -28,7 +28,6 @@ export default {
 @import '@/render/styles/variable.scss';
 .question-header {
   .titlePanel {
-    background-color: #fff;
     position: relative;
     width: 100%;
     padding: 0.4rem 0.4rem;

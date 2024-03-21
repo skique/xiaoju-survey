@@ -14,7 +14,7 @@
           <setterField
             :form-config-list="collapse.formConfigList"
             :module-config="_get(schema, collapse.key, {})"
-            @form-change="(key) => {debugger; onFormChange(key, collapse.key) }"
+            @form-change="(key) => { onFormChange(key, collapse.key) }"
           /> 
         </el-collapse-item>
       </el-collapse>

@@ -2,7 +2,6 @@
   <div class="question-submit_wrapper">
     <button
       class="question-submit-btn"
-      :style="{ backgroundColor: skinConf.skinColor }"
       @click="submit"
     >
       {{ submitConf.submitTitle }}

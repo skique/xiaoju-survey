@@ -26,6 +26,7 @@ export default {
 .over-time {
   text-align: center;
   margin-bottom: 5.5rem;
+  height: 100%;
 
   .title-msg {
     width: 100%;

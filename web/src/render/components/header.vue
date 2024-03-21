@@ -85,7 +85,6 @@ export default {
 .question-header {
   .banner,
   .titlePanel {
-    background-color: #fff;
     position: relative;
     width: 100%;
   }

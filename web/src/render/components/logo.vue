@@ -28,7 +28,6 @@ export default {
 .container {
   display: flex;
   justify-content: center;
-  background-color: #fff;
 }
 
 .logo-wrapper {

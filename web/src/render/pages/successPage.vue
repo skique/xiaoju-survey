@@ -36,7 +36,7 @@ export default {
   
   padding: 0 0.3rem;
   .result-page{
-    background: #fff;
+    background: rgba(255, 255, 255, var(--opacity)); 
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -51,7 +51,6 @@ export default {
   width: 100%;
   position: relative;
   padding-top: 2rem;
-  background: #fff;
   flex: 1;
 
   img {

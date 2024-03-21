@@ -77,7 +77,7 @@ export default {
         if(backgroundConf?.color) {
           root.style.setProperty('--primary-background-color', backgroundConf?.color); // 设置背景颜色
         }
-        if(contentConf?.opacity) {
+        if(contentConf?.opacity.toString()) {
           root.style.setProperty('--opacity', contentConf?.opacity/100); // 设置全局透明度
         }
       },

@@ -63,7 +63,7 @@ export default {
   background-color: var(--primary-background-color);
   padding: 0 0.3rem;
   .result-page{
-    background: #fff;
+    background: rgba(255, 255, 255, var(--opacity)); 
     display: flex;
     flex-direction: column;
     height: 100%;

@@ -37,7 +37,7 @@ export default {
   width: 100%;
   position: relative;
   padding-top: 2rem;
-  background: #fff;
+  background: var(--primary-background-color);
 
   img {
     width: 2rem;

@@ -30,24 +30,12 @@ export default {
   },
   computed: {
     skinConf () {
-      const skinConf = _get(this.$store, 'state.skinConf', {});
-      return skinConf 
+      return _get(this.$store, 'state.skinConf', {});
     },
   },
   watch: {
-    skinConf(skinConf) {
-      const { themeConf, backgroundConf, contentConf} = skinConf
-      const root = document.documentElement;
-      if(themeConf?.color) {
-        root.style.setProperty('--primary-color', themeConf?.color); // 设置主题颜色
-      }
-      if(backgroundConf?.color) {
-        root.style.setProperty('--primary-background-color', backgroundConf?.color); // 设置背景颜色
-      }
-      if(contentConf?.opacity.toString()) {
-        console.log({opacity: (contentConf?.opacity)/100})
-        root.style.setProperty('--opacity', (contentConf?.opacity)/100); // 设置全局透明度
-      }
+    skinConf(value) {
+      this.setSkin(value)
     }
   },
   async created() {
@@ -81,6 +69,7 @@ export default {
               skinConf,
               submitConf,
             };
+            this.setSkin(skinConf)
             this.$store.commit('setSurveyPath', surveyPath);
             this.$store.dispatch('init', questionData);
             this.$store.dispatch('getEncryptInfo');
@@ -95,6 +84,20 @@ export default {
         }
       }
     },
+    setSkin(skinConf) {
+      const { themeConf, backgroundConf, contentConf} = skinConf
+      const root = document.documentElement;
+      if(themeConf?.color) {
+        root.style.setProperty('--primary-color', themeConf?.color); // 设置主题颜色
+      }
+      if(backgroundConf?.color) {
+        root.style.setProperty('--primary-background-color', backgroundConf?.color); // 设置背景颜色
+      }
+      if(contentConf?.opacity.toString()) {
+        console.log({opacity: (contentConf?.opacity)/100})
+        root.style.setProperty('--opacity', (contentConf?.opacity)/100); // 设置全局透明度
+      }
+    }
   },
 };
 </script>

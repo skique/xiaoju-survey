@@ -46,7 +46,7 @@ export default {
   width: 100%;
   position: relative;
   padding-top: 1.8rem;
-  background: #fff;
+  background: var(--primary-background-color);
 }
 
 .title-msg {

@@ -58,6 +58,6 @@ export default {
   max-height: 812px;
   overflow-x: hidden;
   overflow-y: auto;
-  background-color: #fff;
+  background-color: var(--primary-background-color);
 }
 </style>

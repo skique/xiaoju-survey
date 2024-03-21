@@ -30,7 +30,7 @@ export default {
   .title-msg {
     width: 100%;
     font-size: 16px;
-    color: #999;
+    color: #666;
   }
 }
 

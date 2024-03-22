@@ -7,9 +7,9 @@
 </template>
 <script>
 import commonTemplate from '../../components/commonTemplate.vue';
-import resultCatalog from '../../modules/settingModule/result/resultCatalog.vue';
-import resultPreview from '../../modules/settingModule/result/resultPreview.vue';
-import resultSetter from '../../modules/settingModule/result/resultSetter.vue';
+import resultCatalog from '../../modules/settingModule/result/catalogPanel.vue';
+import resultPreview from '../../modules/settingModule/result/previewPanel.vue';
+import resultSetter from '../../modules/settingModule/result/setterPanel.vue';
 
 export default {
   name: 'editIndex',

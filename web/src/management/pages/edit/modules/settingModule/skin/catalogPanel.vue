@@ -33,14 +33,14 @@
 </template>
 <script>
 import { mapActions } from 'vuex'
-import skinPresets from '../../../../../config/skinPresets.js'
+
+import skinPresets from '@/management/config/skinPresets.js'
 export default {
   name: 'catalogPanel',
   data() {
     return {
       skinPresets: [],
       groupName: 'temp',
-      // groupList: []
     };
   },
   computed: {

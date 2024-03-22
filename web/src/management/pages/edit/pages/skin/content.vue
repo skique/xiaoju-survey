@@ -19,6 +19,9 @@
       previewPanel,
       setterPanel,
     },
+    created() {
+      this.$store.dispatch('getBannerData');
+    }
   };
   </script>
   <style lang="scss" scoped>

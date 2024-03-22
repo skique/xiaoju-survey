@@ -31,10 +31,10 @@
 </template>
 
 <script>
-import materialGroup from '../../questionModule/components/materialGroup.vue';
-import banner from '../../questionModule/components/banner.vue';
-import mainTitle from '../../questionModule/components/mainTitle.vue';
-import submit from '../../questionModule/components/submit.vue';
+import materialGroup from '@/management/pages/edit/components/materialGroup.vue';
+import banner from '../components/banner.vue';
+import mainTitle from '@/management/pages/edit/components/mainTitle.vue';
+import submit from '@/management/pages/edit/components/submit.vue';
 import logo from '../../questionModule/components/logo.vue';
 import { mapState, mapGetters } from 'vuex';
 import { get as _get } from 'lodash-es';

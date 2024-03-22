@@ -24,7 +24,7 @@
 </template>
 <script>
 import skinConfig from '@/management/config/setterConfig/skinConfig';
-import setterField from '../../questionModule/components/setterField.vue';
+import setterField from '@/management/pages/edit/components/setterField.vue';
 import { mapState, mapGetters } from 'vuex';
 import { get as _get } from 'lodash-es'
 export default {
@@ -43,12 +43,6 @@ export default {
       skinConf: (state) => _get(state, 'edit.schema.skinConf'),
       schema: (state) => _get(state, 'edit.schema'),
     }),
-  },
-  mounted() {
-    this.$nextTick(() => {
-      console.log(this.$store.state.edit.schema)
-    })
-    
   },
   methods: {
     _get,

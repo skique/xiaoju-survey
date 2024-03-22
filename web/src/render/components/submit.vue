@@ -61,7 +61,7 @@ export default {
     color: #fff;
     background: var(--primary-color);
     border-radius: 0.08rem;
-    margin-top: 0.4rem;
+    margin: 0.4rem 0;
     cursor: pointer;
   }
 }

@@ -20,7 +20,7 @@ const routes = [
   },
   {
     path: '/survey/:id/edit',
-    name: 'editPage',
+    // name: 'editPage',
     meta: {
       needLogin: true,
     },
@@ -53,7 +53,7 @@ const routes = [
       },
       {
         path: 'skin',
-        name: 'SkinSetting',
+        // name: 'SkinSetting',
         meta: {
           needLogin: true,
         },

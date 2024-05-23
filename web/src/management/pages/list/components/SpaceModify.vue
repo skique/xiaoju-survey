@@ -23,13 +23,17 @@
         <el-input v-model="formModel.description" />
       </el-form-item>
       <el-form-item label="添加成员">
-        <MemberSelect :members="formModel.members" @select="handleMemberSelect" @change="handleMembersChange"/>
+        <MemberSelect
+          :members="formModel.members"
+          @select="handleMemberSelect"
+          @change="handleMembersChange"
+        />
       </el-form-item>
     </el-form>
 
     <template #footer>
       <div class="dialog-footer">
-        <el-button type="primary" class="save-btn" @click="onConfirm" v-if ='!formDisabled'>
+        <el-button type="primary" class="save-btn" @click="onConfirm" v-if="!formDisabled">
           确定
         </el-button>
       </div>
@@ -38,7 +42,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, type Ref, shallowRef, onMounted } from 'vue'
+import { computed, ref, shallowRef, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { pick as _pick } from 'lodash-es'
 
@@ -66,11 +70,14 @@ const formModel = ref<IWorkspace>({
 const rules = {
   name: [{ required: true, message: '请输入团队名称', trigger: 'blur' }]
 }
-const spaceDetail =  computed(() => {
+const spaceDetail = computed(() => {
   return store.state.list.spaceDetail
 })
 const formDisabled = computed(() => {
-  return spaceDetail.value?._id ? store.state.list.teamSpaceList.find((item : any) => item._id === spaceDetail.value._id).currentUserRole !== UserRole.Admin : false
+  return spaceDetail.value?._id
+    ? store.state.list.teamSpaceList.find((item: any) => item._id === spaceDetail.value._id)
+        .currentUserRole !== UserRole.Admin
+    : false
 })
 // const formDisabled = computed(() => {
 //   return currentTeamSpaceRole.value ? currentTeamSpaceRole.value.currentUserRole !== UserRole.Admin : false
@@ -80,7 +87,6 @@ const formDisabled = computed(() => {
 // })
 onMounted(() => {
   if (props.type === QOP_MAP.EDIT) {
-    
     formModel.value = _pick(spaceDetail.value, ['_id', 'name', 'description', 'members'])
   }
 })
@@ -111,7 +117,7 @@ const onConfirm = async () => {
 }
 
 const handleMemberSelect = (val: string, label: string) => {
-  formModel.value.members.push({userId: val, username: label, role: UserRole.Member})
+  formModel.value.members.push({ userId: val, username: label, role: UserRole.Member })
 }
 const handleMembersChange = (val: IMember[]) => {
   formModel.value.members = val

@@ -1,11 +1,12 @@
 <template>
   <div>
-    <el-select 
+    <el-select
       :multiple="multiple"
-      v-model="value" 
+      v-model="value"
       placeholder="Select"
-      style="width: 120px;"
-      @change="handleChange">
+      style="width: 120px"
+      @change="handleChange"
+    >
       <el-option
         v-for="item in options"
         :key="item.value"
@@ -19,31 +20,37 @@
 import { type Ref, ref, computed, defineProps, watch } from 'vue'
 import { type ListItem } from '@/management/utils/types/workSpace'
 
-const props = withDefaults(defineProps<{
-  multiple?: boolean,
-  modelValue: string | string[],
-  options: ListItem[]
-}>(), {
-  multiple: false,
-  modelValue: '',
-  options: () => []
-})
+const props = withDefaults(
+  defineProps<{
+    multiple?: boolean
+    modelValue: string | string[]
+    options: ListItem[]
+  }>(),
+  {
+    multiple: false,
+    modelValue: '',
+    options: () => []
+  }
+)
 const emit = defineEmits(['update:modelValue', 'change'])
 const value = computed({
   get() {
-    return props.modelValue;
+    return props.modelValue
   },
   set(value) {
-    emit('update:modelValue', value);
-  },
+    emit('update:modelValue', value)
+  }
 })
 const handleChange = (val: string | string[]) => {
-  console.log({val})
-  emit("change", val)
+  console.log({ val })
+  emit('change', val)
 }
 
 const currentValue: Ref<string | string[]> = ref(props.multiple ? [] : '')
-watch(() => props.modelValue, (newValue) => {
-  currentValue.value = newValue
-})
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    currentValue.value = newValue
+  }
+)
 </script>

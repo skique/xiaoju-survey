@@ -42,7 +42,6 @@ import 'element-plus/theme-chalk/src/message.scss'
 import { createSurvey } from '@/management/api/survey'
 
 import { SURVEY_TYPE_LIST } from '../types'
-import { SpaceType } from '@/management/utils/types/workSpace'
 export default {
   name: 'CreateForm',
   props: {
@@ -91,7 +90,7 @@ export default {
           surveyType: selectType,
           ...this.form
         }
-        if(this.$store.state.list.workSpaceId) {
+        if (this.$store.state.list.workSpaceId) {
           params.workspaceId = this.$store.state.list.workSpaceId
         }
         const res = await createSurvey(params)

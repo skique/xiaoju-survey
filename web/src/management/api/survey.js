@@ -7,7 +7,7 @@ export const getSurveyList = ({ curPage, filter, order, workspaceId }) => {
       curPage,
       filter,
       order,
-      workspaceId,
+      workspaceId
     }
   })
 }

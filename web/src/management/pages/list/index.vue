@@ -3,11 +3,7 @@
     <div class="top-nav">
       <div class="left">
         <img class="logo-img" src="/imgs/Logo.webp" alt="logo" />
-        <el-menu
-          :default-active="activeIndex"
-          class="el-menu-demo"
-          mode="horizontal"
-        >
+        <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal">
           <el-menu-item index="1">问卷列表</el-menu-item>
         </el-menu>
       </div>
@@ -18,22 +14,38 @@
       </div>
     </div>
     <div class="content-wrap">
-      <SliderBar :menus="spaceMenus" @change="handleSpaceChange"/>
+      <SliderBar :menus="spaceMenus" @change="handleSpaceChange" />
       <div class="list-content">
         <div class="top">
-          <h2>{{ spaceType === SpaceType.Group ? '团队空间': '问卷' }}列表</h2>
+          <h2>{{ spaceType === SpaceType.Group ? '团队空间' : '问卷' }}列表</h2>
           <div class="operation">
-            <el-button class="btn space-btn" type="default" @click="onSpaceCreate" v-if="spaceType == SpaceType.Group">
+            <el-button
+              class="btn space-btn"
+              type="default"
+              @click="onSpaceCreate"
+              v-if="spaceType == SpaceType.Group"
+            >
               <i class="iconfont icon-chuangjian"></i>
               <span>创建团队空间</span>
             </el-button>
-            <el-button class="btn create-btn" type="default" @click="onCreate" v-if="spaceType !== SpaceType.Group">
+            <el-button
+              class="btn create-btn"
+              type="default"
+              @click="onCreate"
+              v-if="spaceType !== SpaceType.Group"
+            >
               <i class="iconfont icon-chuangjian"></i>
               <span>创建问卷</span>
             </el-button>
           </div>
         </div>
-        <BaseList :loading="loading" :data="surveyList" :total="surveyTotal" @reflush="fetchSurveyList" v-if="spaceType !== SpaceType.Group"></BaseList>
+        <BaseList
+          :loading="loading"
+          :data="surveyList"
+          :total="surveyTotal"
+          @reflush="fetchSurveyList"
+          v-if="spaceType !== SpaceType.Group"
+        ></BaseList>
         <SpaceList v-if="spaceType === SpaceType.Group"></SpaceList>
       </div>
     </div>
@@ -47,9 +59,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
-import { useRouter } from 'vue-router' 
+import { useRouter } from 'vue-router'
 import BaseList from './components/BaseList.vue'
 import SpaceList from './components/SpaceList.vue'
 import SliderBar from './components/SliderBar.vue'
@@ -76,7 +88,7 @@ const spaceMenus = computed(() => {
 const workSpaceId = computed(() => {
   return store.state.list.workSpaceId
 })
-const spaceType =  computed(() => {
+const spaceType = computed(() => {
   return store.state.list.spaceType
 })
 const handleSpaceChange = (id: any) => {
@@ -84,7 +96,7 @@ const handleSpaceChange = (id: any) => {
     // 点击个人空间菜单
     store.commit('list/changeSpaceType', SpaceType.Personal)
     store.commit('list/changeWorkSpace', '')
-  } else if(id === SpaceType.Group) {
+  } else if (id === SpaceType.Group) {
     // 点击团队空间组菜单
     store.commit('list/changeSpaceType', SpaceType.Group)
     store.commit('list/changeWorkSpace', '')
@@ -93,10 +105,10 @@ const handleSpaceChange = (id: any) => {
     store.commit('list/changeSpaceType', SpaceType.Teamwork)
     store.commit('list/changeWorkSpace', id)
   }
-  
+
   fetchSurveyList()
 }
-onMounted(()=>{
+onMounted(() => {
   fetchSpaceList()
   fetchSurveyList()
 })
@@ -104,13 +116,13 @@ const fetchSpaceList = () => {
   store.dispatch('list/getSpaceList')
 }
 const fetchSurveyList = async (params?: any) => {
-  if(!params) {
+  if (!params) {
     params = {
       pageSize: 10,
-      curPage: 1,
+      curPage: 1
     }
   }
-  if(workSpaceId.value) {
+  if (workSpaceId.value) {
     params.workspaceId = workSpaceId.value
   }
   loading.value = true
@@ -122,7 +134,7 @@ const showSpaceModify = ref(false)
 
 const onCloseModify = (type: string) => {
   showSpaceModify.value = false
-  if(type === 'update') fetchSpaceList()
+  if (type === 'update') fetchSpaceList()
 }
 const onSpaceCreate = () => {
   showSpaceModify.value = true
@@ -140,7 +152,7 @@ const handleLogout = () => {
 .question-list-root {
   height: 100%;
   background-color: #f6f7f9;
-  
+
   .top-nav {
     background: #fff;
     color: #4a4c5b;
@@ -149,8 +161,8 @@ const handleLogout = () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.04);
-    .left{
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.04);
+    .left {
       display: flex;
       align-items: center;
       width: calc(100% - 200px);
@@ -163,8 +175,8 @@ const handleLogout = () => {
         width: 100%;
         height: 56px;
         border: none !important;
-        :deep(.el-menu-item,.is-active){
-          border: none !important
+        :deep(.el-menu-item, .is-active) {
+          border: none !important;
         }
       }
     }
@@ -187,10 +199,9 @@ const handleLogout = () => {
       color: #faa600;
     }
   }
-  .content-wrap{
+  .content-wrap {
     position: relative;
     height: calc(100% - 56px);
-
   }
   .list-content {
     position: relative;
@@ -215,10 +226,10 @@ const handleLogout = () => {
         font-size: 18px;
       }
 
-      .create-btn{
-          background: #4a4c5b;
-        }
-      .space-btn{
+      .create-btn {
+        background: #4a4c5b;
+      }
+      .space-btn {
         background: $primary-color;
       }
       .btn {
@@ -227,8 +238,7 @@ const handleLogout = () => {
         display: flex;
         justify-content: center;
         align-items: center;
-        
-        
+
         color: #fff;
 
         .icon-chuangjian {

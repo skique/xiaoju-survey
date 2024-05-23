@@ -55,11 +55,12 @@ const handleSelect = (id: string) => {
   &:not(.el-menu--collapse) {
     width: 200px;
     min-height: 400px;
-    height: calc(100% - 56px);
     position: absolute;
     top: 1px;
     bottom: 0px;
     z-index: 999;
+    overflow-x: hidden;
+    overflow-y: auto;
     li {
       width: 200px;
     }

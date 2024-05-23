@@ -10,7 +10,6 @@
   >
     <template #item="{ element, index }">
       <QuestionWrapper
-        v-bind="$attrs"
         :ref="`questionWrapper-${element.field}`"
         :moduleConfig="element"
         :qIndex="element.qIndex"
@@ -18,15 +17,15 @@
         :isSelected="currentEditOne === index"
         :isLast="index + 1 === questionDataList.length"
         @select="handleSelect"
+        @changeSeq="handleChangeSeq"
       >
         <QuestionContainerB
-          v-bind="$attrs"
           :type="element.type"
           :moduleConfig="element"
           :indexNumber="element.indexNumber"
           :isSelected="currentEditOne === index"
           :readonly="true"
-          @select="handleSelect"
+          @change="handleChange"
         ></QuestionContainerB>
       </QuestionWrapper>
     </template>
@@ -60,9 +59,9 @@ export default defineComponent({
       }
     }
   },
+  emits: ['change', 'select', 'changeSeq'],
   setup(props, { emit }) {
     const store = useStore()
-
     const renderData = computed({
       get() {
         return filterQuestionPreviewData(props.questionDataList)
@@ -73,6 +72,9 @@ export default defineComponent({
     })
     const handleSelect = (index) => {
       emit('select', index)
+    }
+    const handleChange = (data) => {
+      emit('change', data)
     }
     const handleChangeSeq = (data) => {
       emit('changeSeq', data)
@@ -102,6 +104,7 @@ export default defineComponent({
       DND_GROUP,
       renderData,
       handleSelect,
+      handleChange,
       handleChangeSeq,
       checkMove,
       checkEnd,

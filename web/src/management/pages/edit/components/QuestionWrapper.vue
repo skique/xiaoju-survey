@@ -88,7 +88,10 @@ const showCopy = computed(() => {
 
 const clickFormItem = () => {
   const index = props.qIndex
-  emit('select', index)
+
+  if (!props.isSelected) {
+    emit('select', index)
+  }
 }
 const onCopy = () => {
   const index = props.qIndex

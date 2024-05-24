@@ -9,7 +9,7 @@ export const spaceListConfig = {
   name: {
     title: '空间名称',
     key: 'name',
-    width: 150,
+    width: 150
   },
   surveyTotal: {
     title: '问卷数',
@@ -20,12 +20,12 @@ export const spaceListConfig = {
   memberTotal: {
     title: '成员数',
     key: 'memberTotal',
-    width: 200,
+    width: 200
   },
   owner: {
     title: '所有者',
     key: 'owner',
-    width: 140,
+    width: 140
   },
   createDate: {
     title: '创建时间',

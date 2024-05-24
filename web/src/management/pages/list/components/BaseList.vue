@@ -141,7 +141,7 @@ const props = defineProps({
   },
   data: {
     type: Array,
-    default:  () => []
+    default: () => []
   },
   total: {
     type: Number,
@@ -149,208 +149,208 @@ const props = defineProps({
   }
 })
 const emit = defineEmits(['reflush'])
-  const fields = ['type', 'title', 'remark', 'owner', 'state', 'createDate', 'updateDate']
-  const showModify = ref(false)
-  const modifyType =  ref('')
-  const questionInfo = ref({})
-      
-  const currentPage = ref(1)
-  const searchVal = ref('')
-  const selectValueMap = ref({
-    surveyType: '',
-    'curStatus.status': ''
+const fields = ['type', 'title', 'remark', 'owner', 'state', 'createDate', 'updateDate']
+const showModify = ref(false)
+const modifyType = ref('')
+const questionInfo = ref({})
+
+const currentPage = ref(1)
+const searchVal = ref('')
+const selectValueMap = ref({
+  surveyType: '',
+  'curStatus.status': ''
+})
+const buttonValueMap = ref({
+  'curStatus.date': '',
+  createDate: -1
+})
+const currentComponent = computed(() => {
+  return (componentName) => {
+    switch (componentName) {
+      case 'TagModule':
+        return TagModule
+      case 'StateModule':
+        return StateModule
+      default:
+        return null
+    }
+  }
+})
+
+const fieldList = computed(() => {
+  return map(fields, (f) => {
+    return get(fieldConfig, f, null)
   })
-  const buttonValueMap = ref({
+})
+const data = computed(() => {
+  return props.data
+})
+const total = computed(() => {
+  return props.total
+})
+const dataList = computed(() => {
+  return data.value.map((item) => {
+    return {
+      ...item,
+      'curStatus.date': item.curStatus.date
+    }
+  })
+})
+const filter = computed(() => {
+  return [
+    {
+      comparator: '',
+      condition: [
+        {
+          field: 'title',
+          value: searchVal.value,
+          comparator: '$regex'
+        }
+      ]
+    },
+    {
+      comparator: '',
+      condition: [
+        {
+          field: 'curStatus.status',
+          value: selectValueMap.value['curStatus.status']
+        }
+      ]
+    },
+    {
+      comparator: '',
+      condition: [
+        {
+          field: 'surveyType',
+          value: selectValueMap.value.surveyType
+        }
+      ]
+    }
+  ]
+})
+const order = computed(() => {
+  const formatOrder = Object.entries(buttonValueMap.value)
+    .filter(([, effectValue]) => effectValue)
+    .reduce((prev, item) => {
+      const [effectKey, effectValue] = item
+      prev.push({ field: effectKey, value: effectValue })
+      return prev
+    }, [])
+  return JSON.stringify(formatOrder)
+})
+const workSpaceId = computed(() => {
+  return store.state.list.workSpaceId
+})
+// onMounted(() =>{
+//   init()
+// })
+
+const onReflush = async () => {
+  const filterString = JSON.stringify(
+    filter.value.filter((item) => {
+      return item.condition[0].value
+    })
+  )
+  let params = {
+    curPage: currentPage.value,
+    filter: filterString,
+    order: order.value
+  }
+  if (workSpaceId.value) {
+    params.workspaceId = workSpaceId.value
+  }
+  emit('reflush', params)
+  // store.dispatch('getSurveyList', parasm)
+}
+const getToolConfig = () => {
+  const funcList = [
+    {
+      key: QOP_MAP.EDIT,
+      label: '修改'
+    },
+    {
+      key: 'analysis',
+      label: '数据'
+    },
+    {
+      key: 'release',
+      label: '投放'
+    },
+    {
+      key: 'delete',
+      label: '删除',
+      icon: 'icon-shanchu'
+    },
+    {
+      key: QOP_MAP.COPY,
+      label: '复制',
+      icon: 'icon-shanchu'
+    }
+  ]
+  return funcList
+}
+const onDelete = async (row) => {
+  try {
+    await ElMessageBox.confirm('是否确认删除？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+  } catch (error) {
+    console.log('取消删除')
+    return
+  }
+
+  const res = await deleteSurvey(row._id)
+  if (res.code === CODE_MAP.SUCCESS) {
+    ElMessage.success('删除成功')
+    onReflush()
+  } else {
+    ElMessage.error(res.errmsg || '删除失败')
+  }
+}
+const handleCurrentChange = (current) => {
+  currentPage.value = current
+  onReflush()
+}
+const onModify = (data, type = QOP_MAP.EDIT) => {
+  showModify.value = true
+  modifyType.value = type
+  questionInfo.value = data
+}
+const onCloseModify = (type) => {
+  showModify.value = false
+  questionInfo.value = {}
+  if (type === 'update') {
+    onReflush()
+  }
+}
+const onRowClick = (row) => {
+  router.push({
+    name: 'QuestionEditIndex',
+    params: {
+      id: row._id
+    }
+  })
+}
+const onSearchText = (e) => {
+  searchVal.value = e
+  currentPage.value = 1
+  onReflush()
+}
+const onSelectChange = (selectValue, selectKey) => {
+  selectValueMap.value[selectKey] = selectValue
+  currentPage.value = 1
+  onReflush()
+}
+const onButtonChange = (effectValue, effectKey) => {
+  buttonValueMap.value = {
     'curStatus.date': '',
-    createDate: -1
-  })
-  const currentComponent = computed(() => {
-    return (componentName) => {
-      switch (componentName) {
-        case 'TagModule':
-          return TagModule
-        case 'StateModule':
-          return StateModule
-        default:
-          return null
-     }
-    }
-  })
-
-  const fieldList = computed(() => {
-    return map(fields, (f) => {
-      return get(fieldConfig, f, null)
-    })
-  }) 
-  const data = computed(()=> {
-    return props.data
-  })
-  const total = computed(()=> {
-    return props.total
-  })
-  const dataList = computed(() => {
-    return data.value.map((item) => {
-      return {
-        ...item,
-        'curStatus.date': item.curStatus.date
-      }
-    })
-  })
-  const filter = computed(() => {
-    return [
-        {
-          comparator: '',
-          condition: [
-            {
-              field: 'title',
-              value: searchVal.value,
-              comparator: '$regex'
-            }
-          ]
-        },
-        {
-          comparator: '',
-          condition: [
-            {
-              field: 'curStatus.status',
-              value: selectValueMap.value['curStatus.status']
-            }
-          ]
-        },
-        {
-          comparator: '',
-          condition: [
-            {
-              field: 'surveyType',
-              value: selectValueMap.value.surveyType
-            }
-          ]
-        }
-      ]
-  })
-  const order = computed(() => {
-    const formatOrder = Object.entries(buttonValueMap.value)
-      .filter(([, effectValue]) => effectValue)
-      .reduce((prev, item) => {
-        const [effectKey, effectValue] = item
-        prev.push({ field: effectKey, value: effectValue })
-        return prev
-      }, [])
-    return JSON.stringify(formatOrder)
-  })
-  const workSpaceId = computed(() => {
-    return store.state.list.workSpaceId
-  })
-  // onMounted(() =>{
-  //   init()
-  // })
-
-    const onReflush = async () => {
-        const filterString = JSON.stringify(
-          filter.value.filter((item) => {
-            return item.condition[0].value
-          })
-        )
-        let params = {
-          curPage: currentPage.value,
-          filter: filterString,
-          order: order.value
-        }
-        if(workSpaceId.value) {
-          params.workspaceId = workSpaceId.value
-        }
-        emit('reflush', params)
-        // store.dispatch('getSurveyList', parasm)
-    }
-    const getToolConfig = () => {
-      const funcList = [
-        {
-          key: QOP_MAP.EDIT,
-          label: '修改'
-        },
-        {
-          key: 'analysis',
-          label: '数据'
-        },
-        {
-          key: 'release',
-          label: '投放'
-        },
-        {
-          key: 'delete',
-          label: '删除',
-          icon: 'icon-shanchu'
-        },
-        {
-          key: QOP_MAP.COPY,
-          label: '复制',
-          icon: 'icon-shanchu'
-        }
-      ]
-      return funcList
-    }
-    const  onDelete = async (row) => {
-      try {
-        await ElMessageBox.confirm('是否确认删除？', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        })
-      } catch (error) {
-        console.log('取消删除')
-        return
-      }
-
-      const res = await deleteSurvey(row._id)
-      if (res.code === CODE_MAP.SUCCESS) {
-        ElMessage.success('删除成功')
-        onReflush()
-      } else {
-        ElMessage.error(res.errmsg || '删除失败')
-      }
-    }
-    const handleCurrentChange = (current) => {
-      currentPage.value = current
-      onReflush()
-    }
-    const onModify = (data, type = QOP_MAP.EDIT) => {
-      showModify.value = true
-      modifyType.value = type
-      questionInfo.value = data
-    }
-    const onCloseModify = (type) => {
-      showModify.value = false
-      questionInfo.value = {}
-      if (type === 'update') {
-        onReflush()
-      }
-    }
-    const onRowClick = (row) => {
-      router.push({
-        name: 'QuestionEditIndex',
-        params: {
-          id: row._id
-        }
-      })
-    }
-    const onSearchText = (e) => {
-      searchVal.value = e
-      currentPage.value = 1
-      onReflush()
-    }
-    const onSelectChange = (selectValue, selectKey) => {
-      selectValueMap.value[selectKey] = selectValue
-      currentPage.value = 1
-      onReflush()
-    }
-    const onButtonChange = (effectValue, effectKey) => {
-      buttonValueMap.value = {
-        'curStatus.date': '',
-        createDate: ''
-      }
-      buttonValueMap.value[effectKey] = effectValue
-      onReflush()
-    }
+    createDate: ''
+  }
+  buttonValueMap.value[effectKey] = effectValue
+  onReflush()
+}
 </script>
 
 <style lang="scss" scoped>

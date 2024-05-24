@@ -90,7 +90,7 @@ export default {
           surveyType: selectType,
           ...this.form
         }
-        if(this.$store.state.list.workSpaceId) {
+        if (this.$store.state.list.workSpaceId) {
           params.workspaceId = this.$store.state.list.workSpaceId
         }
         const res = await createSurvey(params)

@@ -1,4 +1,10 @@
-import { createSpace, spaceList, spaceDetail, updateSpace, spaceDelete } from '@/management/api/space'
+import {
+  createSpace,
+  spaceList,
+  spaceDetail,
+  updateSpace,
+  spaceDelete
+} from '@/management/api/space'
 import { CODE_MAP } from '@/management/api/base'
 import { ElMessage } from 'element-plus'
 import 'element-plus/theme-chalk/src/message.scss'
@@ -31,17 +37,17 @@ export default {
     spaceDetail: null,
     teamSpaceList: [],
     surveyList: [],
-    surveyTotal: 0,
+    surveyTotal: 0
   },
   mutations: {
-    updateSpaceMenus(state, teamSpace){
+    updateSpaceMenus(state, teamSpace) {
       // 更新空间列表下的团队空间
       set(state, 'spaceMenus[1].children', teamSpace)
     },
     changeSpaceType(state, spaceType) {
       state.spaceType = spaceType
     },
-    changeWorkSpace(state, workSpaceId){
+    changeWorkSpace(state, workSpaceId) {
       state.workSpaceId = workSpaceId
     },
     setSpaceDetail(state, data) {
@@ -61,10 +67,10 @@ export default {
     async getSpaceList({ commit }) {
       try {
         const res = await spaceList()
-        
+
         if (res.code === CODE_MAP.SUCCESS) {
           const { list } = res.data
-          const teamSpace = list.map(item => {
+          const teamSpace = list.map((item) => {
             return {
               id: item._id,
               name: item.name
@@ -79,17 +85,17 @@ export default {
         ElMessage.error('getSpaceList' + err)
       }
     },
-    async addSpace({ }, params) {
+    async addSpace({}, params) {
       const res = await createSpace({
         name: params.name,
         description: params.description,
         members: params.members
       })
-  
+
       if (res.code === CODE_MAP.SUCCESS) {
         ElMessage.success('添加成功')
       } else {
-        ElMessage.error('createSpace  code err'+res.errmsg)
+        ElMessage.error('createSpace  code err' + res.errmsg)
       }
     },
     async getSpaceDetail({ state, commit }, id) {
@@ -97,7 +103,6 @@ export default {
         const workspaceId = id || state.workSpaceId
         const res = await spaceDetail(workspaceId)
         if (res.code === CODE_MAP.SUCCESS) {
-          
           commit('setSpaceDetail', res.data)
         } else {
           ElMessage.error('getSpaceList' + res.errmsg)
@@ -106,7 +111,7 @@ export default {
         ElMessage.error('getSpaceList' + err)
       }
     },
-    async updateSpace({ }, params) {
+    async updateSpace({}, params) {
       try {
         const res = await updateSpace({
           workspaceId: params._id,
@@ -114,7 +119,7 @@ export default {
           description: params.description,
           members: params.members
         })
-    
+
         if (res.code === CODE_MAP.SUCCESS) {
           ElMessage.success('更新成功')
         } else {
@@ -124,10 +129,10 @@ export default {
         ElMessage.error(err)
       }
     },
-    async deleteSpace({ }, workspaceId) {
+    async deleteSpace({}, workspaceId) {
       try {
         const res = await spaceDelete(workspaceId)
-    
+
         if (res.code === CODE_MAP.SUCCESS) {
           ElMessage.success('删除成功')
         } else {
@@ -137,12 +142,12 @@ export default {
         ElMessage.error(err)
       }
     },
-    async getSurveyList({ commit}, params) {
+    async getSurveyList({ commit }, params) {
       try {
-        if(!params) {
+        if (!params) {
           params = {
             pageSize: 10,
-            curPage: 1,
+            curPage: 1
           }
         }
         const res = await surveyList(params)

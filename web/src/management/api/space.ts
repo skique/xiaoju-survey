@@ -1,6 +1,4 @@
 import axios from './base'
-import memorize from '../utils/memorize'
-
 // 空间
 export const createSpace = ({ name, description, members }: any) => {
   return axios.post('/workspace', { name, description, members })
@@ -34,8 +32,6 @@ export const getUserList = (username: string) => {
 export const getPermissionList = () => {
   return axios.get('collaborator/getPermissionList')
 }
-// 因为协作权限列表枚举相对固定，所以使用memorize缓存一下，减少请求次数
-export const getPermissionListMemorize = memorize(getPermissionList)
 
 export const saveCollaborator = ({ surveyId, collaborators }: any) => {
   return axios.post('collaborator/batchSave', {

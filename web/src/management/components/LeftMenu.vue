@@ -59,6 +59,7 @@ const tabArr = [
 ]
 const tabs = ref([])
 watch(() => store.state.cooperPermissions, (newVal) => {
+  tabs.value = []
   // 如果有问卷管理权限，则加入问卷编辑和投放菜单
   if (newVal.includes(SurveyPermissions.SurveyManage)) {
     tabs.value.push(tabArr[0])

@@ -41,6 +41,10 @@ export default defineComponent({
     maxNum: {
       type: [Number, String],
       default: 1
+    },
+    limitNoDisplay: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['change'],
@@ -60,7 +64,7 @@ export default defineComponent({
       return options.map((item) => {
         return {
           ...item,
-          disabled: isDisabled(item)
+          disabled: item.disabled || isDisabled(item)
         }
       })
     })
@@ -107,6 +111,7 @@ export default defineComponent({
         options={myOptions}
         onChange={onChange}
         value={value}
+        limitNoDisplay={this.limitNoDisplay}
       >
         {{
           selectMore: (scoped) => {
@@ -117,6 +122,11 @@ export default defineComponent({
                 moduleConfig={scoped.selectMoreConfig}
                 onChange={(e) => this.handleSelectMoreChange(e)}
               ></selectMoreView>
+            )
+          },
+          limit: (scoped) => {
+            return (
+              <span>剩余 {scoped?.release} 个</span>
             )
           }
         }}

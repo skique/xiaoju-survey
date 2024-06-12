@@ -31,6 +31,10 @@ export default defineComponent({
     readonly: {
       type: Boolean,
       default: false
+    },
+    limitNoDisplay: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['change'],
@@ -81,6 +85,7 @@ export default defineComponent({
           field={this.field}
           layout={this.layout}
           onChange={this.onChange}
+          limitNoDisplay={this.limitNoDisplay}
         >
           {{
             selectMore: (scoped) => {
@@ -91,6 +96,11 @@ export default defineComponent({
                   moduleConfig={scoped.selectMoreConfig}
                   onChange={(e) => this.handleSelectMoreChange(e)}
                 ></selectMoreView>
+              )
+            },
+            limit: (scoped) => {
+              return (
+                <span>剩余 {scoped?.release} 个</span>
               )
             }
           }}

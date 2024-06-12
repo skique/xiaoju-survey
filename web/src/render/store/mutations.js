@@ -50,7 +50,11 @@ export default {
   setEncryptInfo(state, data) {
     state.encryptInfo = data
   },
-  setRuleEgine(state, ruleEngine) {
-    state.ruleEngine = ruleEngine
+  updateLimitMapByKey(state, { questionKey, optionKey, data }) {
+    // 兼容为空的情况
+    if (!state.limitMap[questionKey]) {
+      state.limitMap[questionKey] = {}
+    }
+    state.limitMap[questionKey][optionKey] = data
   }
 }

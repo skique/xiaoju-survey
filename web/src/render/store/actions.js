@@ -5,7 +5,6 @@ import 'moment/locale/zh-cn'
 moment.locale('zh-cn')
 import adapter from '../adapter'
 import { queryVote, getEncryptInfo } from '@/render/api/survey'
-import { RuleMatch } from '@/common/logicEngine/RulesMatch'
 /**
  * CODE_MAP不从management引入，在dev阶段，会导致B端 router被加载，进而导致C端路由被添加 baseUrl: /management
  */
@@ -15,6 +14,7 @@ const CODE_MAP = {
   NO_AUTH: 403
 }
 const VOTE_INFO_KEY = 'voteinfo'
+const LIMIT_INFO_KEY = 'limitinfo'
 
 export default {
   // 初始化
@@ -80,6 +80,8 @@ export default {
     })
     // 获取已投票数据
     dispatch('initVoteData')
+    // 获取选项上线选中数据
+    dispatch('initLimitMap')
   },
   // 用户输入或者选择后，更新表单数据
   changeData({ commit }, data) {
@@ -102,6 +104,7 @@ export default {
     if (fieldList.length <= 0) {
       return
     }
+    // 如果不存在投票题则不请求投票进度接口
     try {
       localStorage.removeItem(VOTE_INFO_KEY)
       const voteRes = await queryVote({
@@ -170,8 +173,77 @@ export default {
       console.log(error)
     }
   },
-  async initRuleEngine({ commit }, ruleConf) {
-    const ruleEngine = new RuleMatch(ruleConf)
-    commit('setRuleEgine', ruleEngine)
+  async initLimitMap({ state, commit }) {
+    const questionData = state.questionData
+    const surveyPath = state.surveyPath
+    console.log({questionData})
+    const fieldList = Object.keys(questionData).filter(field => {
+      if (['radio', 'checkbox'].includes(questionData[field].type)) {
+        return questionData[field].options.some(option => {
+          return option.limit > 0
+        })
+      }
+    })
+    console.log({fieldList})
+    // 如果不存在则不请求选项上限接口
+    // if (fieldList.length <= 0) {
+    //   return
+    // }
+   
+    try {
+      localStorage.removeItem(LIMIT_INFO_KEY)
+      const voteRes = await queryVote({
+        surveyPath,
+        fieldList: fieldList.join(',')
+      })
+
+      if (voteRes.code === 200) {
+        localStorage.setItem(
+          LIMIT_INFO_KEY,
+          JSON.stringify({
+            ...voteRes.data
+          })
+        )
+        Object.keys(voteRes.data).forEach(field => {
+          Object.keys(voteRes.data[field]).forEach((optionHash) => {
+            commit('updateLimitMapByKey', { questionKey: field, optionKey: optionHash, data: voteRes.data[field][optionHash] })
+          })
+        })
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  },
+  // 题目选中时更新选项配额
+  changeLimit({ state, commit }, data) {
+    const { key: questionKey, value: questionVal } = data
+    // 更新前获取接口缓存在localStorage中的数据
+    const localData = localStorage.getItem(LIMIT_INFO_KEY)
+    const limitMap = JSON.parse(localData)
+    // const limitMap = state.limitMap
+    const currentQuestion = state.questionData[questionKey]
+    const options = currentQuestion.options
+    options.forEach((option) => {
+      const optionhash = option.hash
+      const selectCount = limitMap?.[questionKey]?.[optionhash].selectCount || 0
+      // 如果选中值包含该选项，对应 voteCount 和 voteTotal  + 1
+      if (
+        Array.isArray(questionVal) ? questionVal.includes(optionhash) : questionVal === optionhash
+      ) {
+        const countPayload = {
+          questionKey,
+          optionKey: optionhash,
+          selectCount: selectCount + 1
+        }
+        commit('updateLimitMapByKey', countPayload)
+      } else {
+        const countPayload = {
+          questionKey,
+          optionKey: optionhash,
+          selectCount: selectCount
+        }
+        commit('updateLimitMapByKey', countPayload)
+      }
+    })
   }
 }

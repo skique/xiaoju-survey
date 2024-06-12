@@ -30,7 +30,30 @@ const meta = {
           contentClass: 'input-number-config'
         }
       ]
-    }
+    },
+    {
+      name: 'optionLimit',
+      label: '选项配额',
+      labelStyle: {
+        'font-weight': 'bold'
+      },
+      type: 'DialogSetter',
+      // 输出转换
+      setterAdapter({ options, limitRevert, limitNoDisplay}) {
+        return [{
+          key: 'options',
+          value: options
+        },
+        {
+          key: 'limitRevert',
+          value: limitRevert
+        },
+        {
+          key: 'limitNoDisplay',
+          value: limitNoDisplay
+        }]
+      }
+    },
   ],
   editConfigure: {
     optionEdit: {

@@ -6,13 +6,15 @@
     :indexNumber="indexNumber"
     :showTitle="true"
     @change="handleChange"
-  ></QuestionRuleContainer>
+  >
+  </QuestionRuleContainer>
 </template>
 <script setup>
 import { unref, computed, watch } from 'vue'
 import QuestionRuleContainer from '../../materials/questions/QuestionRuleContainer'
 import { useVoteMap } from '@/render/hooks/useVoteMap'
 import { useShowOthers } from '@/render/hooks/useShowOthers'
+import { useOptionsLimit } from '@/render/hooks/useOptionsLimit'
 import { useShowInput } from '@/render/hooks/useShowInput'
 import store from '@/render/store'
 import { cloneDeep } from 'lodash-es'
@@ -42,6 +44,7 @@ const questionConfig = computed(() => {
   // console.log(field,'这里依赖的formValue，所以change时会触发重新计算')
   let alloptions = options
   if (type === QUESTION_TYPE.VOTE) {
+    // 处理投票进度
     const { options, voteTotal } = useVoteMap(field)
     const voteOptions = unref(options)
     alloptions = alloptions.map((obj, index) => Object.assign(obj, voteOptions[index]))
@@ -49,22 +52,29 @@ const questionConfig = computed(() => {
   }
   if (
     QUESTION_TYPE.CHOICES.includes(type) &&
-    options.filter((optionItem) => optionItem.others).length > 0
+    options.some(option => option.others)
   ) {
+    // 处理普通选择题的填写更多
     let { options, othersValue } = useShowOthers(field)
     const othersOptions = unref(options)
     alloptions = alloptions.map((obj, index) => Object.assign(obj, othersOptions[index]))
     moduleConfig.othersValue = unref(othersValue)
   }
+  if(QUESTION_TYPE.CHOICES.includes(type) &&
+    options.some(option => option.limit > 0)) {
+    // 处理普通选择题的选项上线
+    let { options: optionWithLimit } = useOptionsLimit(field)
+    alloptions = alloptions.map((obj, index) => Object.assign(obj, optionWithLimit[index]))
+  }
   if (
     QUESTION_TYPE.RATES.includes(type) &&
     Object.keys(rest.rangeConfig).filter((index) => rest.rangeConfig[index].isShowInput).length > 0
   ) {
+    // 处理评分题的的选项后输入框
     let { rangeConfig, othersValue } = useShowInput(field)
     moduleConfig.rangeConfig = unref(rangeConfig)
     moduleConfig.othersValue = unref(othersValue)
   }
-
   return {
     ...moduleConfig,
     options: alloptions,

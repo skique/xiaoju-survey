@@ -2,6 +2,7 @@ import { defineComponent, computed } from 'vue'
 import { findIndex, includes, cloneDeep } from 'lodash-es'
 import { filterXSS } from '@/common/xss'
 import './style.scss'
+import { fa } from 'element-plus/es/locales.mjs'
 
 export default defineComponent({
   name: 'BaseChoice',
@@ -47,7 +48,11 @@ export default defineComponent({
     voteTotal: {
       type: Number,
       default: 10
-    }
+    },
+    limitNoDisplay: {
+      type: Boolean,
+      default: false
+    },
   },
   emits: ['change'],
   setup(props, { emit, slots }) {
@@ -93,7 +98,7 @@ export default defineComponent({
     }
   },
   render() {
-    const { uiTarget, isMatrix, hideText, getOptions, isChecked, slots } = this
+    const { uiTarget, isMatrix, hideText, getOptions, isChecked, slots, limitNoDisplay } = this
 
     return (
       <div class="choice-wrapper">
@@ -145,10 +150,17 @@ export default defineComponent({
                               style="display: block; height: auto; padding: 9px 0"
                             ></span>
                           )}
-                          {slots.vote?.({
-                            option: item,
-                            voteTotal: this.voteTotal
-                          })}
+                          {
+                            slots.vote?.({
+                              option: item,
+                              voteTotal: this.voteTotal
+                            })
+                          }
+                          {
+                            item.limit && !limitNoDisplay  && slots.limit?.({
+                              release: item.limit - (item.selectCount || 0)
+                            })
+                          }
                         </label>
                       </div>
                     )}
@@ -167,6 +179,7 @@ export default defineComponent({
                         value: item.othersValue
                       }
                     })}
+                    
                 </div>
               )
             )

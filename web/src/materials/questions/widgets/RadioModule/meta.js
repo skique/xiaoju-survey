@@ -27,16 +27,28 @@ const meta = {
   formConfig: [
     basicConfig,
     {
-      name: 'optionsExtra',
-      label: '固定选项配置',
+      name: 'optionLimit',
+      label: '选项配额',
       labelStyle: {
         'font-weight': 'bold'
       },
-      type: 'Options',
-      options: [],
-      keys: 'extraOptions',
-      hidden: true
-    }
+      type: 'DialogSetter',
+      // 输出转换
+      setterAdapter({ options, limitRevert, limitNoDisplay}) {
+        return [{
+          key: 'options',
+          value: options
+        },
+        {
+          key: 'limitRevert',
+          value: limitRevert
+        },
+        {
+          key: 'limitNoDisplay',
+          value: limitNoDisplay
+        }]
+      }
+    },
   ],
   editConfigure: {
     optionEdit: {

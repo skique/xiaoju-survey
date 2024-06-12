@@ -1,4 +1,5 @@
 import axios from './base'
+import memorize from '@/management/utils/memorize'
 // 空间
 export const createSpace = ({ name, description, members }: any) => {
   return axios.post('/workspace', { name, description, members })
@@ -72,3 +73,4 @@ export const getCollaboratorPermissions = (surveyId: string) => {
     }
   })
 }
+export const getCollaboratorPermissionsMemorize = memorize(getCollaboratorPermissions)

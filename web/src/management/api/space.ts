@@ -33,6 +33,7 @@ export const getUserList = (username: string) => {
 export const getPermissionList = () => {
   return axios.get('collaborator/getPermissionList')
 }
+export const getPermissionListMemorize = memorize(getPermissionList)
 
 export const saveCollaborator = ({ surveyId, collaborators }: any) => {
   return axios.post('collaborator/batchSave', {

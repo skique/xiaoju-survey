@@ -19,10 +19,6 @@ export default defineComponent({
     moduleConfig: {
       type: Object,
       required: true
-    },
-    currentEditOne: {
-      type: [Number, String],
-      default: null
     }
   },
   setup(props, { slots, emit }) {

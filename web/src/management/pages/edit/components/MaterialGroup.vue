@@ -23,6 +23,7 @@
           :type="element.type"
           :moduleConfig="element"
           :indexNumber="element.indexNumber"
+          :currentEditOne="currentEditOne"
           :isSelected="currentEditOne === index"
           :readonly="true"
           @change="handleChange"
@@ -74,6 +75,7 @@ export default defineComponent({
       emit('select', index)
     }
     const handleChange = (data) => {
+      debugger
       emit('change', data)
     }
     const handleChangeSeq = (data) => {

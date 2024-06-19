@@ -1,7 +1,5 @@
 import { defineComponent, ref, computed, onMounted } from 'vue'
 
-import store from '@/management/store'
-
 import OptionEdit from './Options/OptionEdit.vue'
 import OptionEditBar from './Options/OptionEditBar.vue'
 import UseOptionBase from './Options/UseOptionBase'
@@ -10,7 +8,6 @@ export default defineComponent({
   name: 'EditOptions',
   provide() {
     return {
-      currentEditKey: store.getters['edit/currentEditKey'],
       moduleConfig: computed(() => this.moduleConfig)
     }
   },
@@ -22,12 +19,13 @@ export default defineComponent({
     moduleConfig: {
       type: Object,
       required: true
+    },
+    currentEditOne: {
+      type: [Number, String],
+      default: null
     }
   },
-  setup(props, { slots }) {
-    const currentEditKey = computed(() => {
-      return store.getters['edit/currentEditKey']
-    })
+  setup(props, { slots, emit }) {
     const getOptions = computed(() => {
       return props.moduleConfig.options
     })
@@ -44,12 +42,12 @@ export default defineComponent({
 
     const handleOptionChange = (value) => {
       const optionKey = `options`
-      const key = `${currentEditKey.value}.${optionKey}`
+      const key = `${optionKey}`
       handleChange({ key, value })
     }
 
     const handleChange = ({ key, value }) => {
-      store.dispatch('edit/changeSchema', { key, value })
+      emit('change', { key, value })
     }
 
     const hasAdvancedConfig = ref(false)

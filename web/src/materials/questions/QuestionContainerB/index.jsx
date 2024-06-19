@@ -43,6 +43,10 @@ export default defineComponent({
     isSelected: {
       type: Boolean,
       default: false
+    },
+    currentEditOne: {
+      type: [Number, String],
+      default: null
     }
   },
   emits: ['blur', 'focus', 'change', 'select'],
@@ -107,15 +111,16 @@ export default defineComponent({
         <div class="question-block">
           {this.showEditComponent ? (
             <EditOptions
+              currentEditOne={props.currentEditOne}
               moduleConfig={props.moduleConfig}
               editConfigure={questionMeta?.editConfigure}
+              onChange={this.onChange}
             >
               <dynamicComponent
                 readonly
                 {...props}
                 onBlur={this.onBlur}
                 onFocus={this.onFocus}
-                change={this.onChange}
               />
             </EditOptions>
           ) : (
@@ -124,7 +129,6 @@ export default defineComponent({
               {...props}
               onBlur={this.onBlur}
               onFocus={this.onFocus}
-              change={this.onChange}
             />
           )}
         </div>

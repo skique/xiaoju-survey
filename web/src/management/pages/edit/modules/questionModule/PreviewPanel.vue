@@ -63,6 +63,7 @@ const handleChange = (data) => {
   if (currentEditOne.value === null) {
     return
   }
+  debugger
   const { key, value } = data
   const resultKey = `${currentEditKey.value}.${key}`
   store.dispatch('edit/changeSchema', { key: resultKey, value })

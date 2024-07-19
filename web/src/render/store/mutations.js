@@ -17,6 +17,8 @@ export default {
   },
   changeFormData(state, data) {
     let { key, value } = data
+    state.changeField = key
+    state.changeValue = value
     // console.log('formValues', key, value)
     set(state, `formValues.${key}`, value)
   },

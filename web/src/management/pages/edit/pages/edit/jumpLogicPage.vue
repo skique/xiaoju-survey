@@ -13,7 +13,7 @@ import LogicFlow, { ElementState, LogicFlowUtil } from '@logicflow/core'
 import { register, getTeleport } from '@logicflow/vue-node-registry'
 import '@logicflow/core/es/index.css'
 
-
+import ProgressNode from '@/management/pages/edit/components/LFElements/ProgressNode.vue'
 import { combine, square, star, uml, user } from '@/management/pages/edit/components/LFElements/nodes'
 import { animation, connection } from '@/management/pages/edit/components/LFElements/edges'
 
@@ -164,13 +164,13 @@ onMounted(() => {
     // 注册节点 or 边
     registerElements(lf)
     // 注册自定义 vue 节点
-    // register(
-    //   {
-    //     type: 'custom-vue-node',
-    //     component: ProgressNode
-    //   },
-    //   lf
-    // )
+    register(
+      {
+        type: 'custom-vue-node',
+        component: ProgressNode
+      },
+      lf
+    )
 
     lf.render(data)
 
@@ -194,6 +194,18 @@ onMounted(() => {
       x: 360,
       y: 80,
       text: { x: 360, y: 80, value: '节点2' },
+      properties: {
+        progress: 60,
+        width: 80,
+        height: 80
+      }
+    })
+
+    const node4 = lf.addNode({
+      id: 'vue-node-4',
+      type: 'custom-vue-node',
+      x: 480,
+      y: 80,
       properties: {
         progress: 60,
         width: 80,

@@ -1,6 +1,6 @@
 <template>
   <QuestionRuleContainer
-    v-if="visible"
+    v-if="!jumpSkip"
     :moduleConfig="questionConfig"
     :indexNumber="indexNumber"
     :showTitle="true"
@@ -8,7 +8,7 @@
   ></QuestionRuleContainer>
 </template>
 <script setup>
-import { unref, computed, watch } from 'vue'
+import { unref, ref, computed, watch } from 'vue'
 import QuestionRuleContainer from '../../materials/questions/QuestionRuleContainer'
 import { useVoteMap } from '@/render/hooks/useVoteMap'
 import { useShowOthers } from '@/render/hooks/useShowOthers'
@@ -18,6 +18,7 @@ import { cloneDeep } from 'lodash-es'
 import { ruleEngine } from '@/render/hooks/useRuleEngine.js'
 
 import { NORMAL_CHOICES, RATES, QUESTION_TYPE } from '@/common/typeEnum.ts'
+import { getQuestionIndexByField, findMinKeyInMap } from '@/render/utils/index.js'
 
 const props = defineProps({
   indexNumber: {
@@ -29,6 +30,10 @@ const props = defineProps({
     default: () => {
       return {}
     }
+  },
+  qIndex: {
+    type: Number,
+    default: 0
   }
 })
 const emit = defineEmits(['change'])
@@ -74,15 +79,18 @@ const questionConfig = computed(() => {
   }
 })
 
-const { field } = props.moduleConfig
+// const { field } = props.moduleConfig
 
-const visible = computed(() => {
-  // computed有计算缓存，当match有变化的时候触发重新计算
-  return ruleEngine.match(field, 'question', formValues.value)
-})
+// const showMatch = computed(() => {
+//   // computed有计算缓存，当match有变化的时候触发重新计算
+//   const result = ruleEngine.match(field, 'question', formValues.value)
+//   // console.log({field, result})
+//   return result === undefined ? true : result
+// })
+const jumpSkip = ref(false)
 
 watch(
-  () => visible.value,
+  () => !jumpSkip.value,
   (newVal, oldVal) => {
     // 题目从显示到隐藏，需要清空值
     const { field, type, innerType } = props.moduleConfig
@@ -100,6 +108,33 @@ watch(
     }
   }
 )
+
+
+// const jumpSkip = ref(false)
+
+// 监听formValues变化，判断当前题目是否需要跳过
+watch(()=> formValues,
+ (newVal, oldVal) => {
+  const currentIndex = props.qIndex
+  const targets = ruleEngine.findTargetsByField(store.state.changeField)
+  const targetsResult = new Map()
+  targets.forEach(target => {
+    const index = getQuestionIndexByField(store.state.dataConf.dataList, target)
+    targetsResult.set(index, ruleEngine.match(target, 'question', newVal.value, 'or'))
+  })
+  const changeIndex = getQuestionIndexByField(store.state.dataConf.dataList, store.state.changeField)
+  
+  const jumpFitMinIndex = findMinKeyInMap(targetsResult, true)
+  if(currentIndex < changeIndex) {
+    return
+  }
+  if(changeIndex <  currentIndex &&  currentIndex < jumpFitMinIndex) {
+    jumpSkip.value = true
+  } else {
+    jumpSkip.value = false
+  }
+  console.log({targets, targetsResult, changeIndex, currentIndex, jumpFitMinIndex, jumpSkip: jumpSkip.value})
+}, {deep: true})
 
 const handleChange = (data) => {
   emit('change', data)

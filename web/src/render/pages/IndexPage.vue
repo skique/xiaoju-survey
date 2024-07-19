@@ -11,6 +11,7 @@ import useCommandComponent from '../hooks/useCommandComponent'
 
 import AlertDialog from '../components/AlertDialog.vue'
 import { initRuleEngine } from '@/render/hooks/useRuleEngine.js'
+import { jumpLogicRule } from '@/common/logicEngine/jumpLogicRule'
 
 const store = useStore()
 const route = useRoute()
@@ -32,7 +33,8 @@ const loadData = (res: any, surveyPath: string) => {
 
     store.commit('setSurveyPath', surveyPath)
     store.dispatch('init', questionData)
-    initRuleEngine(logicConf?.showLogicConf)
+    initRuleEngine(jumpLogicRule)
+
   } else {
     throw new Error(res.errmsg)
   }

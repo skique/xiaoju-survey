@@ -1,6 +1,6 @@
 <template>
   <QuestionRuleContainer
-    v-if="visible"
+    v-if="!jumpSkip"
     :moduleConfig="questionConfig"
     :indexNumber="indexNumber"
     :showTitle="true"
@@ -8,7 +8,7 @@
   ></QuestionRuleContainer>
 </template>
 <script setup>
-import { unref, computed, watch } from 'vue'
+import { unref, ref, computed, watch, nextTick } from 'vue'
 import QuestionRuleContainer from '../../materials/questions/QuestionRuleContainer'
 import { useVoteMap } from '@/render/hooks/useVoteMap'
 import { useShowOthers } from '@/render/hooks/useShowOthers'
@@ -19,6 +19,7 @@ import { useQuestionStore } from '../stores/question'
 import { useSurveyStore } from '../stores/survey'
 
 import { NORMAL_CHOICES, RATES, QUESTION_TYPE } from '@/common/typeEnum.ts'
+import { getQuestionIndexByField, findMinKeyInMap } from '@/render/utils/index.js'
 
 const props = defineProps({
   indexNumber: {
@@ -30,6 +31,10 @@ const props = defineProps({
     default: () => {
       return {}
     }
+  },
+  qIndex: {
+    type: Number,
+    default: 0
   }
 })
 const emit = defineEmits(['change'])
@@ -64,6 +69,10 @@ const questionConfig = computed(() => {
     rest?.rangeConfig &&
     Object.keys(rest?.rangeConfig).filter((index) => rest?.rangeConfig[index].isShowInput).length >
       0
+    RATES.includes(type) &&
+    rest?.rangeConfig &&
+    Object.keys(rest?.rangeConfig).filter((index) => rest?.rangeConfig[index].isShowInput).length >
+      0
   ) {
     let { rangeConfig, othersValue } = useShowInput(field)
     moduleConfig.rangeConfig = unref(rangeConfig)
@@ -77,33 +86,69 @@ const questionConfig = computed(() => {
   }
 })
 
-const { field } = props.moduleConfig
+// const showMatch = computed(() => {
+//   // computed有计算缓存，当match有变化的时候触发重新计算
+//   const result = ruleEngine.match(props.moduleConfig.field, 'question', formValues.value)
+//   // console.log({field, result})
+//   return result === undefined ? true : result
+// })
 
-const visible = computed(() => {
-  // computed有计算缓存，当match有变化的时候触发重新计算
-  return ruleEngine.match(field, 'question', formValues.value)
+// watch(
+//   () => showMatch.value,
+//   (newVal, oldVal) => {
+//     // 题目从显示到隐藏，需要清空值
+//     const { field, type, innerType } = props.moduleConfig
+//     if (!newVal && oldVal) {
+//       console.log(field,'题目隐藏了')
+//       let value = ''
+//       // 题型是多选，或者子题型是多选（innerType是用于投票）
+//       if (type === QUESTION_TYPE.CHECKBOX || innerType === QUESTION_TYPE.CHECKBOX) {
+//         value = value ? [value] : []
+//       }
+//       const data = {
+//         key: field,
+//         value: value
+//       }
+//       store.commit('changeFormData', data)
+//     }
+//   }
+// )
+
+
+const jumpSkip = ref(false)
+const changeIndex = computed(() => {
+  return getQuestionIndexByField(store.state.dataConf.dataList, store.state.changeField)
 })
 
-watch(
-  () => visible.value,
-  (newVal, oldVal) => {
-    // 题目从显示到隐藏，需要清空值
-    const { field, type, innerType } = props.moduleConfig
-    if (!newVal && oldVal) {
-      let value = ''
-      // 题型是多选，或者子题型是多选（innerType是用于投票）
-      if (type === QUESTION_TYPE.CHECKBOX || innerType === QUESTION_TYPE.CHECKBOX) {
-        value = value ? [value] : []
-      }
-      const data = {
-        key: field,
-        value: value
-      }
-      // store.commit('changeFormData', data)
-      surveyStore.changeData(data)
-    }
+// 监听formValues变化，判断当前题目是否需要跳过
+watch(()=> formValues,
+ (newVal, oldVal) => {
+  const currentIndex = props.qIndex
+  // 找到当前题关联的目标题
+  const targets = ruleEngine.findTargetsByField(store.state.changeField)
+  // 计算目标题的命中情况
+  const targetsResult = new Map()
+  targets.forEach(target => {
+    const index = getQuestionIndexByField(store.state.dataConf.dataList, target)
+    targetsResult.set(index, ruleEngine.match(target, 'question', newVal.value, 'or'))
+  })
+  // const changeIndex = getQuestionIndexByField(store.state.dataConf.dataList, store.state.changeField)
+  
+  const jumpFitMinIndex = findMinKeyInMap(targetsResult, true)
+  // console.log({targets, targetsResult, jumpFitMinIndex})
+  if(currentIndex < changeIndex.value) {
+    return
   }
-)
+  if(changeIndex.value <  currentIndex &&  currentIndex < jumpFitMinIndex) {
+    jumpSkip.value = true
+    nextTick(() => {
+      console.log(`题目${currentIndex + 1}被跳过了，如果该题关联了跳题，则需要重置它的跳题`)
+    })
+  } else {
+    jumpSkip.value = false
+  }
+  console.log({targets, targetsResult, jumpFitMinIndex, changeIndex: changeIndex.value, currentIndex, jumpSkip: jumpSkip.value})
+}, {deep: true})
 
 const handleChange = (data) => {
   emit('change', data)

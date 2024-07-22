@@ -72,6 +72,7 @@ const meta = {
         }
       ]
     }
+    }
   ],
   formConfig: [basicConfig],
   editConfigure: {

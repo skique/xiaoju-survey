@@ -43,10 +43,13 @@
 import { computed, ref, shallowRef, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import 'element-plus/theme-chalk/src/message.scss'
-import MemberSelect from './MemberSelect.vue'
+
 import { getPermissionList, getCollaborator, saveCollaborator } from '@/management/api/space'
 import { type IMember, SurveyPermissions } from '@/management/utils/types/workSpace'
 import { CODE_MAP } from '@/management/api/base'
+
+import MemberSelect from './MemberSelect.vue'
+
 const emit = defineEmits(['on-close-codify', 'onFocus', 'change', 'blur'])
 const props = withDefaults(
   defineProps<{
@@ -110,9 +113,6 @@ const rules = {
     {
       trigger: 'change',
       validator: (rule: any, value: IMember[], callback: Function) => {
-        if (value.length === 0) {
-          callback('请至少添加一名协作者')
-        }
         if (value.filter((item: IMember) => !item.role.length).length) {
           callback('请设置协作者对应权限')
         }
@@ -132,7 +132,6 @@ const rules = {
 const formDisabled = computed(() => {
   return false
 })
-
 const onClose = () => {
   emit('on-close-codify')
 }
@@ -140,7 +139,7 @@ const onConfirm = async () => {
   ruleForm.value?.validate(async (valid: boolean) => {
     if (valid) {
       try {
-        const collaborators = formModel.value.members.map((i: any) => {
+        const collaborators = formModel.value.members.map((i) => {
           const collaborator = {
             userId: i.userId,
             permissions: i.role

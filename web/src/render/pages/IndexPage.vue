@@ -11,6 +11,8 @@ import { useSurveyStore } from '../stores/survey'
 
 import AlertDialog from '../components/AlertDialog.vue'
 import { initRuleEngine } from '@/render/hooks/useRuleEngine.js'
+import { jumpLogicRule } from '@/common/logicEngine/jumpLogicRule'
+
 const route = useRoute()
 const surveyStore = useSurveyStore()
 const loadData = (res: any, surveyPath: string) => {
@@ -31,7 +33,8 @@ const loadData = (res: any, surveyPath: string) => {
 
     surveyStore.setSurveyPath(surveyPath)
     surveyStore.initSurvey(questionData)
-    initRuleEngine(logicConf?.showLogicConf)
+    // initRuleEngine(logicConf?.showLogicConf)
+    initRuleEngine(jumpLogicRule)
   } else {
     throw new Error(res.errmsg)
   }

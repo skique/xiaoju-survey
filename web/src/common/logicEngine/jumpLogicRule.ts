@@ -64,9 +64,9 @@ export const jumpLogicRule = [
   {
     conditions: [
         {
-            "field": "data423",  // 题目1答完，相当于不等于空
+            "field": "data423",  // 题目1选择选项3，跳转题目5
             "operator": "in",
-            "value": '110402'
+            "value": '115019'
         },
     ],
     type: 'jump',
@@ -76,20 +76,21 @@ export const jumpLogicRule = [
   {
       conditions: [
           {
-              "field": "data577",  // 题目3答完，相当于不等于空
+              "field": "data893",  // 题目5答完跳转题目7
               "operator": "neq",
               "value": ''
           },
       ],
       scope: 'question',
-      target: "data893", 
+      target: "data243", 
+      priority: '1', // 优先级字段，待实现
   },
   {
       conditions: [
           {
-              "field": "data423",  // 题目1答完，相当于不等于空
+              "field": "data423",  // 题目1选择选项2，跳转题目6
               "operator": "in",
-              "value": '115019'
+              "value": '115020'
           },
       ],
       action: 'jump',
@@ -99,9 +100,9 @@ export const jumpLogicRule = [
   {
       conditions: [
           {
-              "field": "data423",  // 题目1答完，相当于不等于空
+              "field": "data423",  // 题目1选择选项3，跳转题目7
               "operator": "in",
-              "value": '115020'
+              "value": '110402'
           },
       ],
       action: 'jump',

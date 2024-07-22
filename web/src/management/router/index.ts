@@ -4,6 +4,12 @@ import {
   type RouteLocationNormalized,
   type NavigationGuardNext
 } from 'vue-router'
+import {
+  createRouter,
+  createWebHistory,
+  type RouteLocationNormalized,
+  type NavigationGuardNext
+} from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import { SurveyPermissions } from '@/management/utils/types/workSpace'
 import { analysisTypeMap } from '@/management/config/analysisConfig'
@@ -57,7 +63,7 @@ const routes: RouteRecordRaw[] = [
             meta: {
               needLogin: true
             },
-            component: () => import('../pages/edit/pages/edit/LogicEditPage.vue')
+            component: () => import('../pages/edit/pages/edit/jumpLogicPage.vue')
           }
         ]
       },
@@ -170,13 +176,16 @@ router.beforeEach(async (to, from, next) => {
   // 更新页面标题
   if (to.meta.title) {
     document.title = to.meta.title as string
+    document.title = to.meta.title as string
   }
 
   if (to.meta.needLogin) {
     await handleLoginGuard(to, from, next)
   } else {
     next()
+    next()
   }
+})
 })
 
 async function handleLoginGuard(
@@ -190,6 +199,8 @@ async function handleLoginGuard(
   } else {
     next({
       name: 'login',
+      query: { redirect: encodeURIComponent(to.path) }
+    })
       query: { redirect: encodeURIComponent(to.path) }
     })
   }
@@ -215,14 +226,18 @@ async function handlePermissionsGuard(
       } else {
         ElMessage.warning('您没有该问卷的相关协作权限')
         next({ name: 'survey' })
+        ElMessage.warning('您没有该问卷的相关协作权限')
+        next({ name: 'survey' })
       }
     } else {
+      next()
       next()
     }
   }
 }
 
 function hasRequiredPermissions(requiredPermissions: string[], userPermissions: string[]) {
+  return requiredPermissions.some((permission) => userPermissions.includes(permission))
   return requiredPermissions.some((permission) => userPermissions.includes(permission))
 }
 

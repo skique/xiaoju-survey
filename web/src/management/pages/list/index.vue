@@ -17,16 +17,22 @@
       <SliderBar :menus="spaceMenus" @select="handleSpaceSelect" />
       <div class="list-content">
         <div class="top">
-          <h2>{{ spaceType === SpaceType.Group ? '团队空间' : '问卷' }}列表</h2>
+          <h2>
+            {{ spaceType === SpaceType.Group ? '团队空间' : currentTeamSpace?.name || '问卷列表' }}
+          </h2>
           <div class="operation">
             <el-button
-              class="btn space-btn"
+              class="btn create-btn"
               type="default"
               @click="onSpaceCreate"
               v-if="spaceType == SpaceType.Group"
             >
               <i class="iconfont icon-chuangjian"></i>
               <span>创建团队空间</span>
+            </el-button>
+            <el-button type="default" class="btn" @click="onSetGroup" v-if="workSpaceId">
+              <i class="iconfont icon-shujuliebiao"></i>
+              <span>团队管理</span>
             </el-button>
             <el-button
               class="btn create-btn"
@@ -43,10 +49,17 @@
           :loading="loading"
           :data="surveyList"
           :total="surveyTotal"
-          @reflush="fetchSurveyList"
+          @refresh="fetchSurveyList"
           v-if="spaceType !== SpaceType.Group"
         ></BaseList>
-        <SpaceList v-if="spaceType === SpaceType.Group"></SpaceList>
+        <SpaceList
+          ref="spaceListRef"
+          @refresh="fetchSpaceList"
+          :loading="spaceLoading"
+          :data="spaceList"
+          :total="spaceTotal"
+          v-if="spaceType === SpaceType.Group"
+        ></SpaceList>
       </div>
     </div>
     <SpaceModify
@@ -107,7 +120,21 @@ const handleSpaceSelect = (id: any) => {
     workSpaceStore.changeSpaceType(SpaceType.Teamwork)
     workSpaceStore.changeWorkSpace(id)
   }
-
+  switch (id) {
+    case SpaceType.Personal:
+      changeSpaceType(SpaceType.Personal)
+      changeWorkSpace('')
+      break
+    case SpaceType.Group:
+      changeSpaceType(SpaceType.Group)
+      changeWorkSpace('')
+      fetchSpaceList()
+      break
+    default:
+      changeSpaceType(SpaceType.Teamwork)
+      changeWorkSpace(id)
+      break
+  }
   fetchSurveyList()
 }
 onMounted(() => {
@@ -134,9 +161,23 @@ const fetchSurveyList = async (params?: any) => {
 const modifyType = ref('add')
 const showSpaceModify = ref(false)
 
+// 当前团队信息
+const currentTeamSpace = computed(() => {
+  return store.state.list.teamSpaceList.find((item: any) => item._id === workSpaceId.value)
+})
+
+const onSetGroup = async () => {
+  await store.dispatch('list/getSpaceDetail', workSpaceId.value)
+  modifyType.value = 'edit'
+  showSpaceModify.value = true
+}
+
 const onCloseModify = (type: string) => {
   showSpaceModify.value = false
-  if (type === 'update') fetchSpaceList()
+  if (type === 'update' && spaceListRef.value) {
+    fetchSpaceList()
+    spaceListRef.value.onCloseModify()
+  }
 }
 const onSpaceCreate = () => {
   showSpaceModify.value = true
@@ -239,6 +280,7 @@ const handleLogout = () => {
 
       .create-btn {
         background: #4a4c5b;
+        color: #fff;
       }
 
       .space-btn {
@@ -252,10 +294,9 @@ const handleLogout = () => {
         justify-content: center;
         align-items: center;
 
-        color: #fff;
-
+        .icon-shujuliebiao,
         .icon-chuangjian {
-          padding-right: 8px;
+          padding-right: 5px;
           font-size: 14px;
         }
 

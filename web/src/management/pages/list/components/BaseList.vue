@@ -120,6 +120,7 @@ import 'moment/locale/zh-cn'
 moment.locale('zh-cn')
 
 import EmptyIndex from '@/management/components/EmptyIndex.vue'
+import CooperModify from '@/management/components/CooperModify/ModifyDialog.vue'
 import { CODE_MAP } from '@/management/api/base'
 import { QOP_MAP } from '@/management/utils/constant.ts'
 import { deleteSurvey } from '@/management/api/survey'
@@ -132,7 +133,6 @@ import ToolBar from './ToolBar.vue'
 import TextSearch from './TextSearch.vue'
 import TextSelect from './TextSelect.vue'
 import TextButton from './TextButton.vue'
-import CooperModify from './CooperModify.vue'
 import { SurveyPermissions } from '@/management/utils/types/workSpace'
 
 import {
@@ -161,7 +161,7 @@ const props = defineProps({
     default: 0
   }
 })
-const emit = defineEmits(['reflush'])
+const emit = defineEmits(['refresh'])
 const fields = ['type', 'title', 'remark', 'owner', 'state', 'createDate', 'updateDate']
 const showModify = ref(false)
 const modifyType = ref('')
@@ -244,7 +244,7 @@ const order = computed(() => {
   return JSON.stringify(formatOrder)
 })
 
-const onReflush = async () => {
+const onRefresh = async () => {
   const filterString = JSON.stringify(
     filter.value.filter((item) => {
       return item.condition[0].value
@@ -258,7 +258,7 @@ const onReflush = async () => {
   if (workSpaceId.value) {
     params.workspaceId = workSpaceId.value
   }
-  emit('reflush', params)
+  emit('refresh', params)
 }
 
 const getToolConfig = (row) => {
@@ -393,14 +393,14 @@ const onDelete = async (row) => {
   const res = await deleteSurvey(row._id)
   if (res.code === CODE_MAP.SUCCESS) {
     ElMessage.success('删除成功')
-    onReflush()
+    onRefresh()
   } else {
     ElMessage.error(res.errmsg || '删除失败')
   }
 }
 const handleCurrentChange = (current) => {
   currentPage.value = current
-  onReflush()
+  onRefresh()
 }
 const onModify = (data, type = QOP_MAP.EDIT) => {
   showModify.value = true
@@ -411,7 +411,7 @@ const onCloseModify = (type) => {
   showModify.value = false
   questionInfo.value = {}
   if (type === 'update') {
-    onReflush()
+    onRefresh()
   }
 }
 const onRowClick = (row) => {
@@ -425,12 +425,12 @@ const onRowClick = (row) => {
 const onSearchText = (e) => {
   searchVal.value = e
   currentPage.value = 1
-  onReflush()
+  onRefresh()
 }
 const onSelectChange = (selectKey, selectValue) => {
   surveyListStore.changeSelectValueMap(selectKey, selectValue)
   currentPage.value = 1
-  onReflush()
+  onRefresh()
 }
 const onButtonChange = (effectKey, effectValue) => {
   surveyListStore.resetButtonValueMap()

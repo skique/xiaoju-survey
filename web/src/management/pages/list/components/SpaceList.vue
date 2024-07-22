@@ -1,14 +1,19 @@
 <template>
-  <div class="list-wrap">
+  <div class="search">
+    <TextSearch placeholder="请输入空间名称" :value="searchVal" @search="onSearchText" />
+  </div>
+  <div class="list-wrap" v-if="props.total > 0">
     <el-table
       ref="multipleListTable"
       class="list-table"
-      :data="dataList"
+      :data="data"
       empty-text="暂无数据"
       row-key="_id"
       header-row-class-name="tableview-header"
       row-class-name="tableview-row"
       cell-class-name="tableview-cell"
+      v-loading="loading"
+      :height="550"
       style="width: 100%"
     >
       <el-table-column column-key="space" width="20" />
@@ -30,7 +35,6 @@
           </template>
         </template>
       </el-table-column>
-
       <el-table-column
         label="操作"
         :width="200"
@@ -38,29 +42,30 @@
         class-name="table-options"
       >
         <template #default="scope">
-          <div class="tool-root">
-            <!-- <el-button text type="primary" class="tool-root-btn-text" :style="{ width: 50 + 'px' }" @click.stop="handleEnter(scope.row)">进入</el-button> -->
-            <el-button
-              text
-              type="primary"
-              class="tool-root-btn-text"
-              :style="{ width: 50 + 'px' }"
-              @click.stop="handleModify(scope.row._id)"
-              >{{ isAdmin(scope.row._id) ? '管理' : '查看' }}</el-button
-            >
-            <el-button
-              text
-              type="primary"
-              class="tool-root-btn-text"
-              :style="{ width: 50 + 'px' }"
-              @click.stop="handleDelete(scope.row._id)"
-              v-if="isAdmin(scope.row._id)"
-              >删除</el-button
-            >
+          <div class="space-tool-bar">
+            <ToolBar
+              :data="scope.row"
+              :tool-width="50"
+              :tools="getTools(scope.row)"
+              @click="handleClick"
+            />
           </div>
         </template>
       </el-table-column>
     </el-table>
+  </div>
+  <div v-else>
+    <EmptyIndex :data="!searchVal ? noSpaceDataConfig : noSpaceSearchDataConfig" />
+  </div>
+  <div class="list-pagination">
+    <el-pagination
+      v-model:current-page="curPage"
+      background
+      @current-change="handleCurrentChange"
+      layout="prev, pager, next"
+      :total="props.total"
+    >
+    </el-pagination>
   </div>
   <SpaceModify
     v-if="showSpaceModify"
@@ -74,8 +79,15 @@ import { ref, computed } from 'vue'
 import { ElMessageBox } from 'element-plus'
 import 'element-plus/theme-chalk/src/message-box.scss'
 import { get, map } from 'lodash-es'
-import { spaceListConfig } from '@/management/config/listConfig'
+import {
+  noSpaceDataConfig,
+  noSpaceSearchDataConfig,
+  spaceListConfig
+} from '@/management/config/listConfig'
 import SpaceModify from './SpaceModify.vue'
+import TextSearch from '@/management/pages/list/components/TextSearch.vue'
+import EmptyIndex from '@/management/components/EmptyIndex.vue'
+import ToolBar from './ToolBar.vue'
 import { UserRole } from '@/management/utils/types/workSpace'
 import { useWorkSpaceStore } from '@/management/stores/workSpace'
 
@@ -98,12 +110,40 @@ const isAdmin = (id: string) => {
   )
 }
 
+const data = computed(() => {
+  return props.data
+})
+let searchVal = ref('')
+let curPage = ref(1)
+const emitRefresh = (page: number, name: string) => {
+  curPage.value = page
+  emit('refresh', {
+    curPage: page,
+    name
+  })
+}
+const handleCurrentChange = async (val: number) => {
+  emitRefresh(val, searchVal.value)
+}
+const onSearchText = async (value: string) => {
+  searchVal.value = value
+  emitRefresh(1, value)
+}
+
+const getTools = (data: any) => {
+  const flag = isAdmin(data._id)
+  const tools = [{ key: 'modify', label: flag ? '管理' : '查看' }]
+  if (flag) {
+    tools.push({ key: 'delete', label: '删除' })
+  }
+  return tools
+}
+
 const handleModify = async (id: string) => {
   await workSpaceStore.getSpaceDetail(id)
   modifyType.value = 'edit'
   showSpaceModify.value = true
 }
-
 const handleDelete = (id: string) => {
   ElMessageBox.confirm(
     '删除团队后，团队内的问卷将同步被删除，请谨慎考虑！是否确认本次删除？',
@@ -132,6 +172,18 @@ const onCloseModify = () => {
 // }
 </script>
 <style lang="scss" scoped>
+.search {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+.list-pagination {
+  margin-top: 20px;
+  :deep(.el-pagination) {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
 .list-wrap {
   padding: 20px;
   background: #fff;
@@ -147,6 +199,7 @@ const onCloseModify = () => {
       }
     }
 
+
     :deep(.tableview-row) {
       .tableview-cell {
         padding: 5px 0;
@@ -154,6 +207,7 @@ const onCloseModify = () => {
         &.link {
           cursor: pointer;
         }
+
 
         .cell .cell-span {
           font-size: 14px;

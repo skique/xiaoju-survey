@@ -1,10 +1,6 @@
 
 <template>
-  <el-card header="Graph" class="logic-wrapper">
-    <el-divider content-position="left">节点面板</el-divider>
-    <div ref="containerRef" id="graph" class="viewport"></div>
-    <!-- <TeleportContainer  class="graph"/> -->
-  </el-card>
+  <div ref="containerRef" id="graph" class="viewport"></div>
 </template>
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
@@ -111,7 +107,7 @@ const registerElements = (lf: LogicFlow) => {
     user
   ]
 
-  map(elements, (customElement) => {
+  map(elements, (customElement: any) => {
     lf.register(customElement)
   })
 }
@@ -239,9 +235,11 @@ onMounted(() => {
 
 
 </script>
-<style>
-.logic-wrapper{
-  width: 80%;
-  height: 80%
-}
+<style scoped>
+/* .logic-wrapper{
+  width: 98%;
+  height: 98%;
+  position: relative;
+  top: 48px
+} */
 </style> 

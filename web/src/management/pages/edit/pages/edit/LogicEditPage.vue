@@ -25,11 +25,11 @@ provide('renderData', renderData)
 </script>
 <style lang="scss" scoped>
 .logic-wrapper {
-  height: calc(100% - 120px);
+  height: 100%;
   width: 100%;
-  margin: 12px;
   background: #fff;
   text-align: center;
   overflow: auto;
+  // position: fixed;
 }
 </style>

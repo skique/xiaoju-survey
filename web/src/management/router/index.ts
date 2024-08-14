@@ -27,6 +27,14 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/survey/downloadTask/',
+    name: 'download',
+    component: () => import('../pages/downloadTask/TaskList.vue'),
+    meta: {
+      needLogin: true
+    }
+  },
+  {
     path: '/survey/:id/edit',
     meta: {
       needLogin: true,

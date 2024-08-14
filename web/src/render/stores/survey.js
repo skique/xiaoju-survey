@@ -12,12 +12,16 @@ import moment from 'moment'
 // 引入中文
 import 'moment/locale/zh-cn'
 // 设置中文
-moment.locale('zh-cn')
+
 
 import adapter from '../adapter'
 import { RuleMatch } from '@/common/logicEngine/RulesMatch'
-// import { jumpLogicRule } from '@/common/logicEngine/jumpLogicRule'
+import useCommandComponent from '../hooks/useCommandComponent'
+import BackAnswerDialog from '../components/BackAnswerDialog.vue'
 
+const confirm = useCommandComponent(BackAnswerDialog)
+
+moment.locale('zh-cn')
 /**
  * CODE_MAP不从management引入，在dev阶段，会导致B端 router被加载，进而导致C端路由被添加 baseUrl: /management
  */
@@ -26,6 +30,8 @@ const CODE_MAP = {
   ERROR: 500,
   NO_AUTH: 403
 }
+
+
 export const useSurveyStore = defineStore('survey', () => {
   const surveyPath = ref('')
   const isMobile = ref(isInMobile())
@@ -110,13 +116,11 @@ export const useSurveyStore = defineStore('survey', () => {
 
     return isSuccess
   }
-  const initSurvey = (option) => {
-    setEnterTime()
 
-    if (!canFillQuestionnaire(option.baseConf, option.submitConf)) {
-      return
-    }
 
+
+  // 加载空白页面
+  function clearFormData(option) {
     // 根据初始的schema生成questionData, questionSeq, rules, formValues, 这四个字段
     const {
       questionData,
@@ -135,6 +139,7 @@ export const useSurveyStore = defineStore('survey', () => {
         'pageConf'
       ])
     )
+    // todo: 建议通过questionStore提供setqueationdata方法修改属性，否则不好跟踪变化
     questionStore.questionData = questionData
     questionStore.questionSeq = questionSeq
 
@@ -149,8 +154,123 @@ export const useSurveyStore = defineStore('survey', () => {
     formValues.value = _formValues
     whiteData.value = option.whiteData
     pageConf.value = option.pageConf
+    
     // 获取已投票数据
     questionStore.initVoteData()
+    questionStore.initQuotaMap()
+
+  }
+
+  // 加载上次填写过的数据到问卷页
+  function loadFormData(params, formData) {
+    // 根据初始的schema生成questionData, questionSeq, rules, formValues, 这四个字段
+    const { questionData, questionSeq, rules:_rules, formValues: _formValues } = adapter.generateData({
+      bannerConf: params.bannerConf,
+      baseConf: params.baseConf,
+      bottomConf: params.bottomConf,
+      dataConf: params.dataConf,
+      skinConf: params.skinConf,
+      submitConf: params.submitConf,
+    })
+
+    for(const key in formData){
+      _formValues[key] = formData[key]
+    }
+
+    // todo: 建议通过questionStore提供setqueationdata方法修改属性，否则不好跟踪变化
+    questionStore.questionData = questionData
+    questionStore.questionSeq = questionSeq
+
+    // 将数据设置到state上
+    rules.value = _rules
+    bannerConf.value = params.bannerConf
+    baseConf.value = params.baseConf
+    bottomConf.value = params.bottomConf
+    dataConf.value = params.dataConf
+    skinConf.value = params.skinConf
+    submitConf.value = params.submitConf
+    formValues.value = _formValues
+
+    whiteData.value = params.whiteData
+    pageConf.value = params.pageConf
+    
+    // 获取已投票数据
+    questionStore.initVoteData()
+    questionStore.initQuotaMap()
+
+  }
+  const initSurvey = (option) => {
+
+    setEnterTime()
+    if (!canFillQuestionnaire(option.baseConf, option.submitConf)) {
+      return
+    }
+
+    const { breakAnswer, backAnswer } = option.baseConf
+
+    const localData = JSON.parse(localStorage.getItem(surveyPath.value + "_questionData"))
+    for(const key in localData){
+      localData[key] = decodeURIComponent(localData[key])
+    }
+
+    const isSubmit = JSON.parse(localStorage.getItem('isSubmit'))
+    if(localData) {
+      if(isSubmit){
+        if(!backAnswer) {
+          clearFormData(option)
+        } else {
+          confirm({
+            title: "您之前已提交过问卷，是否要回填？",
+            onConfirm: async () => {
+              try {
+                loadFormData(option, localData)
+              } catch (error) {
+                console.log(error)
+              } finally {
+                confirm.close()
+              }
+            },
+            onCancel: async() => {
+              try {
+                clearFormData(option)
+              } catch (error) {
+                console.log(error)
+              } finally {
+                confirm.close()
+              }
+            }
+          })
+        }
+      } else {
+        if(!breakAnswer) {
+          clearFormData(option)
+        } else {
+          confirm({
+            title: "您之前已填写部分内容, 是否要继续填写?",
+            onConfirm: async () => {
+              try {
+                loadFormData(option, localData)
+              } catch (error) {
+                console.log(error)
+              } finally {
+                confirm.close()
+              }
+            },
+            onCancel: async() => {
+              try {
+                clearFormData(option)
+              } catch (error) {
+                console.log(error)
+              } finally {
+                confirm.close()
+              }
+            }
+          })
+        }
+      }
+    } else {
+      clearFormData(option)
+    }
   }
 
   // 用户输入或者选择后，更新表单数据

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode, Request } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode } from '@nestjs/common';
 import { HttpException } from 'src/exceptions/httpException';
 import { SurveyNotFoundException } from 'src/exceptions/surveyNotFoundException';
 import { checkSign } from 'src/utils/checkSign';
@@ -7,16 +7,18 @@ import { EXCEPTION_CODE } from 'src/enums/exceptionCode';
 import { getPushingData } from 'src/utils/messagePushing';
 
 import { ResponseSchemaService } from '../services/responseScheme.service';
-import { CounterService } from '../services/counter.service';
 import { SurveyResponseService } from '../services/surveyResponse.service';
 import { ClientEncryptService } from '../services/clientEncrypt.service';
 import { MessagePushingTaskService } from '../../message/services/messagePushingTask.service';
+import { RedisService } from 'src/modules/redis/redis.service';
 
 import moment from 'moment';
 import * as Joi from 'joi';
 import * as forge from 'node-forge';
 import { ApiTags } from '@nestjs/swagger';
-import { Logger } from 'src/logger';
+
+import { CounterService } from '../services/counter.service';
+import { XiaojuSurveyLogger } from 'src/logger';
 import { WhitelistType } from 'src/interfaces/survey';
 import { UserService } from 'src/modules/auth/services/user.service';
 import { WorkspaceMemberService } from 'src/modules/workspace/services/workspaceMember.service';
@@ -26,18 +28,19 @@ import { WorkspaceMemberService } from 'src/modules/workspace/services/workspace
 export class SurveyResponseController {
   constructor(
     private readonly responseSchemaService: ResponseSchemaService,
-    private readonly counterService: CounterService,
     private readonly surveyResponseService: SurveyResponseService,
     private readonly clientEncryptService: ClientEncryptService,
     private readonly messagePushingTaskService: MessagePushingTaskService,
-    private readonly logger: Logger,
+    private readonly counterService: CounterService,
+    private readonly logger: XiaojuSurveyLogger,
+    private readonly redisService: RedisService,
     private readonly userService: UserService,
     private readonly workspaceMemberService: WorkspaceMemberService,
   ) {}
 
   @Post('/createResponse')
   @HttpCode(200)
-  async createResponse(@Body() reqBody, @Request() req) {
+  async createResponse(@Body() reqBody) {
     // 检查签名
     checkSign(reqBody);
     // 校验参数
@@ -53,9 +56,7 @@ export class SurveyResponseController {
     }).validate(reqBody, { allowUnknown: true });
 
     if (error) {
-      this.logger.error(`updateMeta_parameter error: ${error.message}`, {
-        req,
-      });
+      this.logger.error(`updateMeta_parameter error: ${error.message}`);
       throw new HttpException('参数错误', EXCEPTION_CODE.PARAMETER_ERROR);
     }
 
@@ -214,38 +215,71 @@ export class SurveyResponseController {
         const arr = cur.options.map((optionItem) => ({
           hash: optionItem.hash,
           text: optionItem.text,
+          quota: optionItem.quota,
         }));
         pre[cur.field] = arr;
         return pre;
       }, {});
 
-    // 对用户提交的数据进行遍历处理
-    for (const field in decryptedData) {
-      const val = decryptedData[field];
-      const vals = Array.isArray(val) ? val : [val];
-      if (field in optionTextAndId) {
-        // 记录选项的提交数量，用于投票题回显、或者拓展上限限制功能
-        const optionCountData: Record<string, any> =
-          (await this.counterService.get({
-            surveyPath,
+    const surveyId = responseSchema.pageId;
+    const lockKey = `locks:optionSelectedCount:${surveyId}`;
+    const lock = await this.redisService.lockResource(lockKey, 1000);
+    this.logger.info(`lockKey: ${lockKey}`);
+    try {
+      for (const field in decryptedData) {
+        const value = decryptedData[field];
+        const values = Array.isArray(value) ? value : [value];
+        if (field in optionTextAndId) {
+          const optionCountData = await this.counterService.get({
             key: field,
+            surveyPath,
             type: 'option',
-          })) || { total: 0 };
-        optionCountData.total++;
-        for (const val of vals) {
-          if (!optionCountData[val]) {
-            optionCountData[val] = 1;
-          } else {
-            optionCountData[val]++;
+          });
+
+          //遍历选项hash值
+          for (const val of values) {
+            const option = optionTextAndId[field].find(
+              (opt) => opt['hash'] === val,
+            );
+            const quota = parseInt(option['quota']);
+            if (quota !== 0 && quota <= optionCountData[val]) {
+              const item = dataList.find((item) => item['field'] === field);
+              throw new HttpException(
+                `【${item['title']}】中的【${option['text']}】所选人数已达到上限，请重新选择`,
+                EXCEPTION_CODE.RESPONSE_OVER_LIMIT,
+              );
+            }
           }
         }
-        this.counterService.set({
-          surveyPath,
-          key: field,
-          data: optionCountData,
-          type: 'option',
-        });
       }
+
+      for (const field in decryptedData) {
+        const value = decryptedData[field];
+        const values = Array.isArray(value) ? value : [value];
+        if (field in optionTextAndId) {
+          const optionCountData = await this.counterService.get({
+            key: field,
+            surveyPath,
+            type: 'option',
+          });
+          for (const val of values) {
+            optionCountData[val]++;
+            this.counterService.set({
+              key: field,
+              surveyPath,
+              type: 'option',
+              data: optionCountData,
+            });
+          }
+          optionCountData['total']++;
+        }
+      }
+    } catch (error) {
+      this.logger.error(error.message);
+      throw error;
+    } finally {
+      await this.redisService.unlockResource(lock);
+      this.logger.info(`unlockResource: ${lockKey}`);
     }
 
     // 入库
@@ -259,7 +293,6 @@ export class SurveyResponseController {
         optionTextAndId,
       });
 
-    const surveyId = responseSchema.pageId;
     const sendData = getPushingData({
       surveyResponse,
       questionList: responseSchema?.code?.dataConf?.dataList || [],

@@ -10,7 +10,7 @@ import { QUESTION_TYPE } from '@/common/typeEnum'
 import { getQuestionByType } from '@/management/utils/index'
 import { filterQuestionPreviewData } from '@/management/utils/index'
 
-import { getSurveyById } from '@/management/api/survey'
+import { getSurveyById, getSessionId } from '@/management/api/survey'
 import { getNewField } from '@/management/utils'
 
 import submitFormConfig from '@/management/pages/edit/setterConfig/submitConfig'
@@ -93,6 +93,7 @@ function useInitializeSchema(surveyId: Ref<string>, initializeSchemaCallBack: ()
   })
   const { showLogicEngine, initShowLogicEngine, jumpLogicEngine, initJumpLogicEngine } =
     useLogicEngine(schema)
+  
   function initSchema({ metaData, codeData }: { metaData: any; codeData: any }) {
     schema.metaData = metaData
     schema.bannerConf = _merge({}, schema.bannerConf, codeData.bannerConf)
@@ -151,7 +152,7 @@ function useInitializeSchema(surveyId: Ref<string>, initializeSchemaCallBack: ()
     initSchema,
     getSchemaFromRemote,
     showLogicEngine,
-    jumpLogicEngine
+    jumpLogicEngine,
   }
 }
 
@@ -367,16 +368,18 @@ function usePageEdit(
     if (pageConf.value.length <= 1) return
     const { startIndex, endIndex } = getSorter(index)
     const newQuestionList = _cloneDeep(questionDataList.value)
-    const deleteFields = newQuestionList.slice(startIndex, endIndex - startIndex).map(i => i.field)
-    
+    const deleteFields = newQuestionList
+      .slice(startIndex, endIndex - startIndex)
+      .map((i) => i.field)
+
     // 删除分页判断题目是否存在逻辑关联
     const hasLogic = deleteFields.filter((field) => {
       const { hasShowLogic } = useShowLogicInfo(field)
       const { hasJumpLogic } = useJumpLogicInfo(field)
       return hasShowLogic || hasJumpLogic
     })
-    if(hasLogic.length) {
-      ElMessageBox.alert('该分页下有题目被显示或跳转逻辑关联，请先清除逻辑依赖', '提示', {
+    if (hasLogic.length) {
+      ElMessageBox.alert('该分页下有题目被显示或跳转逻辑关联，请先清除', '提示', {
         confirmButtonText: '确定',
         type: 'warning'
       })
@@ -475,21 +478,48 @@ function useLogicEngine(schema: any) {
     initJumpLogicEngine
   }
 }
+
+
 type IBannerItem = {
   name: string
   key: string
   list: Array<Object>
 }
 type IBannerList = Record<string, IBannerItem>
+
+
+
 export const useEditStore = defineStore('edit', () => {
   const surveyId = ref('')
   const bannerList: Ref<IBannerList> = ref({})
   const cooperPermissions = ref(Object.values(SurveyPermissions))
   const schemaUpdateTime = ref(Date.now())
+  
+  function setSurveyId(id: string) {
+    surveyId.value = id
+  }
+
   const { schema, initSchema, getSchemaFromRemote, showLogicEngine, jumpLogicEngine } =
     useInitializeSchema(surveyId, () => {
-    editGlobalBaseConf.initCounts()
-  })
+      editGlobalBaseConf.initCounts()
+    })
+
+  const sessionId = ref('')
+
+  async function initSessionId() {
+    const sessionIdKey = `${surveyId.value}_sessionId`;
+    const localSessionId = sessionStorage.getItem(sessionIdKey)
+    if (localSessionId) {
+      sessionId.value = localSessionId
+    } else {
+      const res: Record<string, any> = await getSessionId({ surveyId: surveyId.value })
+      if (res.code === 200) {
+        sessionId.value = res.data.sessionId
+        sessionStorage.setItem(sessionIdKey, sessionId.value)
+      }
+    }
+  }
+
   const questionDataList = toRef(schema, 'questionDataList')
 
   const editGlobalBaseConf = useEditGlobalBaseConf(questionDataList, updateTime)
@@ -497,9 +527,6 @@ export const useEditStore = defineStore('edit', () => {
     schema.questionDataList = data
   }
 
-  function setSurveyId(id: string) {
-    surveyId.value = id
-  }
 
   const fetchBannerData = async () => {
     const res: any = await getBannerData()
@@ -507,6 +534,7 @@ export const useEditStore = defineStore('edit', () => {
       bannerList.value = res.data
     }
   }
+
   const fetchCooperPermissions = async (id: string) => {
     const res: any = await getCollaboratorPermissions(id)
     if (res.code === CODE_MAP.SUCCESS) {
@@ -529,6 +557,7 @@ export const useEditStore = defineStore('edit', () => {
     const { metaData } = schema
     if (!metaData || (metaData as any)?._id !== surveyId.value) {
       await getSchemaFromRemote()
+      await initSessionId()
     }
     currentEditOne.value = null
     currentEditStatus.value = 'Success'
@@ -639,7 +668,9 @@ export const useEditStore = defineStore('edit', () => {
   return {
     editGlobalBaseConf,
     surveyId,
+    sessionId,
     setSurveyId,
+    initSessionId,
     bannerList,
     fetchBannerData,
     cooperPermissions,

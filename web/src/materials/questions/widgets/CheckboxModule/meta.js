@@ -108,8 +108,27 @@ const meta = {
           value: '',
           min: 'minNum',
           contentClass: 'input-number-config'
-        }
+        },
       ]
+    },
+    {
+      name: 'optionQuota',
+      label: '选项配额',
+      labelStyle: {
+        'font-weight': 'bold'
+      },
+      type: 'QuotaConfig',
+      // 输出转换
+      valueSetter({ options, quotaNoDisplay}) {
+        return [{
+          key: 'options',
+          value: options
+        },
+        {
+          key: 'quotaNoDisplay',
+          value: quotaNoDisplay
+        }]
+      }
     }
   ],
   editConfigure: {

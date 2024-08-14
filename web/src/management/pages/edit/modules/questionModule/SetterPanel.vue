@@ -103,7 +103,6 @@ watch(
     height: 100%;
     border: none;
     display: flex;
-    flex-direction: column;
 
     .el-tabs__nav {
       width: 100%;

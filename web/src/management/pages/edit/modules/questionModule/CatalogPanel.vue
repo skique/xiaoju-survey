@@ -23,7 +23,6 @@ const tabSelected = ref<string>('0')
   box-shadow: none;
   border: none;
   display: flex;
-  flex-direction: column;
   :deep(.el-tabs__nav) {
     width: 100%;
   }

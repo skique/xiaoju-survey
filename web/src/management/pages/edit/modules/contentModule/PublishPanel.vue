@@ -4,14 +4,14 @@
   </el-button>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useEditStore } from '@/management/stores/edit'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, } from 'element-plus'
 import 'element-plus/theme-chalk/src/message.scss'
-
 import { publishSurvey, saveSurvey } from '@/management/api/survey'
 import buildData from './buildData'
+import { storeToRefs } from 'pinia'
 
 interface Props {
   updateLogicConf: any
@@ -22,7 +22,11 @@ const props = defineProps<Props>()
 
 const isPublishing = ref<boolean>(false)
 const editStore = useEditStore()
-const { schema, getSchemaFromRemote } = editStore
+const { getSchemaFromRemote } = editStore
+const { schema, sessionId } = storeToRefs(editStore)
+const saveData = computed(() => {
+  return buildData(schema.value, sessionId.value)
+})
 const router = useRouter()
 
 const validate = () => {
@@ -45,6 +49,21 @@ const validate = () => {
   }
 }
 
+const onSave = async () => {
+  
+  if (!saveData.value.sessionId) {
+    ElMessage.error('未获取到sessionId')
+    return null
+  }
+  
+  if (!saveData.value.surveyId) {
+    ElMessage.error('未获取到问卷id')
+    return null
+  }
+
+  const res: Record<string, any> = await saveSurvey(saveData.value)
+  return res
+}
 const handlePublish = async () => {
   if (isPublishing.value) {
     return
@@ -60,22 +79,16 @@ const handlePublish = async () => {
     return
   }
 
-  const saveData = buildData(schema)
-  if (!saveData.surveyId) {
-    isPublishing.value = false
-    ElMessage.error('未获取到问卷id')
-    return
-  }
-
   try {
-    const saveRes: any = await saveSurvey(saveData)
-    if (saveRes.code !== 200) {
-      isPublishing.value = false
-      ElMessage.error(saveRes.errmsg || '问卷保存失败')
+    const saveRes: any = await onSave()
+    if (!saveRes) {
       return
     }
-
-    const publishRes: any = await publishSurvey({ surveyId: saveData.surveyId })
+    if(saveRes && saveRes?.code !== 200) {
+      ElMessage.error(`保存失败 ${saveRes.errmsg}`)
+      return
+    }
+    const publishRes: any = await publishSurvey({ surveyId: saveData.value.surveyId })
     if (publishRes.code === 200) {
       ElMessage.success('发布成功')
       getSchemaFromRemote()

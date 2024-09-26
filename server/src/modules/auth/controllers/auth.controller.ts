@@ -246,4 +246,9 @@ export class AuthController {
       };
     }
   }
+  
+  @HttpCode(200)
+  async hello():Promise<any> {
+      return {data:'hello'};
+  }
 }

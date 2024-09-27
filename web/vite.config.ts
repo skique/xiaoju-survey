@@ -49,6 +49,7 @@ const mpaPlugin = createMpaPlugin({
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: './',
   optimizeDeps: {
     include: [
       'lodash-es',

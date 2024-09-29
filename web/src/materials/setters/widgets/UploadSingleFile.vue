@@ -4,7 +4,7 @@
       <el-upload
         ref="upload"
         class="upload-img"
-        action="/api/file/upload"
+        action="/xiaoju/api/file/upload"
         :accept="formConfig.accept"
         :limit="1"
         :show-file-list="false"
@@ -49,6 +49,7 @@ const token = _get(userStore, 'userInfo.token')
 const inputValue = ref(props.formConfig.value)
 
 watch(inputValue, (newValue) => {
+  debugger
   emit(FORM_CHANGE_EVENT_KEY, { key: props.formConfig.key, value: newValue })
 })
 

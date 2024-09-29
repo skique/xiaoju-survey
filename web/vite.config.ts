@@ -120,9 +120,10 @@ export default defineConfig({
   server: {
     port: 8080,
     proxy: {
-      '/api': {
+      '/xiaoju/api': {
         target: 'http://127.0.0.1:3000',
-        changeOrigin: true
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/xiaoju\/api/, '/api')
       },
       '/exportfile': {
         target: 'http://127.0.0.1:3000',

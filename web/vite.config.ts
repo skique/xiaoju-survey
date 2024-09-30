@@ -49,7 +49,9 @@ const mpaPlugin = createMpaPlugin({
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: './',
+  base: process.env.NODE_ENV === 'production'
+  ? 'https://s3-gzpu.didistatic.com/xiaojuwenjuan/surveyUpload/dist/'
+  : '/',
   optimizeDeps: {
     include: [
       'lodash-es',

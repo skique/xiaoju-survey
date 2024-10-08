@@ -37,11 +37,11 @@ import EmptyIndex from '@/management/components/EmptyIndex.vue'
 import LeftMenu from '@/management/components/LeftMenu.vue'
 import ChannelRow from './components/ChannelRow.vue'
 
-const backgroundImage = '/imgs/phone-bg.webp'
+const backgroundImage = 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/phone-bg.webp'
 const defaultConfig = {
   title: '问卷未发布',
   desc: '点击发布后，问卷就可以对外投放了哦！',
-  img: '/imgs/icons/unpublished.webp'
+  img: 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/icons/unpublished.webp'
 }
 
 const editStore = useEditStore()

@@ -10,7 +10,7 @@
     </RuleNodeView>
 
     <div class="no-logic" v-if="list.length === 0">
-      <img src="/imgs/icons/unselected.webp" />
+      <img src="https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/icons/unselected.webp" />
     </div>
 
     <el-button type="primary" plain class="add" @click="handleAdd">

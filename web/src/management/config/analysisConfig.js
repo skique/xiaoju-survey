@@ -3,7 +3,7 @@ import { menuItems } from './questionMenuConfig'
 export const noDataConfig = {
   title: '暂无数据',
   desc: '您的问卷当前还没有数据，快去回收问卷吧！',
-  img: 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/icons/analysis-empty.webp'
+  img: '/imgs/icons/analysis-empty.webp'
 }
 
 export const separateItemListHead = [

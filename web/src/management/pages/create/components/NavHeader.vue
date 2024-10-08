@@ -20,7 +20,7 @@ withDefaults(defineProps<Props>(), {
   boxShadow: true
 })
 
-const img = 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/s-logo.webp'
+const img = '/imgs/s-logo.webp'
 
 const router = useRouter()
 

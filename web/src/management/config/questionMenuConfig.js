@@ -1,21 +1,21 @@
 export const menuItems = {
   text: {
     type: 'text',
-    snapshot: 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/question-type-snapshot/iL84te6xxU1657702189333.webp',
+    snapshot: '/imgs/question-type-snapshot/iL84te6xxU1657702189333.webp',
     path: 'InputModule',
     icon: 'tixing-danhangshuru',
     title: '单行输入框'
   },
   textarea: {
     type: 'textarea',
-    snapshot: 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/question-type-snapshot/11iAo3ca0u1657702225416.webp',
+    snapshot: '/imgs/question-type-snapshot/11iAo3ca0u1657702225416.webp',
     path: 'TextareaModule',
     icon: 'tixing-duohangshuru',
     title: '多行输入框'
   },
   radio: {
     type: 'radio',
-    snapshot: 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/question-type-snapshot/TgeRDfURJZ1657702220602.webp',
+    snapshot: '/imgs/question-type-snapshot/TgeRDfURJZ1657702220602.webp',
     icon: 'tixing-danxuan',
     path: 'RadioModule',
     title: '单项选择'
@@ -23,20 +23,20 @@ export const menuItems = {
   checkbox: {
     type: 'checkbox',
     path: 'CheckboxModule',
-    snapshot: 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/question-type-snapshot/Md2YmzBBpV1657702223744.webp',
+    snapshot: '/imgs/question-type-snapshot/Md2YmzBBpV1657702223744.webp',
     icon: 'tixing-duoxuan',
     title: '多项选择'
   },
   'binary-choice': {
     type: 'binary-choice',
-    snapshot: 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/question-type-snapshot/blW8U1ckzd1657702223023.webp',
+    snapshot: '/imgs/question-type-snapshot/blW8U1ckzd1657702223023.webp',
     path: 'BinaryChoiceModule',
     icon: 'tixing-panduanti',
     title: '判断题'
   },
   'radio-star': {
     type: 'radio-star',
-    snapshot: 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/question-type-snapshot/7CU6tn4XqT1657702221208.webp',
+    snapshot: '/imgs/question-type-snapshot/7CU6tn4XqT1657702221208.webp',
     path: 'StarModule',
     icon: 'tixing-pingfen',
     title: '评分'
@@ -44,14 +44,14 @@ export const menuItems = {
   'radio-nps': {
     type: 'radio-nps',
     path: 'NpsModule',
-    snapshot: 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/question-type-snapshot/radio-nps.webp',
+    snapshot: '/imgs/question-type-snapshot/radio-nps.webp',
     icon: 'NPSpingfen',
     title: 'nps评分'
   },
   vote: {
     type: 'vote',
     path: 'VoteModule',
-    snapshot: 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/question-type-snapshot/nGTscsZlwn1657702222857.webp',
+    snapshot: '/imgs/question-type-snapshot/nGTscsZlwn1657702222857.webp',
     icon: 'tixing-toupiao',
     title: '投票'
   }

@@ -157,7 +157,7 @@ const closedDialog = () => {
       justify-content: center;
 
       .wrapper {
-        background: url('https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/preview-phone.png') no-repeat;
+        background: url('/imgs/preview-phone.png') no-repeat;
         width: 328px;
         height: 678px;
         background-size: 100% 100%;

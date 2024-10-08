@@ -23,8 +23,8 @@ const surveyStore = useSurveyStore()
 const errorStore = useErrorInfo()
 const { errorInfo } = storeToRefs(errorStore)
 const imageMap = {
-  overTime: 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/icons/overtime.webp',
-  default: 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/icons/error.webp'
+  overTime: '/imgs/icons/overtime.webp',
+  default: '/imgs/icons/error.webp'
 }
 
 const errorImage = computed(() => {

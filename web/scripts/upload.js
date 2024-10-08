@@ -1,11 +1,13 @@
-import * as path from 'path'
+import * as path from 'path';
 import {globby} from 'globby';
 
 
 import { Client } from 'minio';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import fs from 'fs'
+import fs from 'fs';
+import mime from 'mime';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -31,7 +33,10 @@ const uploadFile = async ({
     pathStyle: true,
   });
   const key =  'surveyUpload/dist/' + filepath
-  await client.putObject(config.BUCKET, key, file);
+  const metaData = {
+    'Content-Type': mime.getType(filepath),
+  }
+  await client.putObject(config.BUCKET, key, file, metaData);
 }
 
 const upload = async () => {

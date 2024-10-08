@@ -2,7 +2,7 @@
   <div class="result-page-wrap">
     <div class="result-page">
       <div class="result-content">
-        <img src="/imgs/icons/success.webp" />
+        <img src="https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/icons/success.webp" />
         <div class="msg" v-html="successMsg"></div>
         <router-link
           :to="{

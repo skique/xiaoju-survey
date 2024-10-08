@@ -79,28 +79,28 @@ export const fieldConfig = {
 export const noListDataConfig = {
   title: '您还没有创建问卷',
   desc: '赶快点击右上角立即创建问卷吧！',
-  img: '/imgs/icons/list-empty.webp'
+  img: 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/icons/list-empty.webp'
 }
 
 export const noSpaceDataConfig = {
   title: '您还没有创建团队空间',
   desc: '赶快点击右上角立即创建团队空间吧！',
-  img: '/imgs/icons/list-empty.webp'
+  img: 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/icons/list-empty.webp'
 }
 export const noSpaceSearchDataConfig = {
   title: '没有满足该查询条件的团队空间',
   desc: '可以更换条件查询试试',
-  img: '/imgs/icons/list-empty.webp'
+  img: 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/icons/list-empty.webp'
 }
 export const noSearchDataConfig = {
   title: '没有满足该查询条件的问卷',
   desc: '可以更换条件查询试试',
-  img: '/imgs/icons/list-empty.webp'
+  img: 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/icons/list-empty.webp'
 }
 export const noDownloadTaskConfig = {
   title: '没有下载任务',
   desc: '可以在数据分析进行下载',
-  img: '/imgs/icons/list-empty.webp'
+  img: 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/icons/list-empty.webp'
 }
 
 export const statusMaps = {

@@ -2,12 +2,12 @@
   <div
     class="login-page"
     :style="{
-      background: `url('/imgs/create/background.webp') no-repeat bottom right`,
+      background: `url('https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/create/background.webp') no-repeat bottom right`,
       'background-size': 'cover'
     }"
   >
     <div class="login-top">
-      <img src="/imgs/Logo.webp" alt="logo" />
+      <img src="https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/Logo.webp" alt="logo" />
       <span>您好，请登录</span>
     </div>
     <div class="login-box">

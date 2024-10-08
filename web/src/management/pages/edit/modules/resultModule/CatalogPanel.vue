@@ -28,12 +28,12 @@ const statusList = [
   {
     type: EDIT_STATUS_MAP.SUCCESS,
     title: '提交成功',
-    previewImg: '/imgs/icons/success.webp'
+    previewImg: 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/icons/success.webp'
   },
   {
     type: EDIT_STATUS_MAP.OVERTIME,
     title: '问卷过期',
-    previewImg: '/imgs/icons/overtime.webp'
+    previewImg: 'https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/icons/overtime.webp'
   }
 ]
 

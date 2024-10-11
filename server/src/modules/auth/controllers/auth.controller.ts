@@ -151,12 +151,7 @@ export class AuthController {
       // 验证过的验证码要删掉，防止被别人保存重复调用
       this.captchaService.deleteCaptcha(userInfo.captchaId);
     } catch (error) {
-      throw new Error(
-        'generateToken erro:' +
-          error.message +
-          this.configService.get<string>('XIAOJU_SURVEY_JWT_SECRET') +
-          this.configService.get<string>('XIAOJU_SURVEY_JWT_EXPIRES_IN'),
-      );
+      throw new Error('generateToken erro:' + error.message);
     }
 
     return {

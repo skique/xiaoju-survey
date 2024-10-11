@@ -169,7 +169,7 @@ export class MessagePushingTaskService {
           switch (task.type) {
             case MESSAGE_PUSHING_TYPE.HTTP: {
               try {
-                const res = await httpPost({
+                const res: Record<string, any> = await httpPost({
                   url: task.pushAddress,
                   body: sendData,
                 });

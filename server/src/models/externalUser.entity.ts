@@ -1,15 +1,17 @@
 import { Entity, Column } from 'typeorm';
 import { BaseEntity } from './base.entity';
-@Entity({ name: 'user' })
-export class User extends BaseEntity {
+import { EXTERNAL_LOGIN_KIND_ENUM } from 'src/enums/externalAuth';
+
+@Entity({ name: 'messagePushingLog' })
+export class ExternalUser extends BaseEntity {
   @Column('string')
-  username: string;
+  kind: EXTERNAL_LOGIN_KIND_ENUM;
 
   @Column('string')
-  password?: string;
+  userId: string;
 
   @Column('string')
-  openid?: string;
+  openid: string;
 
   @Column('string')
   email?: string;
@@ -19,4 +21,7 @@ export class User extends BaseEntity {
 
   @Column('string')
   name?: string;
+
+  @Column('string')
+  clientId: string;
 }

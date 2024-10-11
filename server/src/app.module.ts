@@ -1,13 +1,15 @@
+import { join } from 'path';
+import { APP_FILTER } from '@nestjs/core';
 import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 import { AppController } from './app.controller';
 
 import { ResponseSecurityPlugin } from './securityPlugin/responseSecurityPlugin';
 import { SurveyUtilPlugin } from './securityPlugin/surveyUtilPlugin';
 
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { SurveyModule } from './modules/survey/survey.module';
 import { SurveyResponseModule } from './modules/surveyResponse/surveyResponse.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -16,9 +18,6 @@ import { FileModule } from './modules/file/file.module';
 import { WorkspaceModule } from './modules/workspace/workspace.module';
 import { UpgradeModule } from './modules/upgrade/upgrade.module';
 
-import { join } from 'path';
-
-import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionsFilter } from './exceptions/httpExceptions.filter';
 
 import { Captcha } from './models/captcha.entity';
@@ -38,6 +37,7 @@ import { Workspace } from './models/workspace.entity';
 import { Collaborator } from './models/collaborator.entity';
 import { DownloadTask } from './models/downloadTask.entity';
 import { Session } from './models/session.entity';
+import { ExternalUser } from './models/externalUser.entity';
 
 import { LoggerProvider } from './logger/logger.provider';
 import { PluginManagerProvider } from './securityPlugin/pluginManager.provider';
@@ -89,6 +89,7 @@ import { Logger } from './logger';
             Collaborator,
             DownloadTask,
             Session,
+            ExternalUser,
           ],
         };
       },

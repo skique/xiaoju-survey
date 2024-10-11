@@ -22,9 +22,13 @@ instance.interceptors.response.use(
     }
     const res = response.data
     if (res.code === CODE_MAP.NO_AUTH || res.code === CODE_MAP.ERR_AUTH) {
-      router.replace({
-        name: 'login'
-      })
+      if (res.data?.loginUrl) {
+        location.href = res.data.loginUrl
+      } else {
+        router.replace({
+          name: 'login'
+        })
+      }
       return res
     } else {
       return res

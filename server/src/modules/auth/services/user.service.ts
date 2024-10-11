@@ -60,6 +60,32 @@ export class UserService {
 
     return this.userRepository.save(newUser);
   }
+  async createUserByUid({
+    username,
+    uid,
+    phone,
+    avatar,
+    email,
+    name,
+  }: {
+    uid: string;
+    phone: string;
+    username: string;
+    avatar?: string;
+    email?: string;
+    name?: string;
+  }): Promise<User> {
+    const newUser = this.userRepository.create({
+      uid,
+      phone,
+      username,
+      avatar,
+      email,
+      name,
+    });
+
+    return this.userRepository.save(newUser);
+  }
 
   saveUser(user: User) {
     return this.userRepository.save(user);
@@ -103,6 +129,15 @@ export class UserService {
     const user = await this.userRepository.findOne({
       where: {
         openid,
+      },
+    });
+
+    return user;
+  }
+  async getUserByUid(uid: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        uid,
       },
     });
 

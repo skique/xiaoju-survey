@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { EXTERNAL_LOGIN_KIND_ENUM } from 'src/enums/externalAuth';
 import { ExternalAuthGoogle } from '../utils/externalAuth/google';
 import { ConfigService } from '@nestjs/config';
+import { ExternalAuthPassport } from '../utils/externalAuth/passport';
 
 @Injectable()
 export class ExternalAuthService {
@@ -30,6 +31,20 @@ export class ExternalAuthService {
           state,
         });
         return google.getAuthUrl();
+      }
+      case EXTERNAL_LOGIN_KIND_ENUM.PASSPORT: {
+        const passport = new ExternalAuthPassport({
+          passportUrl: this.configService.get<string>(
+            'XIAOJU_SURVEY_PASSPORT_URL',
+          ),
+          appId: '50065',
+          role: '426',
+          source: '50065',
+          validUrl: this.configService.get<string>(
+            'XIAOJU_SURVEY_PASSPORT_VALID_URL',
+          ),
+        })
+        return passport.getAuthUrl();
       }
       default: {
         throw new Error('未知的类型');
@@ -80,6 +95,20 @@ export class ExternalAuthService {
           ),
         });
         return google.getUserInfo(ticket);
+      }
+      case EXTERNAL_LOGIN_KIND_ENUM.PASSPORT: {
+        const passport = new ExternalAuthPassport({
+          passportUrl: this.configService.get<string>(
+            'XIAOJU_SURVEY_PASSPORT_URL',
+          ),
+          appId: '50065',
+          role: '426',
+          source: '50065',
+          validUrl: this.configService.get<string>(
+            'XIAOJU_SURVEY_PASSPORT_VALID_URL',
+          ),
+        })
+        return passport.getUserInfo(ticket);
       }
       default: {
         throw new Error('未知的类型');

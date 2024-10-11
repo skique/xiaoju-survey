@@ -127,7 +127,7 @@ export default defineConfig({
       '/xiaoju/api': {
         target: 'http://127.0.0.1:3000',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/xiaoju\/api/, '/api')
+        rewrite: (path: any) => path.replace(/^\/xiaoju\/api/, '/api')
       },
       '/exportfile': {
         target: 'http://127.0.0.1:3000',

@@ -18,6 +18,10 @@ export class Authentication implements CanActivate {
     //   state: '',
     // });
     const request = context.switchToHttp().getRequest();
+    const ticket = request.headers.ticket?.split(' ')[1];
+    if(ticket) {
+      // todo: 这里调用授权回调
+    }
     const token = request.headers.authorization?.split(' ')[1];
 
     if (!token) {

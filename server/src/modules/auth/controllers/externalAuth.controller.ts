@@ -119,7 +119,7 @@ export class ExternalAuthController {
             kind,
             code: query.code,
           });
-          const googleUser = await this.externalAuthService.getUserInfoByTicket(
+          const googleUser: any = await this.externalAuthService.getUserInfoByTicket(
             {
               kind,
               ticket,
@@ -137,6 +137,29 @@ export class ExternalAuthController {
           clientId = this.configService.get<string>(
             'XIAOJU_SURVEY_GOOGLE_CLIENT_ID',
           );
+           // 如果是使用绑定功能的话，走绑定用户的逻辑
+          this.bindUser({ kind, remoteUser, clientId, res });
+          // this.handleLogin({ remoteUser, res, kind });
+          break;
+        }
+        case EXTERNAL_LOGIN_KIND_ENUM.PASSPORT: {
+          if (!query.ticket) {
+            // const authUrl = await this.externalAuthService.generateAuthUrl({
+            //   kind,
+            //   state: query.state,
+            // });
+            // res.redirect(302, authUrl);
+            throw new HttpException('参数有误', EXCEPTION_CODE.PARAMETER_ERROR);
+          }
+          remoteUser = await this.externalAuthService.getUserInfoByTicket(
+            {
+              kind,
+              ticket: query.ticket,
+            }
+          )
+          // this.bindUser({ kind, remoteUser, clientId, res });
+          // 如果不需要绑定用户，直接替换登录方式的话，走对比用户新增用户的逻辑
+          this.handleLogin({ remoteUser, res, kind });
           break;
         }
         default:
@@ -149,7 +172,7 @@ export class ExternalAuthController {
         );
       }
       // 如果是使用绑定功能的话，走绑定用户的逻辑
-      this.bindUser({ kind, remoteUser, clientId, res });
+      // this.bindUser({ kind, remoteUser, clientId, res });
       // 如果不需要绑定用户，直接替换登录方式的话，走对比用户新增用户的逻辑
       // this.handleLogin({ remoteUser, res });
     } catch (err) {
@@ -327,33 +350,57 @@ export class ExternalAuthController {
   private async handleLogin({
     remoteUser,
     res,
+    kind
   }: {
     remoteUser: Record<string, any>;
     res: any;
+    kind?: string;
   }) {
-    let userInfo = await this.userService.getUserByOpenid(remoteUser.openid);
-    if (!userInfo) {
-      // 新用户，入库
-      userInfo = await this.userService.createUserByOpenid({
-        username: remoteUser.username,
-        email: remoteUser.email,
-        openid: remoteUser.openid,
-        avatar: remoteUser.avatar,
-        name: remoteUser.name,
-      });
-    } else {
-      // 已有用户，更新信息
-      if (remoteUser.email) {
-        userInfo.email = remoteUser.email;
+    let userInfo;
+    switch (kind) {
+      case EXTERNAL_LOGIN_KIND_ENUM.GOOGLE: {
+        userInfo = await this.userService.getUserByOpenid(remoteUser.openid);
+        if (!userInfo) {
+          // 新用户，入库
+          userInfo = await this.userService.createUserByOpenid({
+            username: remoteUser.username,
+            email: remoteUser.email,
+            openid: remoteUser.openid,
+            avatar: remoteUser.avatar,
+            name: remoteUser.name,
+          });
+        }
+        break;
       }
-      if (remoteUser.avatar) {
-        userInfo.avatar = remoteUser.avatar;
+      case EXTERNAL_LOGIN_KIND_ENUM.PASSPORT: {
+        userInfo = await this.userService.getUserByUid(remoteUser.uid_str);
+        if (!userInfo) {
+          // 新用户，入库
+          userInfo = await this.userService.createUserByUid({
+            uid: remoteUser.uid_str,
+            phone: remoteUser.cell,
+            username: remoteUser.username,
+            email: remoteUser.email,
+            avatar: remoteUser.avatar,
+            name: remoteUser.name,
+          });
+        }
+        break;
       }
-      if (remoteUser.name) {
-        userInfo.name = remoteUser.name;
-      }
-      await this.userService.saveUser(userInfo);
+      default:
+        throw new Error('未知的登录类型');
     }
+    // 已有用户，更新信息
+    if (remoteUser.email) {
+      userInfo.email = remoteUser.email;
+    }
+    if (remoteUser.avatar) {
+      userInfo.avatar = remoteUser.avatar;
+    }
+    if (remoteUser.name) {
+      userInfo.name = remoteUser.name;
+    }
+    await this.userService.saveUser(userInfo);
     const jwt = await this.authService.generateToken(
       {
         _id: userInfo._id.toString(),

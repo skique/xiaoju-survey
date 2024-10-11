@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 import { User } from 'src/models/user.entity';
+import { ExternalUser } from 'src/models/externalUser.entity';
 import { HttpException } from 'src/exceptions/httpException';
 import { EXCEPTION_CODE } from 'src/enums/exceptionCode';
 import { hash256 } from 'src/utils/hash256';
-import { RECORD_STATUS } from 'src/enums';
 import { ObjectId } from 'mongodb';
 
 @Injectable()
@@ -13,6 +13,8 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: MongoRepository<User>,
+    @InjectRepository(ExternalUser)
+    private readonly externalUserRepository: MongoRepository<ExternalUser>,
   ) {}
 
   async createUser(userInfo: {
@@ -29,10 +31,38 @@ export class UserService {
 
     const newUser = this.userRepository.create({
       username: userInfo.username,
-      password: hash256(userInfo.password),
+      password: userInfo.password ? hash256(userInfo.password) : '',
     });
 
     return this.userRepository.save(newUser);
+  }
+
+  async createUserByOpenid({
+    username,
+    openid,
+    avatar,
+    email,
+    name,
+  }: {
+    username: string;
+    openid: string;
+    avatar?: string;
+    email?: string;
+    name?: string;
+  }): Promise<User> {
+    const newUser = this.userRepository.create({
+      username,
+      openid,
+      avatar,
+      email,
+      name,
+    });
+
+    return this.userRepository.save(newUser);
+  }
+
+  saveUser(user: User) {
+    return this.userRepository.save(user);
   }
 
   async getUser(userInfo: {
@@ -53,9 +83,6 @@ export class UserService {
     const user = await this.userRepository.findOne({
       where: {
         username: username,
-        'curStatus.status': {
-          $ne: RECORD_STATUS.REMOVED,
-        },
       },
     });
 
@@ -66,9 +93,16 @@ export class UserService {
     const user = await this.userRepository.findOne({
       where: {
         _id: new ObjectId(id),
-        'curStatus.status': {
-          $ne: RECORD_STATUS.REMOVED,
-        },
+      },
+    });
+
+    return user;
+  }
+
+  async getUserByOpenid(openid: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        openid,
       },
     });
 
@@ -79,13 +113,10 @@ export class UserService {
     const list = await this.userRepository.find({
       where: {
         username: new RegExp(username),
-        'curStatus.status': {
-          $ne: RECORD_STATUS.REMOVED,
-        },
       },
       skip,
       take,
-      select: ['_id', 'username', 'createDate'],
+      select: ['_id', 'username', 'createdAt'],
     });
     return list;
   }
@@ -96,12 +127,51 @@ export class UserService {
         _id: {
           $in: idList.map((item) => new ObjectId(item)),
         },
-        'curStatus.status': {
-          $ne: RECORD_STATUS.REMOVED,
-        },
       },
-      select: ['_id', 'username', 'createDate'],
+      select: ['_id', 'username', 'createdAt'],
     });
     return list;
+  }
+
+  async createExternalUser({ kind, clientId, ...remoteUser }) {
+    const externalUser = this.externalUserRepository.create({
+      kind,
+      clientId,
+      ...remoteUser,
+    });
+    return this.externalUserRepository.save(externalUser);
+  }
+
+  async getExternalUserByOpenId({ kind, clientId, openid }) {
+    const externalUser = await this.externalUserRepository.findOne({
+      where: {
+        kind,
+        clientId,
+        openid,
+      },
+    });
+    return externalUser;
+  }
+
+  async getExternalUserById(id) {
+    const externalUser = await this.externalUserRepository.findOne({
+      where: {
+        _id: new ObjectId(id),
+      },
+    });
+    return externalUser;
+  }
+
+  async bindUser({ externalUserId, userId }) {
+    return this.externalUserRepository.updateOne(
+      {
+        _id: new ObjectId(externalUserId),
+      },
+      {
+        $set: {
+          userId,
+        },
+      },
+    );
   }
 }

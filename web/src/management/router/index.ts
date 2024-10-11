@@ -161,11 +161,27 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     name: 'login',
-    component: () => import('../pages/login/LoginPage.vue'),
+    component: () => import('../pages/auth/LoginPage.vue'),
     meta: {
       title: '登录'
     }
-  }
+  },
+  {
+    path: '/auth/callback',
+    name: 'loginCallback',
+    component: () => import('../pages/auth/LoginCallback.vue'),
+    meta: {
+      title: '登录'
+    }
+  },
+  {
+    path: '/auth/bind',
+    name: 'loginBind',
+    component: () => import('../pages/auth/BindAccount.vue'),
+    meta: {
+      title: '绑定或注册账号'
+    }
+  },
 ]
 
 const router = createRouter({

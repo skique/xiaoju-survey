@@ -1,23 +1,23 @@
+import { join } from 'path';
+import { APP_FILTER } from '@nestjs/core';
 import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 import { AppController } from './app.controller';
 
 import { ResponseSecurityPlugin } from './securityPlugin/responseSecurityPlugin';
 import { SurveyUtilPlugin } from './securityPlugin/surveyUtilPlugin';
 
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { SurveyModule } from './modules/survey/survey.module';
 import { SurveyResponseModule } from './modules/surveyResponse/surveyResponse.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { MessageModule } from './modules/message/message.module';
 import { FileModule } from './modules/file/file.module';
 import { WorkspaceModule } from './modules/workspace/workspace.module';
+import { UpgradeModule } from './modules/upgrade/upgrade.module';
 
-import { join } from 'path';
-
-import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionsFilter } from './exceptions/httpExceptions.filter';
 
 import { Captcha } from './models/captcha.entity';
@@ -35,18 +35,22 @@ import { MessagePushingLog } from './models/messagePushingLog.entity';
 import { WorkspaceMember } from './models/workspaceMember.entity';
 import { Workspace } from './models/workspace.entity';
 import { Collaborator } from './models/collaborator.entity';
+import { DownloadTask } from './models/downloadTask.entity';
+import { Session } from './models/session.entity';
+import { ExternalUser } from './models/externalUser.entity';
 
 import { LoggerProvider } from './logger/logger.provider';
 import { PluginManagerProvider } from './securityPlugin/pluginManager.provider';
 import { LogRequestMiddleware } from './middlewares/logRequest.middleware';
 import { PluginManager } from './securityPlugin/pluginManager';
 import { Logger } from './logger';
-import { DownloadTask } from './models/downloadTask.entity';
-import { Session } from './models/session.entity';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({}),
+    ConfigModule.forRoot({
+      envFilePath: `.env.${process.env.NODE_ENV}`, // 根据 NODE_ENV 动态加载对应的 .env 文件
+      isGlobal: true, // 使配置模块在应用的任何地方可用
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -85,6 +89,7 @@ import { Session } from './models/session.entity';
             Collaborator,
             DownloadTask,
             Session,
+            ExternalUser,
           ],
         };
       },
@@ -104,6 +109,7 @@ import { Session } from './models/session.entity';
     MessageModule,
     FileModule,
     WorkspaceModule,
+    UpgradeModule,
   ],
   controllers: [AppController],
   providers: [

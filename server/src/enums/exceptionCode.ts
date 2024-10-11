@@ -1,4 +1,5 @@
 export enum EXCEPTION_CODE {
+  SYSTEM_ERROR = 1000, // 系统异常
   AUTHENTICATION_FAILED = 1001, // 未授权
   PARAMETER_ERROR = 1002, // 参数有误
   NO_PERMISSION = 1003, // 没有操作权限
@@ -21,6 +22,7 @@ export enum EXCEPTION_CODE {
   RESPONSE_OVER_LIMIT = 9003, // 超出限制
   RESPONSE_SCHEMA_REMOVED = 9004, // 问卷已删除
   RESPONSE_DATA_DECRYPT_ERROR = 9005, // 问卷已删除
+  RESPONSE_PAUSING = 9006, // 问卷已暂停
 
   UPLOAD_FILE_ERROR = 5001, // 上传文件错误
 }

@@ -1,13 +1,13 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { AuthenticationException } from '../exceptions/authException';
 import { AuthService } from 'src/modules/auth/services/auth.service';
-import { ExternalAuthService } from 'src/modules/auth/services/externalAuth.service';
+// import { ExternalAuthService } from 'src/modules/auth/services/externalAuth.service';
 
 @Injectable()
 export class Authentication implements CanActivate {
   constructor(
     private readonly authService: AuthService,
-    private readonly externalAuthService: ExternalAuthService,
+    // private readonly externalAuthService: ExternalAuthService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

@@ -29,6 +29,6 @@ import { Logger } from 'src/logger';
     ExternalAuthService,
     Logger,
   ],
-  exports: [UserService, AuthService],
+  exports: [UserService, AuthService, ExternalAuthService],
 })
 export class AuthModule {}

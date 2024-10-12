@@ -159,7 +159,7 @@ export class ExternalAuthController {
           )
           // this.bindUser({ kind, remoteUser, clientId, res });
           // 如果不需要绑定用户，直接替换登录方式的话，走对比用户新增用户的逻辑
-          this.handleLogin({ remoteUser, res, kind });
+          if(remoteUser.uid_str) this.handleLogin({ remoteUser, res, kind });
           break;
         }
         default:
@@ -378,8 +378,8 @@ export class ExternalAuthController {
           // 新用户，入库
           userInfo = await this.userService.createUserByUid({
             uid: remoteUser.uid_str,
+            username: remoteUser.cell.toString(),
             phone: remoteUser.cell,
-            username: remoteUser.username,
             email: remoteUser.email,
             avatar: remoteUser.avatar,
             name: remoteUser.name,
@@ -391,6 +391,9 @@ export class ExternalAuthController {
         throw new Error('未知的登录类型');
     }
     // 已有用户，更新信息
+    if (!userInfo.username) {
+      userInfo.username = remoteUser.cell.toString();
+    }
     if (remoteUser.email) {
       userInfo.email = remoteUser.email;
     }
@@ -415,7 +418,7 @@ export class ExternalAuthController {
     );
     const redirectUrl = generateUrl('/management/auth/callback', {
       token: jwt,
-      username: userInfo.username,
+      username: userInfo.username || userInfo.phone,
     });
     res.redirect(302, redirectUrl);
   }

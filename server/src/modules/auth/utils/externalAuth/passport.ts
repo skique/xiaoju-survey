@@ -55,7 +55,7 @@ export class ExternalAuthPassport {
     }
   
     if (!data || data.data.errno) {
-      return 
+      return data
     }
   
     return data.data

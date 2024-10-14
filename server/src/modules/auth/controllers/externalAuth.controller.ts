@@ -153,6 +153,14 @@ export class ExternalAuthController {
               ticket: query.ticket,
             }
           )
+          const XIAOJU_SURVEY_PASSPORT_URL = this.configService.get<string>(
+            'XIAOJU_SURVEY_PASSPORT_URL',
+          )
+          const XIAOJU_SURVEY_PASSPORT_VALID_URL = this.configService.get<string>(
+            'XIAOJU_SURVEY_PASSPORT_VALID_URL',
+          )
+          this.logger.info(`XIAOJU_SURVEY_PASSPORT_URL: `+ XIAOJU_SURVEY_PASSPORT_URL)
+          this.logger.info(`XIAOJU_SURVEY_PASSPORT_VALID_URL: `+ XIAOJU_SURVEY_PASSPORT_VALID_URL)
           this.logger.info(`remoteUser:  + ${JSON.stringify(remoteUser)}`);
           // this.bindUser({ kind, remoteUser, clientId, res });
           // 如果不需要绑定用户，直接替换登录方式的话，走对比用户新增用户的逻辑

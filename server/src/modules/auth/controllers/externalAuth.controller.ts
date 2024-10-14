@@ -146,12 +146,14 @@ export class ExternalAuthController {
           if (!query.ticket) {
             throw new HttpException('参数有误', EXCEPTION_CODE.PARAMETER_ERROR);
           }
+          this.logger.info(`ticket: ' + ${query.ticket}` );
           remoteUser = await this.externalAuthService.getUserInfoByTicket(
             {
               kind,
               ticket: query.ticket,
             }
           )
+          this.logger.info(`remoteUser:  + ${JSON.stringify(remoteUser)}`);
           // this.bindUser({ kind, remoteUser, clientId, res });
           // 如果不需要绑定用户，直接替换登录方式的话，走对比用户新增用户的逻辑
           if(remoteUser && remoteUser.uid_str) {

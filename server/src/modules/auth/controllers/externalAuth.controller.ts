@@ -159,7 +159,14 @@ export class ExternalAuthController {
           )
           // this.bindUser({ kind, remoteUser, clientId, res });
           // 如果不需要绑定用户，直接替换登录方式的话，走对比用户新增用户的逻辑
-          if(remoteUser.uid_str) this.handleLogin({ remoteUser, res, kind });
+          if(remoteUser && remoteUser.uid_str) {
+            this.handleLogin({ remoteUser, res, kind });
+          } else {
+            throw new HttpException(
+              'ticket验证失败 ',
+              EXCEPTION_CODE.AUTHENTICATION_FAILED,
+            );
+          }
           break;
         }
         default:

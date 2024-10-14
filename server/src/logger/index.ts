@@ -35,24 +35,49 @@ export class Logger {
     });
     Logger.inited = true;
   }
-
+  getStackInfo(deep) {
+    const stackList = (new Error()).stack.split('\n').slice(deep + 1);
+    const stackReg = /at\s+(.*)\s+\((.*):(\d*):(\d*)\)/i;
+    const stackReg2 = /at\s+()(.*):(\d*):(\d*)/i;
+  
+    const s = stackList[0];
+    const sp = stackReg.exec(s) || stackReg2.exec(s);
+  
+    if (sp && sp.length === 5) {
+      return { method: sp[1], file: sp[2], line: sp[3], pos: sp[4], stack: stackList.join('\n') };
+    }
+    return null;
+  }
   _log(message, options: { dltag?: string; level: string }) {
     const datetime = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
     const level = options?.level;
-    const dltag = options?.dltag ? `${options.dltag}||` : '';
+    const stackInfo = this.getStackInfo(2);  //
+    const dltag = options?.dltag ? `${options.dltag}||` : '_undef';
     const traceIdStr = this.ctx?.['traceId']
       ? `traceid=${this.ctx?.['traceId']}||`
       : '';
     return log4jsLogger[level](
-      `[${level.toUpperCase()}][${datetime}] ${dltag}${traceIdStr}${message}`,
+      `[${level.toUpperCase()}][${datetime}][${stackInfo.file}:${stackInfo.line}] ${dltag}${traceIdStr}${message}`,
     );
   }
 
   info(message, options?: { dltag?: string }) {
     return this._log(message, { ...options, level: 'info' });
   }
+  warning(message, options?: { dltag?: string }) {
+    return this._log(message, { ...options, level: 'warning' });
+  }
+  trace(message, options?: { dltag?: string }) {
+    return this._log(message, { ...options, level: 'trace' });
+  }
+  debug(message, options?: { dltag?: string }) {
+    return this._log(message, { ...options, level: 'debug' });
+  }
 
   error(message, options?: { dltag?: string }) {
     return this._log(message, { ...options, level: 'error' });
+  }
+  fatal(message, options?: { dltag?: string }) {
+    return this._log(message, { ...options, level: 'fatal' });
   }
 }

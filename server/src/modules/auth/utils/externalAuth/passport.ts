@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Logger } from 'src/logger';
 
 export interface PassportConfig {
   passportUrl:string
@@ -17,7 +18,8 @@ export interface UserInfo {
 export class ExternalAuthPassport {
   private readonly options!: PassportConfig;
 
-  constructor(options: PassportConfig) {
+  constructor(private readonly logger: Logger,options: PassportConfig) {
+    this.logger = logger
     this.options = options;
   }
   public getAuthUrl(): string {
@@ -26,7 +28,7 @@ export class ExternalAuthPassport {
     const url = `${this.options.passportUrl}?appid=${this.options.appId}&role=${this.options.role}&source=${
       this.options.source
     }&redirectUrl=${jumpUrl}`
-    return 
+    return url
   }
   public async getUserInfo(ticket: string): Promise<UserInfo> {
     const param = {
@@ -35,6 +37,7 @@ export class ExternalAuthPassport {
       caller_id: 'daijia-nodejs-biz-cms_question',
     }
     const qjson = JSON.stringify(param)
+    this.logger.info('qjson' + qjson)
     let data
   
     try {
@@ -42,6 +45,7 @@ export class ExternalAuthPassport {
       params.append('ticket', ticket)
       params.append('caller_id', 'daijia-nodejs-biz-cms_question')
       const q = `q=${qjson}`
+      this.logger.info('getUserInfo params:' + JSON.stringify(params))
       data = await axios({
         method: 'post',
         url: this.options.validUrl,
@@ -50,9 +54,12 @@ export class ExternalAuthPassport {
         },
         data: q,
       })
+      
     } catch (error) {
+      this.logger.info('getUserInfo error:' + JSON.stringify(error))
       return 
     }
+    this.logger.info('getUserInfo data:' + JSON.stringify(data.data))
   
     if (!data || data.data.errno) {
       return data.data

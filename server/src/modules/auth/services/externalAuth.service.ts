@@ -4,10 +4,14 @@ import { EXTERNAL_LOGIN_KIND_ENUM } from 'src/enums/externalAuth';
 import { ExternalAuthGoogle } from '../utils/externalAuth/google';
 import { ConfigService } from '@nestjs/config';
 import { ExternalAuthPassport } from '../utils/externalAuth/passport';
+import { Logger } from 'src/logger';
 
 @Injectable()
 export class ExternalAuthService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly logger: Logger,
+    private readonly configService: ConfigService
+  ) {}
 
   async generateAuthUrl({
     kind,
@@ -33,7 +37,7 @@ export class ExternalAuthService {
         return google.getAuthUrl();
       }
       case EXTERNAL_LOGIN_KIND_ENUM.PASSPORT: {
-        const passport = new ExternalAuthPassport({
+        const passport = new ExternalAuthPassport(this.logger, {
           passportUrl: this.configService.get<string>(
             'XIAOJU_SURVEY_PASSPORT_URL',
           ),
@@ -97,7 +101,8 @@ export class ExternalAuthService {
         return google.getUserInfo(ticket);
       }
       case EXTERNAL_LOGIN_KIND_ENUM.PASSPORT: {
-        const passport = new ExternalAuthPassport({
+        
+        const passport = new ExternalAuthPassport(this.logger, {
           passportUrl: this.configService.get<string>(
             'XIAOJU_SURVEY_PASSPORT_URL',
           ),

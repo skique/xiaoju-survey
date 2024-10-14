@@ -144,11 +144,6 @@ export class ExternalAuthController {
         }
         case EXTERNAL_LOGIN_KIND_ENUM.PASSPORT: {
           if (!query.ticket) {
-            // const authUrl = await this.externalAuthService.generateAuthUrl({
-            //   kind,
-            //   state: query.state,
-            // });
-            // res.redirect(302, authUrl);
             throw new HttpException('参数有误', EXCEPTION_CODE.PARAMETER_ERROR);
           }
           remoteUser = await this.externalAuthService.getUserInfoByTicket(
@@ -162,10 +157,13 @@ export class ExternalAuthController {
           if(remoteUser && remoteUser.uid_str) {
             this.handleLogin({ remoteUser, res, kind });
           } else {
-            throw new HttpException(
-              'ticket验证失败 ',
-              EXCEPTION_CODE.AUTHENTICATION_FAILED,
-            );
+            return {
+              code: 500,
+              data: {
+                data: remoteUser,
+                msg: 'ticket验证失败',
+              },
+            };
           }
           break;
         }
@@ -380,6 +378,7 @@ export class ExternalAuthController {
         break;
       }
       case EXTERNAL_LOGIN_KIND_ENUM.PASSPORT: {
+        console.log({remoteUser})
         userInfo = await this.userService.getUserByUid(remoteUser.uid_str);
         if (!userInfo) {
           // 新用户，入库

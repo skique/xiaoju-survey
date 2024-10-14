@@ -32,7 +32,8 @@ const userInfo = computed(() => {
 
 const handleLogout = () => {
   userStore.logout()
-  router.replace({ name: 'login' })
+  // router.replace({ name: 'login' })
+  window.location.href = window.location.origin + '/logout'
 }
 </script>
 

@@ -51,9 +51,31 @@ export class ExternalAuthPassport {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       }
-      this.logger.info('axiosoptions:' + axiosoptions)
+      this.logger.info('axiosoptions:' + JSON.stringify(axiosoptions))
       // const data = await axios.post(this.options.validUrl, q)
-      data = await axios(axiosoptions)
+
+      const instance = axios.create();
+      instance.interceptors.request.use((config) =>{
+        this.logger.info('request:' + JSON.stringify(config))
+        // 在发送请求之前做些什么
+        return config;
+      }, (error) => {
+        this.logger.info('request error:' + JSON.stringify(error.message))
+        // 对请求错误做些什么
+        return Promise.reject(error);
+      });
+      instance.interceptors.response.use( (response) => {
+        this.logger.info('response:' + JSON.stringify(response.data))
+        // 2xx 范围内的状态码都会触发该函数。
+        // 对响应数据做点什么
+        return response;
+      },  (error) => {
+        // 超出 2xx 范围的状态码都会触发该函数。
+        // 对响应错误做点什么
+        this.logger.info('response error:' + JSON.stringify(error.message))
+        return Promise.reject(error);
+      });
+      data = await instance(axiosoptions)
       this.logger.info('data:' + data)
     } catch (error) {
       this.logger.error('getUserInfo error:' + JSON.stringify(error.message))

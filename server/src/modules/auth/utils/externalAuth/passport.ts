@@ -43,15 +43,20 @@ export class ExternalAuthPassport {
     try {
       const q = `q=${qjson}`
       this.logger.info('q:' + q)
-      this.logger.info('getUserInfo:' + this.options.validUrl)
-      data = await axios({
+      const axiosoptions = {
         method: 'post',
         url: this.options.validUrl,
         data: q,
-      })
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }
+      this.logger.info('axiosoptions:' + axiosoptions)
+      // const data = await axios.post(this.options.validUrl, q)
+      data = await axios(axiosoptions)
       this.logger.info('data:' + data)
     } catch (error) {
-      this.logger.info('getUserInfo error:' + JSON.stringify(error.message))
+      this.logger.error('getUserInfo error:' + JSON.stringify(error.message))
       return 
     }
     this.logger.info('getUserInfo data:' + JSON.stringify(data.data))

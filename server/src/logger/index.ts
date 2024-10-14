@@ -44,7 +44,7 @@ export class Logger {
       ? `traceid=${this.ctx?.['traceId']}||`
       : '';
     return log4jsLogger[level](
-      `[${level.toUpperCase()}][${datetime}]${dltag}${traceIdStr}${message}`,
+      `[${level.toUpperCase()}][${datetime}] ${dltag}${traceIdStr}${message}`,
     );
   }
 

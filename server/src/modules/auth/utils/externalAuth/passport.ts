@@ -37,26 +37,21 @@ export class ExternalAuthPassport {
       caller_id: 'daijia-nodejs-biz-cms_question',
     }
     const qjson = JSON.stringify(param)
-    this.logger.info('qjson' + qjson)
+    
     let data
   
     try {
-      const params = new FormData()
-      params.append('ticket', ticket)
-      params.append('caller_id', 'daijia-nodejs-biz-cms_question')
       const q = `q=${qjson}`
-      this.logger.info('getUserInfo params:' + JSON.stringify(params))
+      this.logger.info('q:' + q)
+      this.logger.info('getUserInfo:' + this.options.validUrl)
       data = await axios({
         method: 'post',
         url: this.options.validUrl,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
         data: q,
       })
-      
+      this.logger.info('data:' + data)
     } catch (error) {
-      this.logger.info('getUserInfo error:' + JSON.stringify(error))
+      this.logger.info('getUserInfo error:' + JSON.stringify(error.message))
       return 
     }
     this.logger.info('getUserInfo data:' + JSON.stringify(data.data))

@@ -39,6 +39,8 @@ import { FileService } from '../file/services/file.service';
 import { DownloadTaskService } from './services/downloadTask.service';
 import { SessionService } from './services/session.service';
 import { Session } from 'src/models/session.entity';
+import { Approval } from 'src/models/approval.entity'
+import { ApprovalService } from './services/approval.service';
 
 @Module({
   imports: [
@@ -52,6 +54,7 @@ import { Session } from 'src/models/session.entity';
       Counter,
       DownloadTask,
       Session,
+      Approval,
     ]),
     ConfigModule,
     SurveyResponseModule,
@@ -82,6 +85,7 @@ import { Session } from 'src/models/session.entity';
     DownloadTaskService,
     FileService,
     SessionService,
+    ApprovalService,
   ],
 })
 export class SurveyModule {}

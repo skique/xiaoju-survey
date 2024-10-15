@@ -34,6 +34,8 @@ import { PERMISSION as WORKSPACE_PERMISSION } from 'src/enums/workspace';
 import { SessionService } from '../services/session.service';
 import { UserService } from 'src/modules/auth/services/user.service';
 
+import { ApprovalService } from '../services/approval.service';
+
 @ApiTags('survey')
 @Controller('/api/survey')
 export class SurveyController {
@@ -46,6 +48,7 @@ export class SurveyController {
     private readonly logger: Logger,
     private readonly sessionService: SessionService,
     private readonly userService: UserService,
+    private readonly approvalService: ApprovalService
   ) {}
 
   @Get('/getBannerData')
@@ -341,16 +344,16 @@ export class SurveyController {
     const surveyConf =
       await this.surveyConfService.getSurveyConfBySurveyId(surveyId);
 
-    const { text } = await this.surveyConfService.getSurveyContentByCode(
-      surveyConf.code,
-    );
+    // const { text } = await this.surveyConfService.getSurveyContentByCode(
+    //   surveyConf.code,
+    // );
 
-    if (await this.contentSecurityService.isForbiddenContent({ text })) {
-      throw new HttpException(
-        '问卷存在非法关键字，不允许发布',
-        EXCEPTION_CODE.SURVEY_CONTENT_NOT_ALLOW,
-      );
-    }
+    // if (await this.contentSecurityService.isForbiddenContent({ text })) {
+    //   throw new HttpException(
+    //     '问卷存在非法关键字，不允许发布',
+    //     EXCEPTION_CODE.SURVEY_CONTENT_NOT_ALLOW,
+    //   );
+    // }
 
     await this.surveyMetaService.publishSurveyMeta({
       surveyMeta,
@@ -376,5 +379,112 @@ export class SurveyController {
     return {
       code: 200,
     };
+  }
+  
+  @Post('/approvalSurvey')
+  @HttpCode(200)
+  @UseGuards(SurveyGuard)
+  @SetMetadata('surveyId', 'body.surveyId')
+  @SetMetadata('surveyPermission', [SURVEY_PERMISSION.SURVEY_CONF_MANAGE])
+  @UseGuards(Authentication)
+  async approvalSurvey(
+    @Body()
+    surveyInfo,
+    @Request()
+    req,
+  ) {
+    const { value, error } = Joi.object({
+      surveyId: Joi.string().required(),
+    }).validate(surveyInfo);
+    if (error) {
+      this.logger.error(error.message);
+      throw new HttpException('参数有误', EXCEPTION_CODE.PARAMETER_ERROR);
+    }
+    const username = req.user.username;
+    const surveyId = value.surveyId;
+    this.logger.info(
+      'approval-params ' +
+        JSON.stringify({
+          username,
+          surveyId,
+        }),
+    )
+    const surveyMeta = req.surveyMeta;
+    if (surveyMeta.isDeleted) {
+      throw new HttpException(
+        '问卷已删除，无法发起审批',
+        EXCEPTION_CODE.SURVEY_NOT_FOUND,
+      );
+    }
+    const surveyConf =
+      await this.surveyConfService.getSurveyConfBySurveyId(surveyId);
+
+    const approvalInstance =  this.approvalService.instantiation({
+      surveyConf: surveyConf.code, 
+      surveyMeta: surveyMeta
+    });
+    const userId = username._id
+    try {
+      const auditRecode = await this.approvalService.create({
+        surveyId,
+        userId,
+        version: approvalInstance.getAuditVersion(),
+        conAuditStatus: 'new',
+      });
+      const auditId = auditRecode._id
+    
+      
+      const { content, imgUrls, videoUrls } = approvalInstance.getAuditData()
+      
+      const res = await this.approvalService.start(surveyId, userId, {
+        imgUrls,
+        videoUrls,
+        content,
+        title: surveyMeta.title,
+        auditId,
+      })
+      this.logger.info('Publish-approval-res ' + JSON.stringify(res))
+      const auditInfo = {
+        switch: false, // 是否需要等待人审结果
+        text: '',
+        id: auditId,
+      }
+      if (res.keys.base && res.keys.base.length > 0) {
+        this.logger.info('publish_audit_base')
+        // 命中了涉黄涉政词
+        auditInfo.switch = true
+        auditInfo.text = '您的问卷中包含图片或视频，需要经过人工审核后才能发布成功，请您耐心等待。'
+      }
+
+      await this.approvalService.updateRequiredCallbackAnd({
+        id: auditId,
+        requiredCallback: auditInfo.switch,
+      })
+    
+    // const { text } = await this.surveyConfService.getSurveyContentByCode(
+    //   surveyConf.code,
+    // );
+
+    // if (await this.contentSecurityService.isForbiddenContent({ text })) {
+    //   throw new HttpException(
+    //     '问卷存在非法关键字，不允许发布',
+    //     EXCEPTION_CODE.SURVEY_CONTENT_NOT_ALLOW,
+    //   );
+    // }
+
+    
+      return {
+        code: 200,
+        keys: res.keys,
+        hasImg: res.hasImg,
+        hasVideo: res.hasVideo,
+        auditInfo,
+      };
+    } catch (error) {
+      throw new HttpException(
+        error.message,
+        EXCEPTION_CODE.SURVEY_NOT_FOUND,
+      );
+    }
   }
 }

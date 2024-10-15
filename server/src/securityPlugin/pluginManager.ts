@@ -1,10 +1,11 @@
 import { SecurityPlugin } from './interface';
 
 type AllowHooks =
-  | 'encryptResponseData'
-  | 'decryptResponseData'
-  | 'maskData'
-  | 'genSurveyPath';
+  | 'encryptResponseData' // 数据加密
+  | 'decryptResponseData' // 数据解密
+  | 'maskData'            // 数据脱敏
+  | 'genSurveyPath'       // 获取问卷id
+  | 'approval'            // 审批流程
 
 export class PluginManager {
   private plugins: Array<SecurityPlugin> = [];

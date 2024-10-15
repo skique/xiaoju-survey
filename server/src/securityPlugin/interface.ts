@@ -3,4 +3,5 @@ export interface SecurityPlugin {
   afterResponseFind?(responseData);
   maskData?(data: Record<string, any>);
   genSurveyPath?();
+  approval?();
 }

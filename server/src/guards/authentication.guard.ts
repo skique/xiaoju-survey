@@ -11,7 +11,7 @@ export class Authentication implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const loginUrl = '/management/login';
+    const loginUrl = '/';
     // 跳转第三方的登录页面
     // const loginUrl = await this.externalAuthService.generateAuthUrl({
     //   kind: '',

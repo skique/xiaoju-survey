@@ -1,7 +1,7 @@
 <template>
   <div class="top-nav">
     <div class="left">
-      <img class="logo-img" src="https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/Logo.webp" alt="logo" />
+      <img class="logo-img" src="https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/Logo.webp" alt="logo" @click="toHomePage"/>
       <el-menu router default-active-index="survey" class="el-menu-demo" mode="horizontal">
         <el-menu-item index="survey">
           <router-link :to="{ name: 'survey' }">问卷列表</router-link>
@@ -30,6 +30,9 @@ const userInfo = computed(() => {
   return userStore.userInfo
 })
 
+const toHomePage = () => {
+  window.location.href = '/'
+}
 const handleLogout = () => {
   userStore.logout()
   // router.replace({ name: 'login' })

@@ -344,17 +344,22 @@ export class SurveyController {
     const surveyConf =
       await this.surveyConfService.getSurveyConfBySurveyId(surveyId);
 
-    // const { text } = await this.surveyConfService.getSurveyContentByCode(
-    //   surveyConf.code,
-    // );
+    // const auditInfo = await this.approvalService.getBySurveyId(surveyId)
+    // this.logger.info(`Publish-controller-publish-auditInfo: ${auditInfo}` )
+    
 
-    // if (await this.contentSecurityService.isForbiddenContent({ text })) {
-    //   throw new HttpException(
-    //     '问卷存在非法关键字，不允许发布',
-    //     EXCEPTION_CODE.SURVEY_CONTENT_NOT_ALLOW,
-    //   );
-    // }
-
+    const userId = username._id
+   
+    const approvalResult = await this.approvalService.processApproval(surveyId, userId, {surveyConf, surveyMeta})
+    if(approvalResult.auditInfo.switch) {
+      return {
+        code: 200,
+        success: false,
+        auditInfo: approvalResult.auditInfo,
+        message: '您的问卷需要经过人工审核后才能发布成功，请您耐心等待。'
+      };
+    }
+    
     await this.surveyMetaService.publishSurveyMeta({
       surveyMeta,
     });
@@ -378,6 +383,7 @@ export class SurveyController {
     });
     return {
       code: 200,
+      success: true
     };
   }
   
@@ -419,66 +425,16 @@ export class SurveyController {
     const surveyConf =
       await this.surveyConfService.getSurveyConfBySurveyId(surveyId);
 
-    const approvalInstance =  this.approvalService.instantiation({
-      surveyConf: surveyConf.code, 
-      surveyMeta: surveyMeta
-    });
     const userId = username._id
     try {
-      const auditRecode = await this.approvalService.create({
-        surveyId,
-        userId,
-        version: approvalInstance.getAuditVersion(),
-        conAuditStatus: 'new',
-      });
-      const auditId = auditRecode._id
-    
-      
-      const { content, imgUrls, videoUrls } = approvalInstance.getAuditData()
-      
-      const res = await this.approvalService.start(surveyId, userId, {
-        imgUrls,
-        videoUrls,
-        content,
-        title: surveyMeta.title,
-        auditId,
-      })
-      this.logger.info('Publish-approval-res ' + JSON.stringify(res))
-      const auditInfo = {
-        switch: false, // 是否需要等待人审结果
-        text: '',
-        id: auditId,
-      }
-      if (res.keys.base && res.keys.base.length > 0) {
-        this.logger.info('publish_audit_base')
-        // 命中了涉黄涉政词
-        auditInfo.switch = true
-        auditInfo.text = '您的问卷中包含图片或视频，需要经过人工审核后才能发布成功，请您耐心等待。'
-      }
-
-      await this.approvalService.updateRequiredCallbackAnd({
-        id: auditId,
-        requiredCallback: auditInfo.switch,
-      })
-    
-    // const { text } = await this.surveyConfService.getSurveyContentByCode(
-    //   surveyConf.code,
-    // );
-
-    // if (await this.contentSecurityService.isForbiddenContent({ text })) {
-    //   throw new HttpException(
-    //     '问卷存在非法关键字，不允许发布',
-    //     EXCEPTION_CODE.SURVEY_CONTENT_NOT_ALLOW,
-    //   );
-    // }
-
-    
+      const res:any= await this.approvalService.processApproval(surveyId, userId, {surveyConf, surveyMeta})
+      console.log(res)
       return {
         code: 200,
         keys: res.keys,
         hasImg: res.hasImg,
         hasVideo: res.hasVideo,
-        auditInfo,
+        auditInfo: res.auditInfo,
       };
     } catch (error) {
       throw new HttpException(

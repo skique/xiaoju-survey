@@ -9,29 +9,81 @@ import { fillUrl } from 'src/utils/string'
 import { ConfigService } from '@nestjs/config';
 import * as _ from 'lodash'
 import fetch from 'node-fetch';
+import { Logger } from 'src/logger';
 @Injectable()
 export class ApprovalService {
   constructor(
     @InjectRepository(Approval)
     private readonly approvalRepository: MongoRepository<Approval>,
-    // private readonly logger: Logger,
+    private readonly logger: Logger,
     private readonly configService: ConfigService
   ) {}
-  instantiation({surveyConf, surveyMeta}) {
-    return new ApprovalPlugin({surveyConf, surveyMeta})
+
+  async processApproval(surveyId, userId, { surveyConf, surveyMeta }) {
+    const approvalInstance =  this.instantiation({
+      surveyConf: surveyConf.code, 
+      surveyMeta: surveyMeta
+    });
+    // 获取审批数据
+    const { content, imgUrls, videoUrls } = approvalInstance.getAuditData()
+    // 新增审批记录
+    const auditRecode = await this.create({
+      surveyId,
+      userId,
+      version: approvalInstance.getAuditVersion(),
+      conAuditStatus: 'new',
+    });
+    const auditId = auditRecode._id
+    this.logger.info('Publish-approval-process-start ' + JSON.stringify(auditId))
+
+    // 开始审批流程
+    const res = await this.start(surveyId, userId, {
+      imgUrls,
+      videoUrls,
+      content,
+      title: surveyMeta.title,
+      auditId,
+    })
+    // 命中敏感词，给问卷打标，问卷schema新增isSecret、isSensitive
+    // await ctx.service.publish.updateSecretFlag(res.keys, actId)
+
+    this.logger.info('Publish-approval-res ' + JSON.stringify(res))
+    const auditInfo = {
+      switch: false, // 是否需要等待人审结果
+      text: '',
+      id: auditId,
+    }
+    if (res.keys.base && res.keys.base.length > 0) {
+      this.logger.info('publish_audit_base')
+      // 命中了涉黄涉政词
+      auditInfo.switch = true
+      auditInfo.text = '您的问卷中包含图片或视频，需要经过人工审核后才能发布成功，请您耐心等待。'
+    }
+
+    // 更新审批结果
+    await this.updateRequiredCallbackAnd({
+      id: auditId,
+      requiredCallback: auditInfo.switch,
+    })
+      
+    return {
+      keys: res.keys,
+      hasImg: res.hasImg,
+      hasVideo: res.hasVideo,
+      auditInfo,
+    };
+    
   }
 
   async start(surveyId, userId, auditInfo): Promise<any> {
     const { imgUrls, content, videoUrls, title, auditId } = auditInfo
-    // const defaultBannerImgs = this._getDefaultBannerImgs()
-    // const filterImgUrls = imgUrls.filter(img => !defaultBannerImgs.includes(img))
-    const filterImgUrls = imgUrls
 
     const result: any = await this.sendApproval({
       content,
-      imgUrls: filterImgUrls.map(fillUrl),
+      imgUrls: imgUrls.map(fillUrl),
       videoUrls: videoUrls.map(fillUrl),
       bizData: {
+        isnew: true,
         surveyId,
         auditId,
         owner: userId,
@@ -48,7 +100,7 @@ export class ApprovalService {
       keyObj[key.label] = key.keyword.split(',')
     }
     result.keys = keyObj
-    result.hasImg = filterImgUrls.length > 0
+    result.hasImg = imgUrls.length > 0
     result.hasVideo = videoUrls.length > 0
     return result
   }
@@ -66,30 +118,30 @@ export class ApprovalService {
         bizData: JSON.stringify(bizData),
         urls: imgUrls,
         videoUrls,
-        id: bizData.actId,
+        id: bizData.surveyId,
       }
+      const traceId = this.logger.getTrackId()
       fetch(sensitiveWordCheckUrl, {
         method: 'POST',
         headers: {
           Accept: 'application/json, */*',
           'Content-Type': 'application/json',
           timeout: '1001',
-          'didi-header-rid': traceId,
+          'didi-header-rid': traceId
         },
         body: JSON.stringify(data),
-      }).then((res) => {
+      }).then( async (res) => {
         try {
-          // res = JSON.parse(res)
-          const code = _.get(res, 'data.code')
+          const data = await res.json()
+          const code = _.get(data.data, 'code')
           let isBase = false
-          const keys = _.get(res, 'data.extendResult', [])
+          const keys = _.get(data.data, 'extendResult', [])
           for (const v of keys) {
             if (v.label === 'base') {
               isBase = true
             }
           }
           if (code === 100000 || !isBase) {
-            
             resolve({
               success: true,
               keys,
@@ -98,8 +150,8 @@ export class ApprovalService {
             
             resolve({
               success: false,
-              code: _.get(res, 'data.code'),
-              msg: _.get(res, 'data'),
+              code: _.get(data, 'data.code'),
+              msg: _.get(data, 'data'),
               keys,
             })
           }
@@ -119,6 +171,10 @@ export class ApprovalService {
       });
 
     })
+  }
+
+  instantiation({surveyConf, surveyMeta}) {
+    return new ApprovalPlugin({surveyConf, surveyMeta})
   }
 
   create({ surveyId, userId, version, conAuditStatus }) {

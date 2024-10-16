@@ -60,6 +60,9 @@ export class Logger {
       `[${level.toUpperCase()}][${datetime}][${stackInfo.file}:${stackInfo.line}] ${dltag}${traceIdStr}${message}`,
     );
   }
+  getTrackId() {
+    return this.ctx?.['traceId']
+  }
 
   info(message, options?: { dltag?: string }) {
     return this._log(message, { ...options, level: 'info' });

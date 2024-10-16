@@ -111,9 +111,22 @@ const handlePublish = async () => {
     }
     const publishRes: any = await publishSurvey({ surveyId: saveData.value.surveyId })
     if (publishRes.code === 200) {
-      ElMessage.success('发布成功')
-      getSchemaFromRemote()
-      router.push({ name: 'publish' })
+      if(publishRes.success) {
+          ElMessage.success('发布成功')
+          getSchemaFromRemote()
+          router.push({ name: 'publish' })
+        } else {
+          ElMessageBox.confirm('您的问卷需要经过人工审核后才能发布成功，请您耐心等待。', '提示', {
+            confirmButtonText: '提交审核',
+            cancelButtonText: '返回修改',
+            type: 'warning'
+          }).then(() => {
+            // todo提交审核
+            console.log('提交审核逻辑')
+          }).catch(() => {
+            console.log('返回修改')
+          })
+      }
     } else {
       ElMessage.error(`发布失败 ${publishRes.errmsg}`)
     }

@@ -1,24 +1,24 @@
 import { SecurityPlugin } from '../interface';
 import { SurveyResponse } from 'src/models/surveyResponse.entity';
 import { decryptData, encryptData, isDataSensitive, maskData } from './utils';
+import { cleanRichText } from 'src/utils/string';
+import { get, set } from 'lodash';
+import DataSecSDK, { AnalyzeClazzV2Request } from './DataSecSDK'
 
 export class ResponseSecurityPlugin implements SecurityPlugin {
-  constructor(private readonly secretKey: string) {}
-  encryptResponseData(responseData: SurveyResponse) {
-    const secretKeys = [];
+  constructor(
+    private readonly secretKey: string, 
+    private dataSecurityEndpoint: string,
+    private dataSecurityAppId: string,
+    private dataSecuritySecretKey: string,
+  ) {
+  }
+  async encryptResponseData({responseData, dataList = []}) {
+    const secretKeys = await this.getSensitiveKeys(responseData, dataList)
     if (responseData.data) {
       for (const key in responseData.data) {
         const value = responseData.data[key];
-        const values = Array.isArray(value) ? value : [value];
-        let needEncrypt = false;
-        for (const val of values) {
-          if (isDataSensitive(val)) {
-            needEncrypt = true;
-            break;
-          }
-        }
-        if (needEncrypt) {
-          secretKeys.push(key);
+        if (secretKeys.includes(key)) {
           responseData.data[key] = Array.isArray(value)
             ? value.map((item) =>
                 encryptData(item, {
@@ -32,6 +32,7 @@ export class ResponseSecurityPlugin implements SecurityPlugin {
       }
     }
     responseData.secretKeys = secretKeys;
+    return responseData
   }
 
   decryptResponseData(responseData: SurveyResponse) {
@@ -59,4 +60,70 @@ export class ResponseSecurityPlugin implements SecurityPlugin {
       }
     });
   }
+  async getSensitiveKeys(params, dataList) {
+    const fields = [];
+    const ignoreKeys = ['optionsWithId', 'scores', 'score', 'p', 'channel', 'total', 'difTime', 'mapLocation', 'secret']
+    Object.entries(params.data).forEach(([key, value]) => {
+      if (ignoreKeys.includes(key)) {
+        return
+      }
+      // 构造题目的送审数据
+      fields.push({
+        name: `data.${key}`,
+        comment: cleanRichText(dataList[key]),
+        type: Array.isArray(value) ? 'Array' : 'String',
+        value,
+      });
+    });
+    const samples = fields
+      .map((item) => item.name)
+      .map((key) => get(params, key))
+
+    const payload: AnalyzeClazzV2Request = {
+      // ruleSet: 'PII',
+      ruleSet: 'MULTI_STRATEGY_STRUCTURE',
+      simplifySamples: true,
+      fields: fields.map(({ name, comment, type }) => ({ name, comment, type })),
+      samples: [samples],
+    };
+    const dataSecSDK = new DataSecSDK({
+      endpoint: this.dataSecurityEndpoint,
+      config: {
+        appId: this.dataSecurityAppId,
+        secretKey: this.dataSecuritySecretKey
+      },
+    })
+    const ret = await dataSecSDK.clazzV2(payload)
+    const sensitiveKeys = this.extractSensitiveKeys(ret);
+    
+    return sensitiveKeys
+    
+  }
+  extractSensitiveKeys = (response) => {
+    if (response.code === 0) {
+      return response.data
+        .filter((item) => item.cntDriven && item.mainClassification?.category)
+        .map((item) => item.fieldName);
+    }
+  
+    throw response;
+  }
+  
+  // prepareQuestionTitles(params, dataList) {
+  //   try {
+  //     const titles = Object.entries({ ...params.data }).reduce((prev, [key, value]: [string, any]) => {
+  //       const question = dataList.find((item) => item.field === key);
+
+  //       if (!question) {
+  //         return prev;
+  //       }
+
+  //       return prev;
+  //     }, {});
+
+  //     return titles;
+  //   } catch (error) {
+  //     throw error
+  //   }
+  // }
 }

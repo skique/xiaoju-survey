@@ -24,6 +24,7 @@ import { WhitelistType } from 'src/interfaces/survey';
 import { UserService } from 'src/modules/auth/services/user.service';
 import { WorkspaceMemberService } from 'src/modules/workspace/services/workspaceMember.service';
 import { QUESTION_TYPE } from 'src/enums/question';
+import pluginManager from 'src/securityPlugin/pluginManager';
 
 const optionQuestionType: Array<string> = [
   QUESTION_TYPE.RADIO,
@@ -286,11 +287,12 @@ export class SurveyResponseController {
     //   this.logger.info(`unlockResource: ${lockKey}`);
     // }
 
-    // 入库
+    // 入库前调用存储加密
+    const responseData = await pluginManager.triggerHook('encryptResponseData', { responseData: decryptedData, dataList });
     const surveyResponse =
       await this.surveyResponseService.createSurveyResponse({
         surveyPath: value.surveyPath,
-        data: decryptedData,
+        data: responseData,
         clientTime,
         diffTime,
         surveyId: responseSchema.pageId,

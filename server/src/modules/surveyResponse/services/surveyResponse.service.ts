@@ -18,6 +18,7 @@ export class SurveyResponseService {
     surveyPath,
     optionTextAndId,
   }) {
+    
     const newSubmitData = this.surveyResponseRepository.create({
       surveyPath,
       data,

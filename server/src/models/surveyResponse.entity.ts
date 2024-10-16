@@ -25,10 +25,12 @@ export class SurveyResponse extends BaseEntity {
   @Column('jsonb')
   optionTextAndId: Record<string, any>;
 
-  @BeforeInsert()
-  async onDataInsert() {
-    return await pluginManager.triggerHook('encryptResponseData', this);
-  }
+
+
+  // @BeforeInsert()
+  // async onDataInsert(dataList) {
+  //   return await pluginManager.triggerHook('encryptResponseData', {responseData: this, dataList});
+  // }
 
   @AfterLoad()
   async onDataLoaded() {

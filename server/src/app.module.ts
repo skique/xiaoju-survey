@@ -136,6 +136,16 @@ export class AppModule {
         this.configService.get<string>(
           'XIAOJU_SURVEY_RESPONSE_AES_ENCRYPT_SECRET_KEY',
         ),
+        this.configService.get<string>(
+          'XIAOJU_SURVEY_DATA_SECURITY_ENDPOINT',
+        ),
+        this.configService.get<string>(
+          'XIAOJU_SURVEY_DATA_SECURITY_APPID',
+        ),
+        this.configService.get<string>(
+          'XIAOJU_SURVEY_DATA_SECURITY_SECRET_KEY',
+        ),
+
       ),
       new SurveyUtilPlugin(),
     );

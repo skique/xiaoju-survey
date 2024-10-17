@@ -112,6 +112,16 @@ export class SurveyMetaService {
     return this.surveyRepository.save(survey);
   }
 
+  async rejectSurveyMeta(survey: SurveyMeta) {
+    const newStatus = {
+      status: RECORD_STATUS.REJECTED,
+      date: Date.now(),
+    };
+    survey.curStatus = newStatus;
+
+    return this.surveyRepository.save(survey);
+  }
+
   async editSurveyMeta({
     survey,
     operator,

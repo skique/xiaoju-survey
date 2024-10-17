@@ -35,6 +35,7 @@ import { SessionService } from '../services/session.service';
 import { UserService } from 'src/modules/auth/services/user.service';
 
 import { ApprovalService } from '../services/approval.service';
+import _ from 'lodash'
 
 @ApiTags('survey')
 @Controller('/api/survey')
@@ -223,15 +224,19 @@ export class SurveyController {
   @UseGuards(Authentication)
   async pausingSurvey(@Request() req) {
     const surveyMeta = req.surveyMeta;
-
-    await this.surveyMetaService.pausingSurveyMeta(surveyMeta);
-    await this.responseSchemaService.pausingResponseSchema({
-      surveyPath: surveyMeta.surveyPath,
-    });
+    this.pauseSurvey(surveyMeta)
+    
 
     return {
       code: 200,
     };
+  }
+
+  private async pauseSurvey(surveyMeta){
+    await this.surveyMetaService.pausingSurveyMeta(surveyMeta);
+    await this.responseSchemaService.pausingResponseSchema({
+      surveyPath: surveyMeta.surveyPath,
+    });
   }
 
   @Get('/getSurvey')
@@ -458,6 +463,46 @@ export class SurveyController {
 
     await this.surveyMetaService.auditSurveyMeta(surveyMeta);
 
+    return {
+      code: 200,
+    };
+  }
+
+  @Post('/approvalCallback')
+  @HttpCode(200)
+  async approvalCallback(@Body() reqBody) {
+    const { result, bizData } = reqBody;
+    this.logger.info('approvalCallback_response:'+JSON.stringify({result,bizData }))
+    const surveyId = _.get(bizData, 'surveyId', '')
+    const auditId = _.get(bizData, 'auditId', '')
+
+    if (auditId) {
+      // 更新审核记录状态
+      this.approvalService.updateConSecStatus({ id: auditId, status: result === 0 ? 'approved' : 'rejected' })
+    }
+    const surveyMeta = await this.surveyMetaService.getSurveyById({ surveyId })
+    const surveyConf = await this.surveyConfService.getSurveyConfBySurveyId(surveyId)
+    if (result === 0) {
+      if(surveyMeta.curStatus.status === 'auditing') {
+        await this.surveyMetaService.publishSurveyMeta({
+          surveyMeta,
+        });
+    
+        await this.responseSchemaService.publishResponseSchema({
+          title: surveyMeta.title,
+          surveyPath: surveyMeta.surveyPath,
+          code: surveyConf.code,
+          pageId: surveyId,
+        });
+      }
+      return {
+        errno: 0,
+        msg: 'Review succeed result received.',
+      };
+    } else if (result === 1) {
+      // 暂停问卷
+      this.pauseSurvey(surveyMeta)
+    }
     return {
       code: 200,
     };

@@ -149,6 +149,7 @@ const handlePublish = async () => {
   const showAuditingDialog = async () => {
     await ElMessageBox.alert('问卷已成功提交审核，请等待审核结果。暂时不可进行问卷编辑。', '提示', {
       confirmButtonText: '返回问卷列表',
+      showClose: false,
       type: 'warning',
       callback: (action: Action) => {
         router.push('/')

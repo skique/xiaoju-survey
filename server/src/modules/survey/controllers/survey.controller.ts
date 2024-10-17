@@ -349,8 +349,9 @@ export class SurveyController {
     
 
     const userId = username._id
+    const previewUrl = `${req.hostname}/management/preview/670f85f4ff242e9c3b1a132f}`
    
-    const approvalResult = await this.approvalService.processApproval(surveyId, userId, {surveyConf, surveyMeta})
+    const approvalResult = await this.approvalService.processApproval(surveyId, userId, { surveyConf, surveyMeta }, previewUrl)
     if(approvalResult.auditInfo.switch) {
       return {
         code: 200,
@@ -424,10 +425,10 @@ export class SurveyController {
     }
     const surveyConf =
       await this.surveyConfService.getSurveyConfBySurveyId(surveyId);
-
+    const previewUrl = `${req.hostname}management/preview/670f85f4ff242e9c3b1a132f}`
     const userId = username._id
     try {
-      const res:any= await this.approvalService.processApproval(surveyId, userId, {surveyConf, surveyMeta})
+      const res:any= await this.approvalService.processApproval(surveyId, userId, {surveyConf, surveyMeta}, previewUrl)
       console.log(res)
       return {
         code: 200,

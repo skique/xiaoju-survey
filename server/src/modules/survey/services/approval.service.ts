@@ -19,7 +19,7 @@ export class ApprovalService {
     private readonly configService: ConfigService
   ) {}
 
-  async processApproval(surveyId, userId, { surveyConf, surveyMeta }) {
+  async processApproval(surveyId, userId, { surveyConf, surveyMeta }, previewUrl: string) {
     const approvalInstance =  this.instantiation({
       surveyConf: surveyConf.code, 
       surveyMeta: surveyMeta
@@ -43,6 +43,7 @@ export class ApprovalService {
       content,
       title: surveyMeta.title,
       auditId,
+      previewUrl,
     })
     // 命中敏感词，给问卷打标，问卷schema新增isSecret、isSensitive
     // await ctx.service.publish.updateSecretFlag(res.keys, actId)
@@ -76,7 +77,7 @@ export class ApprovalService {
   }
 
   async start(surveyId, userId, auditInfo): Promise<any> {
-    const { imgUrls, content, videoUrls, title, auditId } = auditInfo
+    const { imgUrls, content, videoUrls, title, auditId, previewUrl } = auditInfo
 
     const result: any = await this.sendApproval({
       content,
@@ -91,7 +92,7 @@ export class ApprovalService {
           title,
         },
       },
-      previewUrl: ``,
+      previewUrl,
     })
 
     const keys = _.get(result, 'keys', [])

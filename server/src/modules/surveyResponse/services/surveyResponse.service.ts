@@ -17,12 +17,13 @@ export class SurveyResponseService {
     surveyId,
     surveyPath,
     optionTextAndId,
+    secretKeys
   }) {
     
     const newSubmitData = this.surveyResponseRepository.create({
       surveyPath,
       data,
-      secretKeys: [],
+      secretKeys,
       clientTime,
       diffTime,
       pageId: surveyId,

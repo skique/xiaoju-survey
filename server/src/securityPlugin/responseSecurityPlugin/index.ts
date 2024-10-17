@@ -18,7 +18,7 @@ export class ResponseSecurityPlugin implements SecurityPlugin {
     if (responseData.data) {
       for (const key in responseData.data) {
         const value = responseData.data[key];
-        if (secretKeys.includes(key)) {
+        if (secretKeys.includes(`data.${key}`)) {
           responseData.data[key] = Array.isArray(value)
             ? value.map((item) =>
                 encryptData(item, {
@@ -38,7 +38,10 @@ export class ResponseSecurityPlugin implements SecurityPlugin {
   decryptResponseData(responseData: SurveyResponse) {
     const secretKeys = responseData.secretKeys;
     if (Array.isArray(secretKeys) && secretKeys.length > 0) {
-      for (const key of secretKeys) {
+      for (let key of secretKeys) {
+        if (key.split('data.').length) {
+          key = key.split('data.')[1] 
+        }
         if (Array.isArray(responseData.data[key])) {
           responseData.data[key] = responseData.data[key].map((item) =>
             decryptData(item, { secretKey: this.secretKey }),
@@ -62,6 +65,7 @@ export class ResponseSecurityPlugin implements SecurityPlugin {
   }
   async getSensitiveKeys(params, dataList) {
     const fields = [];
+    const titlesMap = this.prepareQuestionTitles(dataList)
     const ignoreKeys = ['optionsWithId', 'scores', 'score', 'p', 'channel', 'total', 'difTime', 'mapLocation', 'secret']
     Object.entries(params.data).forEach(([key, value]) => {
       if (ignoreKeys.includes(key)) {
@@ -70,7 +74,7 @@ export class ResponseSecurityPlugin implements SecurityPlugin {
       // 构造题目的送审数据
       fields.push({
         name: `data.${key}`,
-        comment: cleanRichText(dataList[key]),
+        comment: cleanRichText(titlesMap[key]),
         type: Array.isArray(value) ? 'Array' : 'String',
         value,
       });
@@ -103,27 +107,20 @@ export class ResponseSecurityPlugin implements SecurityPlugin {
     if (response.code === 0) {
       return response.data
         .filter((item) => item.cntDriven && item.mainClassification?.category)
-        .map((item) => item.fieldName);
+        .map((item) => {
+          return item.fieldName
+        });
     }
   
     throw response;
   }
   
-  // prepareQuestionTitles(params, dataList) {
-  //   try {
-  //     const titles = Object.entries({ ...params.data }).reduce((prev, [key, value]: [string, any]) => {
-  //       const question = dataList.find((item) => item.field === key);
-
-  //       if (!question) {
-  //         return prev;
-  //       }
-
-  //       return prev;
-  //     }, {});
-
-  //     return titles;
-  //   } catch (error) {
-  //     throw error
-  //   }
-  // }
+  prepareQuestionTitles(dataList) {
+    return dataList.reduce((acc, item) => {
+      if (item.field) {
+        acc[item.field] = item.title;
+      }
+      return acc;
+    }, {});
+  }
 }

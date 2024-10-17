@@ -288,16 +288,17 @@ export class SurveyResponseController {
     // }
 
     // 入库前调用存储加密
-    const responseData = await pluginManager.triggerHook('encryptResponseData', { responseData: decryptedData, dataList });
+    const parmas = {
+      surveyPath: value.surveyPath,
+      data: decryptedData,
+      clientTime,
+      diffTime,
+      surveyId: responseSchema.pageId,
+      optionTextAndId,
+    }
+    const responseData = await pluginManager.triggerHook('encryptResponseData', { responseData: parmas, dataList });
     const surveyResponse =
-      await this.surveyResponseService.createSurveyResponse({
-        surveyPath: value.surveyPath,
-        data: responseData,
-        clientTime,
-        diffTime,
-        surveyId: responseSchema.pageId,
-        optionTextAndId,
-      });
+      await this.surveyResponseService.createSurveyResponse(responseData);
 
     const sendData = getPushingData({
       surveyResponse,

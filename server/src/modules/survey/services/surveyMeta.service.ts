@@ -96,6 +96,22 @@ export class SurveyMetaService {
     return this.surveyRepository.save(survey);
   }
 
+  async auditSurveyMeta(survey: SurveyMeta) {
+    if (survey?.curStatus?.status === RECORD_STATUS.AUDITING) {
+      throw new HttpException(
+        '问卷已在审核中，不允许进行状态修改',
+        EXCEPTION_CODE.SURVEY_STATUS_TRANSFORM_ERROR,
+      );
+    }
+    const newStatus = {
+      status: RECORD_STATUS.AUDITING,
+      date: Date.now(),
+    };
+    survey.curStatus = newStatus;
+
+    return this.surveyRepository.save(survey);
+  }
+
   async editSurveyMeta({
     survey,
     operator,

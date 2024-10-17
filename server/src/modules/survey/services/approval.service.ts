@@ -31,7 +31,7 @@ export class ApprovalService {
       surveyId,
       userId,
       version: approvalInstance.getAuditVersion(),
-      conAuditStatus: 'new',
+      conAuditStatus: APPROVAL_STATUS.NEW,
     });
     const auditId = auditRecode._id
     this.logger.info('Publish-approval-process-start ' + JSON.stringify(auditId))
@@ -178,20 +178,12 @@ export class ApprovalService {
   }
 
   create({ surveyId, userId, version, conAuditStatus }) {
-    const curStatus = {
-      status: APPROVAL_STATUS.NEW,
-      date: Date.now(),
-    };
     const auditStatus = {
       status: conAuditStatus || 'new',
-      date: Date.now(),
     }
     const approval = this.approvalRepository.create({
       surveyId,
       userId,
-      curStatus,
-      statusList: [curStatus], // 送审记录的状态变更记录
-      auditInfo: ['consec'],
       consec: {
         version, // 理论上问卷每次修改或者发布都要有一次version，但是目前没有version的设计，改成记录内容的hash
         requiredCallback: false, // 需要等待回调才能进入下一步

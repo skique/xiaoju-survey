@@ -116,6 +116,14 @@ export const curStatus = {
     label: '修改中',
     value: 'editing'
   },
+  auditing: {
+    label: '审核中',
+    value: 'auditing'
+  },
+  reject: {
+    label: '审核拒绝',
+    value: 'reject'
+  }
 }
 
 // 子状态
@@ -177,7 +185,9 @@ export const curStatusSelect = {
     curStatus.new,
     curStatus.published,
     curStatus.editing,
-    subStatus.pausing
+    subStatus.pausing,
+    curStatus.auditing,
+    curStatus.reject
   ],
   default: ''
 }

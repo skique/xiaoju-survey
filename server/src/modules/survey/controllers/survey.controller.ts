@@ -443,4 +443,24 @@ export class SurveyController {
       );
     }
   }
+
+
+
+  @HttpCode(200)
+  @Post('/approvalStatus')
+  @UseGuards(SurveyGuard)
+  @SetMetadata('surveyId', 'body.surveyId')
+  @SetMetadata('surveyPermission', [SURVEY_PERMISSION.SURVEY_CONF_MANAGE])
+  @UseGuards(Authentication)
+  async approvalStatus(@Request() req) {
+    const surveyMeta = req.surveyMeta;
+
+    await this.surveyMetaService.auditSurveyMeta(surveyMeta);
+
+    return {
+      code: 200,
+    };
+  }
+
+  
 }

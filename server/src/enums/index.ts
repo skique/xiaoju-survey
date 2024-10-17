@@ -5,6 +5,8 @@ export enum RECORD_STATUS {
   EDITING = 'editing', // 编辑
   FINISHED = 'finished', // 已结束
   REMOVED = 'removed',
+  AUDITING = 'auditing',
+  REJECTED = 'rejected'
 }
 
 export const enum RECORD_SUB_STATUS {

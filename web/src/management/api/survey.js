@@ -24,6 +24,13 @@ export const saveSurvey = ({ surveyId, configData, sessionId }) => {
   return axios.post('/survey/updateConf', { surveyId, configData, sessionId })
 }
 
+
+export const approvalStatus = ({ surveyId }) => {
+  return axios.post('/survey/approvalStatus', {
+    surveyId
+  })
+}
+
 export const publishSurvey = ({ surveyId }) => {
   return axios.post('/survey/publishSurvey', {
     surveyId

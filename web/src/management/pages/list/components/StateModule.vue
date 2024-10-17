@@ -54,5 +54,17 @@ const status = computed(() => {
     border-radius: 50%;
     margin-right: 8px;
   }
+  &-auditing {
+    color: $primary-color;
+    .list-state-badge {
+      background: $primary-color;
+    }
+  }
+  &-reject {
+    color:  #EB505C;
+    .list-state-badge {
+      background: #EB505C;
+    }
+  }
 }
 </style>

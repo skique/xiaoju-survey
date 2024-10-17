@@ -1,16 +1,23 @@
 import { SecurityPlugin } from '../interface';
 import { SurveyResponse } from 'src/models/surveyResponse.entity';
-import { decryptData, encryptData, isDataSensitive, maskData } from './utils';
+import { isDataSensitive, maskData, isString } from './utils';
 import { cleanRichText } from 'src/utils/string';
 import { get, set } from 'lodash';
 import DataSecSDK, { AnalyzeClazzV2Request } from './DataSecSDK'
+import * as kms from '@didi/kms-exts'
+import { Logger } from 'src/logger';
+
 
 export class ResponseSecurityPlugin implements SecurityPlugin {
   constructor(
-    private readonly secretKey: string, 
     private dataSecurityEndpoint: string,
     private dataSecurityAppId: string,
     private dataSecuritySecretKey: string,
+    private kmsAk: string,
+    private kmsSk: string,
+    private kmsSecretId: string,
+    private kmsVersionId: string,
+    // private readonly logger: Logger, 
   ) {
   }
   async encryptResponseData({responseData, dataList = []}) {
@@ -21,13 +28,9 @@ export class ResponseSecurityPlugin implements SecurityPlugin {
         if (secretKeys.includes(`data.${key}`)) {
           responseData.data[key] = Array.isArray(value)
             ? value.map((item) =>
-                encryptData(item, {
-                  secretKey: this.secretKey,
-                }),
+                this.encryptData(item),
               )
-            : encryptData(value, {
-                secretKey: this.secretKey,
-              });
+            : this.encryptData(value);
         }
       }
     }
@@ -35,7 +38,7 @@ export class ResponseSecurityPlugin implements SecurityPlugin {
     return responseData
   }
 
-  decryptResponseData(responseData: SurveyResponse) {
+  public decryptResponseData(responseData: SurveyResponse) {
     const secretKeys = responseData.secretKeys;
     if (Array.isArray(secretKeys) && secretKeys.length > 0) {
       for (let key of secretKeys) {
@@ -44,26 +47,24 @@ export class ResponseSecurityPlugin implements SecurityPlugin {
         }
         if (Array.isArray(responseData.data[key])) {
           responseData.data[key] = responseData.data[key].map((item) =>
-            decryptData(item, { secretKey: this.secretKey }),
+            this.decryptData(item),
           );
         } else {
-          responseData.data[key] = decryptData(responseData.data[key], {
-            secretKey: this.secretKey,
-          });
+          responseData.data[key] = this.decryptData(responseData.data[key]);
         }
       }
     }
     responseData.secretKeys = [];
   }
 
-  maskData(data: Record<string, any>) {
+  public maskData(data: Record<string, any>) {
     Object.keys(data).forEach((key) => {
       if (isDataSensitive(data[key])) {
         data[key] = maskData(data[key]);
       }
     });
   }
-  async getSensitiveKeys(params, dataList) {
+  private async getSensitiveKeys(params, dataList) {
     const fields = [];
     const titlesMap = this.prepareQuestionTitles(dataList)
     const ignoreKeys = ['optionsWithId', 'scores', 'score', 'p', 'channel', 'total', 'difTime', 'mapLocation', 'secret']
@@ -103,7 +104,7 @@ export class ResponseSecurityPlugin implements SecurityPlugin {
     return sensitiveKeys
     
   }
-  extractSensitiveKeys = (response) => {
+  private extractSensitiveKeys = (response) => {
     if (response.code === 0) {
       return response.data
         .filter((item) => item.cntDriven && item.mainClassification?.category)
@@ -114,8 +115,7 @@ export class ResponseSecurityPlugin implements SecurityPlugin {
   
     throw response;
   }
-  
-  prepareQuestionTitles(dataList) {
+  private prepareQuestionTitles(dataList) {
     return dataList.reduce((acc, item) => {
       if (item.field) {
         acc[item.field] = item.title;
@@ -123,4 +123,59 @@ export class ResponseSecurityPlugin implements SecurityPlugin {
       return acc;
     }, {});
   }
+  encryptData = (data) => {
+    if (!isString(data)) {
+      return data;
+    }
+    try {
+      const secret = kms.aesEncrypt(this.kmsAk, this.kmsSk, this.kmsSecretId, this.kmsVersionId, kms.CBC, data, 0)
+      if (secret) {
+        // this.logger.info('ResponseSecurityPlugin-encryptData-secret: %s:'+secret)
+        return secret
+      }
+      // this.logger.error('ResponseSecurityPlugin-encryptData-error: %j'+JSON.stringify({
+      //     params: data,
+      //     result: secret,
+      //     msg: '加密失败',
+      //   })
+      // )
+      return data
+    } catch (e) {
+      // this.logger.error('ResponseSecurityPlugin-encryptData-error: %j' + JSON.stringify({
+      //     params: data,
+      //     error: e,
+      //     msg: 'kms 初始化失败',
+      //   })
+      // )
+      return data
+    }
+  };
+  
+  decryptData = (data) => {
+    if (!isString(data)) {
+      return data;
+    }
+    try {
+      const secret = kms.aesDecrypt(this.kmsAk, this.kmsSk, kms.CBC, data)
+      if (secret) {
+        // this.logger.info('ResponseSecurityPlugin-decryptData-secret: %s:'+secret)
+        return secret
+      }
+      // this.logger.error('ResponseSecurityPlugin-service-aesDecrypt-error: %j'+JSON.stringify({
+      //     params: data,
+      //     result: secret,
+      //     msg: '解密失败',
+      //   })
+      // )
+      return data
+    } catch (e) {
+      // this.logger.error('ResponseSecurityPlugin-aesEncrypt-error: %j'+JSON.stringify({
+      //     params: data,
+      //     error: e,
+      //     msg: 'kms 初始化失败',
+      //   })
+      // )
+      return data
+    }
+  };
 }

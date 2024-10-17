@@ -45,6 +45,7 @@ import { LogRequestMiddleware } from './middlewares/logRequest.middleware';
 import { PluginManager } from './securityPlugin/pluginManager';
 import { Logger } from './logger';
 import { Approval } from './models/approval.entity'
+import * as kms from '@didi/kms-exts'
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -131,11 +132,11 @@ export class AppModule {
     consumer.apply(LogRequestMiddleware).forRoutes('*');
   }
   onModuleInit() {
+    if (process.env.NODE_ENV === 'development') {
+      kms.kmsInit(10, '/usr/local/kms/kms-files')
+    }
     this.pluginManager.registerPlugin(
       new ResponseSecurityPlugin(
-        this.configService.get<string>(
-          'XIAOJU_SURVEY_RESPONSE_AES_ENCRYPT_SECRET_KEY',
-        ),
         this.configService.get<string>(
           'XIAOJU_SURVEY_DATA_SECURITY_ENDPOINT',
         ),
@@ -145,7 +146,18 @@ export class AppModule {
         this.configService.get<string>(
           'XIAOJU_SURVEY_DATA_SECURITY_SECRET_KEY',
         ),
-
+        this.configService.get<string>(
+          'XIAOJU_SERVEY_KMS_AK',
+        ),
+        this.configService.get<string>(
+          'XIAOJU_SERVEY_KMS_SK',
+        ),
+        this.configService.get<string>(
+          'XIAOJU_SERVEY_KMS_SECRET_ID',
+        ),
+        this.configService.get<string>(
+          'XIAOJU_SERVEY_KMS_VERSION_ID',
+        )
       ),
       new SurveyUtilPlugin(),
     );

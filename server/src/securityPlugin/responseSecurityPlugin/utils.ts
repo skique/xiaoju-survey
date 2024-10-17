@@ -1,5 +1,6 @@
 import { load } from 'cheerio';
 import * as CryptoJS from 'crypto-js';
+// import * as kms from '@didi/kms-exts'
 
 const phoneRegex = /^1[3456789]\d{9}$/; // 手机号码正则表达式
 const idCardRegex = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/; // 身份证号码正则表达式
@@ -17,7 +18,7 @@ const isEmail = (data: string) => emailRegex.test(data);
 
 const isGender = (data: string) => genderArr.includes(data);
 
-const isString = (data) => {
+export const isString = (data) => {
   return typeof data === 'string';
 };
 

@@ -51,13 +51,12 @@ export class Logger {
   _log(message, options: { dltag?: string; level: string }) {
     const datetime = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
     const level = options?.level;
-    const stackInfo = this.getStackInfo(2);  //
     const dltag = options?.dltag ? `${options.dltag}||` : '_undef';
     const traceIdStr = this.ctx?.['traceId']
       ? `traceid=${this.ctx?.['traceId']}||`
       : '';
     return log4jsLogger[level](
-      `[${level.toUpperCase()}][${datetime}][${stackInfo.file}:${stackInfo.line}] ${dltag}${traceIdStr}${message}`,
+      `[${level.toUpperCase()}][${datetime}][default] ${dltag}${traceIdStr}${message}`,
     );
   }
   getTrackId() {

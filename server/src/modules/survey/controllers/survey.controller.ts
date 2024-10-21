@@ -471,22 +471,24 @@ export class SurveyController {
   @Post('/approvalCallback')
   @HttpCode(200)
   async approvalCallback(@Body() reqBody) {
-    const { result, bizData } = reqBody;
+    let { result, bizData } = reqBody;
     this.logger.info('approvalCallback_response:'+JSON.stringify({result,bizData }))
+    if (typeof bizData === 'string') {
+      bizData = JSON.parse(bizData)
+    }
     const surveyId = _.get(bizData, 'surveyId', '')
     const auditId = _.get(bizData, 'auditId', '')
 
     if (auditId) {
+
       // 更新审核记录状态
-      this.approvalService.updateConSecStatus({ id: auditId, status: result === 0 ? 'approved' : 'rejected' })
+      await this.approvalService.updateConSecStatus({ id: auditId, status: result === 0 ? 'approved' : 'rejected' })
     }
     const surveyMeta = await this.surveyMetaService.getSurveyById({ surveyId })
     const surveyConf = await this.surveyConfService.getSurveyConfBySurveyId(surveyId)
     if (result === 0) {
       if(surveyMeta.curStatus.status === 'auditing') {
-        await this.surveyMetaService.publishSurveyMeta({
-          surveyMeta,
-        });
+        await this.surveyMetaService.rejectSurveyMeta(surveyMeta);
     
         await this.responseSchemaService.publishResponseSchema({
           title: surveyMeta.title,
@@ -500,8 +502,19 @@ export class SurveyController {
         msg: 'Review succeed result received.',
       };
     } else if (result === 1) {
-      // 暂停问卷
+      this.logger.error('security-failed')
+      
       this.pauseSurvey(surveyMeta)
+
+      await this.surveyMetaService.pausingSurveyMeta(surveyMeta);
+      // 暂停c端问卷
+      await this.responseSchemaService.pausingResponseSchema({
+        surveyPath: surveyMeta.surveyPath,
+      });
+      return {
+        errno: 0,
+        msg: 'Review succeed result received.',
+      };
     }
     return {
       code: 200,

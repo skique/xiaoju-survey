@@ -25,9 +25,7 @@ instance.interceptors.response.use(
       if (res.data?.loginUrl) {
         location.href = res.data.loginUrl
       } else {
-        router.replace({
-          name: 'login'
-        })
+        window.location.href = window.location.origin + '/'
       }
       return res
     } else {

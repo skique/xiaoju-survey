@@ -6,6 +6,7 @@ const route = useRoute()
 const router = useRouter()
 if (!route.query.token || !route.query.username) {
   router.replace({ name: 'login' })
+  window.location.href = window.location.origin + '/'
 } else {
   const userStore = useUserStore()
   userStore.login({

@@ -21,7 +21,7 @@ const showConfirmBox = () => {
     callback: (action: Action) => {
       if (action === 'confirm') {
         userStore.logout()
-        router.replace({ name: 'login' })
+        window.location.href = window.location.origin + '/'
       }
     }
   })

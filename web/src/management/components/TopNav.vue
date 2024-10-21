@@ -31,7 +31,7 @@ const userInfo = computed(() => {
 })
 
 const toHomePage = () => {
-  window.location.href = '/'
+  window.location.href = window.location.origin + '/'
 }
 const handleLogout = () => {
   userStore.logout()

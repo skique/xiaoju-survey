@@ -159,14 +159,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../pages/create/CreatePage.vue')
   },
   {
-    path: '/login',
-    name: 'login',
-    component: () => import('../pages/auth/LoginPage.vue'),
-    meta: {
-      title: '登录'
-    }
-  },
-  {
     path: '/auth/callback',
     name: 'loginCallback',
     component: () => import('../pages/auth/LoginCallback.vue'),
@@ -216,10 +208,7 @@ async function handleLoginGuard(
   if (userStore?.hasLogin) {
     await handlePermissionsGuard(to, from, next)
   } else {
-    next({
-      name: 'login',
-      query: { redirect: encodeURIComponent(to.path) }
-    })
+    window.location.href = window.location.origin + '/'
   }
 }
 

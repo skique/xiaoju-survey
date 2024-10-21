@@ -22,11 +22,11 @@ export const spaceListConfig = {
     key: 'memberTotal',
     width: 150
   },
-  owner: {
-    title: '所有者',
-    key: 'owner',
-    width: 150
-  },
+  // owner: {
+  //   title: '所有者',
+  //   key: 'owner',
+  //   width: 150
+  // },
   createdAt: {
     title: '创建时间',
     key: 'createdAt',
@@ -59,11 +59,11 @@ export const fieldConfig = {
     width: 140,
     comp: 'StateModule'
   },
-  owner: {
-    title: '所有者',
-    key: 'owner',
-    width: 140
-  },
+  // owner: {
+  //   title: '所有者',
+  //   key: 'owner',
+  //   width: 140
+  // },
   updatedAt: {
     title: '更新时间',
     key: 'updatedAt',

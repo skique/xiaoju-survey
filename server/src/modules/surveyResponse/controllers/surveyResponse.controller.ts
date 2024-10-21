@@ -297,6 +297,7 @@ export class SurveyResponseController {
       optionTextAndId,
     }
     const responseData = await pluginManager.triggerHook('encryptResponseData', { responseData: parmas, dataList });
+    this.logger.info('surveyResponse-pluginManager-encryptResponseData-responseData: ' + JSON.stringify(responseData))
     const surveyResponse =
       await this.surveyResponseService.createSurveyResponse(responseData);
 

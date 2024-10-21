@@ -122,7 +122,7 @@ export const curStatus = {
   },
   reject: {
     label: '审核拒绝',
-    value: 'reject'
+    value: 'rejected'
   }
 }
 
@@ -187,7 +187,7 @@ export const curStatusSelect = {
     curStatus.editing,
     subStatus.pausing,
     curStatus.auditing,
-    curStatus.reject
+    curStatus.rejected
   ],
   default: ''
 }

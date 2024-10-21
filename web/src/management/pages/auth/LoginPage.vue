@@ -7,7 +7,7 @@
     }"
   >
     <div class="login-top">
-      <img src="https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/Logo.webp" alt="logo" />
+      <img src="//pt-starimg.didistatic.com/static/starimg/img/4RHOsmIyVh1628582237529.png" alt="logo" />
       <span>您好，请登录</span>
     </div>
     <div class="login-box">

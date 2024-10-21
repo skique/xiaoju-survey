@@ -354,7 +354,7 @@ export class SurveyController {
     
 
     const userId = username._id
-    const previewUrl = `${req.hostname}/management/preview/670f85f4ff242e9c3b1a132f}`
+    const previewUrl = `${req.hostname}/management/preview/${surveyId}`
    
     const approvalResult = await this.approvalService.processApproval(surveyId, userId, { surveyConf, surveyMeta }, previewUrl)
     if(approvalResult.auditInfo.switch) {

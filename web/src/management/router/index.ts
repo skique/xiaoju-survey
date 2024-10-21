@@ -176,6 +176,16 @@ const routes: RouteRecordRaw[] = [
   },
 ]
 
+if(process.env.NODE_ENV === 'development') {
+  routes.push({
+    path: '/login',
+    name: 'login',
+    component: () => import('../pages/auth/LoginPage.vue'),
+    meta: {
+      title: '登录'
+    }
+  },)
+}
 const router = createRouter({
   history: createWebHistory('/management'),
   routes
@@ -208,7 +218,13 @@ async function handleLoginGuard(
   if (userStore?.hasLogin) {
     await handlePermissionsGuard(to, from, next)
   } else {
-    window.location.href = window.location.origin + '/'
+    if(process.env.NODE_ENV === 'development') {
+      router.replace({
+        name: 'login'
+      })
+    } else {
+      window.location.href = location.origin + '/'
+    }
   }
 }
 

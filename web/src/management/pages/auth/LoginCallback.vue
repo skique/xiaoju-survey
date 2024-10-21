@@ -5,8 +5,13 @@ import { useUserStore } from '@/management/stores/user'
 const route = useRoute()
 const router = useRouter()
 if (!route.query.token || !route.query.username) {
-  router.replace({ name: 'login' })
-  window.location.href = window.location.origin + '/'
+  if(process.env.NODE_ENV === 'development') {
+    router.replace({
+      name: 'login'
+    })
+  } else {
+    window.location.href = location.origin + '/'
+  }
 } else {
   const userStore = useUserStore()
   userStore.login({

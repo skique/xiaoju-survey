@@ -25,7 +25,14 @@ instance.interceptors.response.use(
       if (res.data?.loginUrl) {
         location.href = res.data.loginUrl
       } else {
-        window.location.href = window.location.origin + '/'
+        console.log({NODE_ENV: process.env.NODE_ENV})
+        if(process.env.NODE_ENV === 'development') {
+          router.replace({
+            name: 'login'
+          })
+        } else {
+          window.location.href = location.origin + '/'
+        }
       }
       return res
     } else {

@@ -1,6 +1,6 @@
 <template>
   <el-button type="primary" :loading="isPublishing" class="publish-btn" @click="handlePublish">
-    发布111
+    发布
   </el-button>
 </template>
 <script setup lang="ts">

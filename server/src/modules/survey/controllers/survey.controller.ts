@@ -429,7 +429,9 @@ export class SurveyController {
     const surveyConf = await this.surveyConfService.getSurveyConfBySurveyId(surveyId)
     if (result === 0) {
       if(surveyMeta.curStatus.status === 'auditing') {
-        await this.surveyMetaService.pausingSurveyMeta(surveyMeta);
+        await this.surveyMetaService.publishSurveyMeta({
+          surveyMeta,
+        });
     
         await this.responseSchemaService.publishResponseSchema({
           title: surveyMeta.title,

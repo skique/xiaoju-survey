@@ -120,7 +120,7 @@ export const curStatus = {
     label: '审核中',
     value: 'auditing'
   },
-  reject: {
+  rejected: {
     label: '审核拒绝',
     value: 'rejected'
   }

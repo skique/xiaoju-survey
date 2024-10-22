@@ -1,11 +1,11 @@
 <template>
   <div class="navbar-main-logo" @click="handleNavigate">
-    <img src="https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/s-logo.webp" />
+    <img :src="singleLogo" />
   </div>
 </template>
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-
+import { singleLogo } from '@/management/config/logo'
 const router = useRouter()
 
 const handleNavigate = () => {

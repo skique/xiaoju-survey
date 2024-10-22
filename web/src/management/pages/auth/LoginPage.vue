@@ -7,7 +7,7 @@
     }"
   >
     <div class="login-top">
-      <img src="//pt-starimg.didistatic.com/static/starimg/img/4RHOsmIyVh1628582237529.png" alt="logo" />
+      <img :src="brandLogo" alt="logo" />
       <span>您好，请登录</span>
     </div>
     <div class="login-box">
@@ -80,6 +80,7 @@ import { refreshCaptcha as refreshCaptchaApi } from '@/management/api/captcha'
 import { CODE_MAP } from '@/management/api/base'
 import { useUserStore } from '@/management/stores/user'
 import { nanoid } from 'nanoid'
+import { brandLogo } from '@/management/config/logo' 
 
 const route = useRoute()
 const router = useRouter()

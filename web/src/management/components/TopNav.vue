@@ -1,7 +1,7 @@
 <template>
   <div class="top-nav">
     <div class="left">
-      <img class="logo-img" src="//pt-starimg.didistatic.com/static/starimg/img/4RHOsmIyVh1628582237529.png" alt="logo" @click="toHomePage"/>
+      <img class="logo-img" :src="brandLogo" alt="logo" @click="toHomePage"/>
       <el-menu router default-active-index="survey" class="el-menu-demo" mode="horizontal">
         <el-menu-item index="survey">
           <router-link :to="{ name: 'survey' }">问卷列表</router-link>
@@ -23,6 +23,7 @@
 import { useUserStore } from '@/management/stores/user'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { brandLogo } from '@/management/config/logo' 
 const router = useRouter()
 
 const userStore = useUserStore()

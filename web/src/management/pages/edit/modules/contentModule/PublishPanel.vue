@@ -130,7 +130,6 @@ const handlePublish = async () => {
           }).then(async () => {
             const res: any= await approvalStatus({ surveyId: saveData.value.surveyId })
             if(res.code === 200) {
-              showAuditingDialog()
               // 更新问卷状态为审核中
               getSchemaFromRemote()
             }

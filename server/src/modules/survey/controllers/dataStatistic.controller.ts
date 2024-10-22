@@ -54,7 +54,7 @@ export class DataStatisticController {
       this.logger.error(error.message);
       throw new HttpException('参数有误', EXCEPTION_CODE.PARAMETER_ERROR);
     }
-    const { surveyId, isMasked, page, pageSize } = value;
+    const { surveyId, page, pageSize } = value;
     const responseSchema =
       await this.responseSchemaService.getResponseSchemaByPageId(surveyId);
     const { total, listHead, listBody } =
@@ -65,12 +65,12 @@ export class DataStatisticController {
         pageSize,
       });
 
-    if (isMasked) {
-      // 脱敏
-      listBody.forEach((item) => {
-        this.pluginManager.triggerHook('maskData', item);
-      });
-    }
+    // if (isMasked) {
+    //   // 脱敏
+    //   listBody.forEach((item) => {
+    //     this.pluginManager.triggerHook('maskData', item);
+    //   });
+    // }
 
     return {
       code: 200,

@@ -16,6 +16,8 @@
 <script setup lang="ts">
 import { watch, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useEditStore } from '@/management/stores/edit';
+import { storeToRefs } from 'pinia';
 
 const routes = [
   {
@@ -45,6 +47,13 @@ watch(
     immediate: true
   }
 )
+
+const editStore = useEditStore()
+const { getSchemaFromRemote } = editStore
+const { surveyId,  } = storeToRefs(editStore)
+watch(() => surveyId.value, () => {
+  getSchemaFromRemote()
+})
 </script>
 <style lang="scss" scoped>
 .question-content {

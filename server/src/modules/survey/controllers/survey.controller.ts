@@ -392,65 +392,6 @@ export class SurveyController {
       success: true
     };
   }
-  
-  @Post('/approvalSurvey')
-  @HttpCode(200)
-  @UseGuards(SurveyGuard)
-  @SetMetadata('surveyId', 'body.surveyId')
-  @SetMetadata('surveyPermission', [SURVEY_PERMISSION.SURVEY_CONF_MANAGE])
-  @UseGuards(Authentication)
-  async approvalSurvey(
-    @Body()
-    surveyInfo,
-    @Request()
-    req,
-  ) {
-    const { value, error } = Joi.object({
-      surveyId: Joi.string().required(),
-    }).validate(surveyInfo);
-    if (error) {
-      this.logger.error(error.message);
-      throw new HttpException('参数有误', EXCEPTION_CODE.PARAMETER_ERROR);
-    }
-    const username = req.user.username;
-    const surveyId = value.surveyId;
-    this.logger.info(
-      'approval-params ' +
-        JSON.stringify({
-          username,
-          surveyId,
-        }),
-    )
-    const surveyMeta = req.surveyMeta;
-    if (surveyMeta.isDeleted) {
-      throw new HttpException(
-        '问卷已删除，无法发起审批',
-        EXCEPTION_CODE.SURVEY_NOT_FOUND,
-      );
-    }
-    const surveyConf =
-      await this.surveyConfService.getSurveyConfBySurveyId(surveyId);
-    const previewUrl = `${req.hostname}management/preview/670f85f4ff242e9c3b1a132f}`
-    const userId = username._id
-    try {
-      const res:any= await this.approvalService.processApproval(surveyId, userId, {surveyConf, surveyMeta}, previewUrl)
-      console.log(res)
-      return {
-        code: 200,
-        keys: res.keys,
-        hasImg: res.hasImg,
-        hasVideo: res.hasVideo,
-        auditInfo: res.auditInfo,
-      };
-    } catch (error) {
-      throw new HttpException(
-        error.message,
-        EXCEPTION_CODE.SURVEY_NOT_FOUND,
-      );
-    }
-  }
-
-
 
   @HttpCode(200)
   @Post('/approvalStatus')

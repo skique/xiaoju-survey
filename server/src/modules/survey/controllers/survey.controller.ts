@@ -429,7 +429,7 @@ export class SurveyController {
     const surveyConf = await this.surveyConfService.getSurveyConfBySurveyId(surveyId)
     if (result === 0) {
       if(surveyMeta.curStatus.status === 'auditing') {
-        await this.surveyMetaService.rejectSurveyMeta(surveyMeta);
+        await this.surveyMetaService.pausingSurveyMeta(surveyMeta);
     
         await this.responseSchemaService.publishResponseSchema({
           title: surveyMeta.title,
@@ -445,9 +445,8 @@ export class SurveyController {
     } else if (result === 1) {
       this.logger.error('security-failed')
       
-      this.pauseSurvey(surveyMeta)
 
-      await this.surveyMetaService.pausingSurveyMeta(surveyMeta);
+      await this.surveyMetaService.rejectSurveyMeta(surveyMeta);
       // 暂停c端问卷
       await this.responseSchemaService.pausingResponseSchema({
         surveyPath: surveyMeta.surveyPath,

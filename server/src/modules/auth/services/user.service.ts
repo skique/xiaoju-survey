@@ -109,6 +109,7 @@ export class UserService {
     const user = await this.userRepository.findOne({
       where: {
         username: username,
+        downgradeFlag: false
       },
     });
 
@@ -138,6 +139,7 @@ export class UserService {
     const user = await this.userRepository.findOne({
       where: {
         uid,
+        downgradeFlag: false
       },
     });
 
@@ -148,6 +150,7 @@ export class UserService {
     const list = await this.userRepository.find({
       where: {
         username: new RegExp(username),
+        downgradeFlag: false
       },
       skip,
       take,
@@ -162,6 +165,7 @@ export class UserService {
         _id: {
           $in: idList.map((item) => new ObjectId(item)),
         },
+        downgradeFlag: false
       },
       select: ['_id', 'username', 'createdAt'],
     });

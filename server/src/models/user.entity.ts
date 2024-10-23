@@ -25,4 +25,7 @@ export class User extends BaseEntity {
 
   @Column('string')
   name?: string;
+  
+  @Column()
+  downgradeFlag?: Boolean;
 }

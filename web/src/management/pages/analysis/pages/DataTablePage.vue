@@ -5,13 +5,13 @@
         <el-button type="primary" :loading="isDownloading" @click="onDownload"
           >导出全部数据</el-button
         >
-        <el-switch
+        <!-- <el-switch
           class="desensitize-switch"
           :model-value="isShowOriginData"
           active-text="是否展示原数据"
           @input="onIsShowOriginChange"
         >
-        </el-switch>
+        </el-switch> -->
       </div>
     </template>
 

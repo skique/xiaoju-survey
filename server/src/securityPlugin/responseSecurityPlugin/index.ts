@@ -5,7 +5,6 @@ import { cleanRichText } from 'src/utils/string';
 import { get, set } from 'lodash';
 import DataSecSDK, { AnalyzeClazzV2Request } from './DataSecSDK'
 import * as kms from '@didi/kms-exts'
-import { Logger } from 'src/logger';
 
 
 export class ResponseSecurityPlugin implements SecurityPlugin {
@@ -17,11 +16,11 @@ export class ResponseSecurityPlugin implements SecurityPlugin {
     private kmsSk: string,
     private kmsSecretId: string,
     private kmsVersionId: string,
-    // private readonly logger: Logger, 
   ) {
   }
-  async encryptResponseData({responseData, dataList = []}) {
+  async encryptResponseData({responseData, dataList = [], logger}) {
     const secretKeys = await this.getSensitiveKeys(responseData, dataList)
+    logger.info(`encryptData-secretKeys: ${secretKeys}`);
     if (responseData.data) {
       for (const key in responseData.data) {
         const value = responseData.data[key];
@@ -31,6 +30,7 @@ export class ResponseSecurityPlugin implements SecurityPlugin {
                 this.encryptData(item),
               )
             : this.encryptData(value);
+          logger.info(`encryptData-${key}: ${responseData.data[key]}`);
         }
       }
     }
@@ -38,8 +38,10 @@ export class ResponseSecurityPlugin implements SecurityPlugin {
     return responseData
   }
 
-  public decryptResponseData(responseData: SurveyResponse) {
+  public decryptResponseData(responseData: SurveyResponse, logger) {
     const secretKeys = responseData.secretKeys;
+    logger.info(`decryptData-responseData: ${responseData}`); 
+    logger.info(`decryptData-secretKeys: ${secretKeys}`); 
     if (Array.isArray(secretKeys) && secretKeys.length > 0) {
       for (let key of secretKeys) {
         if (key.split('data.').length) {
@@ -51,6 +53,7 @@ export class ResponseSecurityPlugin implements SecurityPlugin {
           );
         } else {
           responseData.data[key] = this.decryptData(responseData.data[key]);
+          logger.info(`decryptData-${key}: ${responseData.data[key]}`);
         }
       }
     }

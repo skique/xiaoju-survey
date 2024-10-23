@@ -4,7 +4,7 @@
   </el-button>
 </template>
 <script setup lang="ts">
-import { ref, computed, watch, toRaw } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useEditStore } from '@/management/stores/edit'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox, type Action } from 'element-plus'
@@ -163,9 +163,6 @@ const handlePublish = async () => {
       if(newVal === 'auditing') {
         showAuditingDialog()
       }
-    },
-    {
-      immediate: true
     }
   )
 </script>

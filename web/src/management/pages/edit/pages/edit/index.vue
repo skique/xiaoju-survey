@@ -48,12 +48,6 @@ watch(
   }
 )
 
-const editStore = useEditStore()
-const { getSchemaFromRemote } = editStore
-const { surveyId,  } = storeToRefs(editStore)
-watch(() => surveyId.value, () => {
-  getSchemaFromRemote()
-})
 </script>
 <style lang="scss" scoped>
 .question-content {

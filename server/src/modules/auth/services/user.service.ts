@@ -108,8 +108,7 @@ export class UserService {
   async getUserByUsername(username) {
     const user = await this.userRepository.findOne({
       where: {
-        username: username,
-        downgradeFlag: false
+        username: username
       },
     });
 

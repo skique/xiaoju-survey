@@ -63,7 +63,7 @@ watch(
 onMounted(async () => {
   const surveyId = route.params.id as string
   setSurveyId(surveyId)
-
+  console.log("触发page/edit的onmounted")
   try {
     await init()
   } catch (err: any) {

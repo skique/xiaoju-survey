@@ -55,6 +55,7 @@ export default function useInitializeSchema(
     const res: any = await getSurveyById(surveyId.value)
     if (res.code === 200) {
       const metaData = res.data.surveyMetaRes
+      console.log({metaData})
       document.title = metaData.title
       const data = res.data.surveyConfRes.code
       const {

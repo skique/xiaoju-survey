@@ -28,7 +28,8 @@ export const useEditStore = defineStore('edit', () => {
     initSessionId,
     getSchemaFromRemote,
     showLogicEngine,
-    jumpLogicEngine
+    jumpLogicEngine,
+    resetSchema
   } = useInitializeSchema(surveyId, () => {
     editGlobalBaseConf.initCounts()
   })
@@ -217,6 +218,7 @@ export const useEditStore = defineStore('edit', () => {
     moveQuestionDataList,
     init,
     getSchemaFromRemote,
+    resetSchema,
     copyQuestion,
     addQuestion,
     deleteQuestion,

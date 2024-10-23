@@ -35,6 +35,18 @@ export default function useInitializeSchema(
     schema.questionDataList = codeData.questionDataList || []
     schema.pageEditOne = 1
   }
+  function resetSchema() {
+    schema.metaData = null
+    schema.bannerConf = {}
+    schema.bottomConf = {}
+    schema.skinConf = {}
+    schema.baseConf = {}
+    schema.submitConf = {}
+    schema.pageConf = []
+    schema.logicConf = {}
+    schema.questionDataList = []
+    schema.pageEditOne = 1
+  }
 
   const sessionId = ref('')
   async function initSessionId() {
@@ -95,6 +107,7 @@ export default function useInitializeSchema(
   return {
     schema,
     getSchemaFromRemote,
+    resetSchema,
     showLogicEngine,
     jumpLogicEngine,
     sessionId,

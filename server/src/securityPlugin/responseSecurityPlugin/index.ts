@@ -53,7 +53,7 @@ export class ResponseSecurityPlugin implements SecurityPlugin {
           );
         } else {
           responseData.data[key] = this.decryptData(responseData.data[key]);
-          logger.info(`decryptData-${key}: ${responseData.data[key]}`);
+          // logger.info(`decryptData-${key}: ${responseData.data[key]}`);
         }
       }
     }

@@ -112,6 +112,12 @@ export class DataStatisticController {
     const fieldList = responseSchema.code.dataConf.dataList
       .filter((item) => allowQuestionType.includes(item.type as QUESTION_TYPE))
       .map((item) => item.field);
+    if(!fieldList.length) {
+      return {
+        code: 200,
+        data: [],
+      };
+    }
     const dataMap = responseSchema.code.dataConf.dataList.reduce((pre, cur) => {
       pre[cur.field] = cur;
       return pre;

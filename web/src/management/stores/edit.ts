@@ -48,9 +48,9 @@ export const useEditStore = defineStore('edit', () => {
     const res: any = await getCollaboratorPermissions(id)
     if (res.code === CODE_MAP.SUCCESS) {
       cooperPermissions.value = res.data.permissions
+      return res.data.permissions
     }
-
-    return res.data.permissions
+    return []
   }
 
   // 问卷题目列表

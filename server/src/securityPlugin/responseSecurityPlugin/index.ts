@@ -40,8 +40,8 @@ export class ResponseSecurityPlugin implements SecurityPlugin {
 
   public decryptResponseData(responseData: SurveyResponse, logger) {
     const secretKeys = responseData.secretKeys;
-    logger.info(`decryptData-responseData: ${responseData}`); 
-    logger.info(`decryptData-secretKeys: ${secretKeys}`); 
+    // logger.info(`decryptData-responseData: ${responseData}`); 
+    // logger.info(`decryptData-secretKeys: ${secretKeys}`); 
     if (Array.isArray(secretKeys) && secretKeys.length > 0) {
       for (let key of secretKeys) {
         if (key.split('data.').length) {

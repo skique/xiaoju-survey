@@ -32,16 +32,16 @@
 
     <el-dialog v-model="downloadDialogVisible" title="导出确认" width="500" style="padding: 40px">
       <el-form :model="downloadForm" label-width="100px" label-position="left">
-        <el-form-item label="导出内容">
+        <!-- <el-form-item label="导出内容">
           <el-radio-group v-model="downloadForm.isMasked">
             <el-radio :value="true">脱敏数据</el-radio>
             <el-radio :value="false">原回收数据</el-radio>
           </el-radio-group>
-        </el-form-item>
+        </el-form-item> -->
         <div class="download-tips">
           <div>注：</div>
           <div>
-            <p>推荐优先下载脱敏数据，如手机号：1***3。</p>
+            <!-- <p>推荐优先下载脱敏数据，如手机号：1***3。</p> -->
             <p>原回收数据可能存在敏感信息，请谨慎下载。</p>
           </div>
         </div>
@@ -80,7 +80,7 @@ const dataTableState = reactive({
   isDownloading: false,
   downloadDialogVisible: false,
   downloadForm: {
-    isMasked: true
+    isMasked: false
   }
 })
 

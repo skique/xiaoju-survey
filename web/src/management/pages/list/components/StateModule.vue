@@ -24,7 +24,7 @@ const status = computed(() => {
 .list-state {
   display: flex;
   align-items: center;
-  &-new {
+  &-new, &-rejected {
     color: $normal-color;
     .list-state-badge {
       background: $normal-color;

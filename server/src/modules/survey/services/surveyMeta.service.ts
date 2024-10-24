@@ -239,7 +239,8 @@ export class SurveyMetaService {
         take: pageSize,
         order,
       });
-      return { data, count };
+      const newData = data.map(({ owner, ...rest }) => rest);
+      return { data: newData, count };
     } catch (error) {
       return { data: [], count: 0 };
     }

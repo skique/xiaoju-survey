@@ -60,11 +60,6 @@
                 :value="unref(scope.row)"
               />
             </template>
-            <template v-else-if="field.key === 'owner'">
-              <span>
-                {{ maskData(scope.row[field.key]) }}
-              </span>
-            </template>  
             <template v-else>
               <span class="cell-span">{{ scope.row[field.key] }}</span>
             </template>

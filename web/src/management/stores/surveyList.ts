@@ -157,8 +157,6 @@ export const useSurveyListStore = defineStore('surveyList', () => {
       if (res.code === CODE_MAP.SUCCESS) {
         surveyList.value = res.data.data
         surveyTotal.value = res.data.count
-      } else {
-        ElMessage.error(res.errmsg)
       }
     } catch (error) {
       ElMessage.error('getSurveyList status' + error)

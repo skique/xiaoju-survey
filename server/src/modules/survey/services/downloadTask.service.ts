@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
 import { MongoRepository } from 'typeorm';
 import { ResponseSchema } from 'src/models/responseSchema.entity';
 import { DownloadTask } from 'src/models/downloadTask.entity';
@@ -29,6 +30,7 @@ export class DownloadTaskService {
     private readonly dataStatisticService: DataStatisticService,
     private readonly fileService: FileService,
     private readonly logger: Logger,
+    private readonly configService: ConfigService,
   ) {}
 
   async createDownloadTask({
@@ -230,8 +232,9 @@ export class DownloadTaskService {
         destination: null,
         path: '',
       };
+      const configKey = this.configService.get<string>('upload');
       const { url, key } = await this.fileService.upload({
-        configKey: 'SERVER_LOCAL_CONFIG',
+        configKey,
         file,
         pathPrefix: 'exportfile',
         filename: taskInfo.filename,

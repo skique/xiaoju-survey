@@ -151,6 +151,7 @@ const handlePublish = async () => {
       confirmButtonText: '返回问卷列表',
       showClose: false,
       type: 'warning',
+      appendTo: document.getElementsByClassName('edit-index')[0],
       callback: (action: Action) => {
         router.push('/')
       }

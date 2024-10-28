@@ -389,11 +389,12 @@ export class ExternalAuthController {
       }
       case EXTERNAL_LOGIN_KIND_ENUM.PASSPORT: {
         console.log({remoteUser})
-        userInfo = await this.userService.getUserByUid(remoteUser.uid_str);
+        userInfo = await this.userService.getUserByUid(remoteUser.uid);
         if (!userInfo) {
           // 新用户，入库
           userInfo = await this.userService.createUserByUid({
-            uid: remoteUser.uid_str,
+            uid: remoteUser.uid,
+            uid_str: remoteUser.uid_str,
             username: remoteUser.cell.toString(),
             phone: remoteUser.cell,
             email: remoteUser.email,

@@ -11,8 +11,11 @@ export class User extends BaseEntity {
   @Column('string')
   openid?: string;
   
+  @Column('number')
+  uid?: number;
+
   @Column('string')
-  uid?: string;
+  uid_str?: string;
   
   @Column('string')
   phone?: string;

@@ -63,12 +63,14 @@ export class UserService {
   async createUserByUid({
     username,
     uid,
+    uid_str,
     phone,
     avatar,
     email,
     name,
   }: {
-    uid: string;
+    uid: number;
+    uid_str: string;
     phone: string;
     username: string;
     avatar?: string;
@@ -77,6 +79,7 @@ export class UserService {
   }): Promise<User> {
     const newUser = this.userRepository.create({
       uid,
+      uid_str,
       phone,
       username,
       avatar,

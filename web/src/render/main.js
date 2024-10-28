@@ -3,6 +3,7 @@ import App from './App.vue'
 import EventBus from './utils/eventbus'
 import router from './router'
 import { createPinia } from 'pinia'
+import errorCapturePlugin from './errorCapturePlugin';
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -13,5 +14,6 @@ app.provide('$bus', $bus)
 app.config.globalProperties.$bus = $bus
 app.use(pinia)
 app.use(router)
+app.use(errorCapturePlugin);
 
 app.mount('#app')

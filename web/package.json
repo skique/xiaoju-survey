@@ -15,6 +15,7 @@
     "upload": "node scripts/upload.js"
   },
   "dependencies": {
+    "@didi/omega-tracker-lite": "^0.1.14",
     "@logicflow/core": "2.0.0",
     "@logicflow/extension": "2.0.0",
     "@wangeditor/editor": "^5.1.23",

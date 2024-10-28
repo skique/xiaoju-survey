@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import plainText from './directive/plainText'
 import safeHtml from './directive/safeHtml'
+import '@/management/utils/tracker'
 
 import App from './App.vue'
 import router from './router'

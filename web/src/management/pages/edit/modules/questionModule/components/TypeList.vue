@@ -54,7 +54,7 @@ import { ref } from 'vue'
 
 const editStore = useEditStore()
 const { newQuestionIndex } = storeToRefs(editStore)
-const { addQuestion, hasSetCurrentEditOne, createNewQuestion } = editStore
+const { addQuestion, setCurrentEditOne, createNewQuestion } = editStore
 
 const activeNames = ref([0, 1])
 const previewImg = ref('')
@@ -68,11 +68,11 @@ questionLoader.init({
 const onQuestionType = ({ type }) => {
   const newQuestion = createNewQuestion({ type })
   addQuestion({ question: newQuestion, index: newQuestionIndex.value })
-  hasSetCurrentEditOne(newQuestionIndex.value)
+  setCurrentEditOne(newQuestionIndex.value)
 }
 
 const onDragEnd = (event) => {  
-  hasSetCurrentEditOne(event.newIndex)
+  setCurrentEditOne(event.newIndex)
 }
 
 const showPreview = ({ snapshot }, id) => {

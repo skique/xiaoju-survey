@@ -1,7 +1,7 @@
 <template>
   <div class="top-nav">
     <div class="left">
-      <img class="logo-img" src="/imgs/Logo.webp" alt="logo" />
+      <img class="logo-img" :src="brandLogo" alt="logo" @click="toHomePage"/>
       <el-menu router default-active-index="survey" class="el-menu-demo" mode="horizontal">
         <el-menu-item index="survey">
           <router-link :to="{ name: 'survey' }">问卷列表</router-link>
@@ -13,7 +13,7 @@
     </div>
     <div class="login-info">
       您好，{{ userInfo?.username }}
-      <img class="login-info-img" src="/imgs/avatar.webp" />
+      <img class="login-info-img" src="https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/avatar.webp" />
       <span class="logout" @click="handleLogout">退出</span>
     </div>
   </div>
@@ -23,6 +23,7 @@
 import { useUserStore } from '@/management/stores/user'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { brandLogo } from '@/management/config/logo' 
 const router = useRouter()
 
 const userStore = useUserStore()
@@ -30,9 +31,13 @@ const userInfo = computed(() => {
   return userStore.userInfo
 })
 
+const toHomePage = () => {
+  window.location.href = window.location.origin + '/'
+}
 const handleLogout = () => {
   userStore.logout()
-  router.replace({ name: 'login' })
+  // router.replace({ name: 'login' })
+  window.location.href = window.location.origin + '/logout'
 }
 </script>
 

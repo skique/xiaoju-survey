@@ -11,7 +11,7 @@ export const CODE_MAP = {
 }
 
 const instance = axios.create({
-  baseURL: '/api',
+  baseURL: '/xiaoju/api',
   timeout: 10000
 })
 
@@ -22,9 +22,18 @@ instance.interceptors.response.use(
     }
     const res = response.data
     if (res.code === CODE_MAP.NO_AUTH || res.code === CODE_MAP.ERR_AUTH) {
-      router.replace({
-        name: 'login'
-      })
+      if (res.data?.loginUrl) {
+        location.href = res.data.loginUrl
+      } else {
+        console.log({NODE_ENV: process.env.NODE_ENV})
+        if(process.env.NODE_ENV === 'development') {
+          router.replace({
+            name: 'login'
+          })
+        } else {
+          window.location.href = location.origin + '/'
+        }
+      }
       return res
     } else {
       return res

@@ -43,7 +43,8 @@ export default defineComponent({
       () => props.isSelected,
       () => {
         status.value = 'preview'
-      }
+      },
+      { immediate: true }
     )
 
     watch(status, (v) => {

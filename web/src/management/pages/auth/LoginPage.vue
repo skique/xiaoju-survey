@@ -2,12 +2,12 @@
   <div
     class="login-page"
     :style="{
-      background: `url('/imgs/create/background.webp') no-repeat bottom right`,
+      background: `url('https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/create/background.webp') no-repeat bottom right`,
       'background-size': 'cover'
     }"
   >
     <div class="login-top">
-      <img src="/imgs/Logo.webp" alt="logo" />
+      <img :src="brandLogo" alt="logo" />
       <span>您好，请登录</span>
     </div>
     <div class="login-box">
@@ -15,30 +15,21 @@
         :model="formData"
         :rules="rules"
         ref="formDataRef"
-        label-width="100px"
+        label-width="0"
         class="login-form"
         @submit.prevent
       >
-        <el-form-item label="账号" prop="name">
-          <el-input v-model="formData.name" size="large"></el-input>
+        <el-form-item prop="name">
+          <el-input placeholder="账号" v-model="formData.name" size="large"></el-input>
         </el-form-item>
 
-        <el-form-item label="密码" prop="password">
-          <el-input type="password" v-model="formData.password" size="large"></el-input>
+        <el-form-item prop="password">
+          <el-input placeholder="密码" type="password" v-model="formData.password" size="large"></el-input>
         </el-form-item>
 
-        <el-form-item label="" v-if="passwordStrength">
-          <span
-            class="strength"
-            v-for="item in 3"
-            :key="item"
-            :style="{ backgroundColor: strengthColor[item - 1][passwordStrength] }"
-          ></span>
-        </el-form-item>
-
-        <el-form-item label="验证码" prop="captcha">
+        <el-form-item prop="captcha">
           <div class="captcha-wrapper">
-            <el-input style="width: 280px" v-model="formData.captcha" size="large"></el-input>
+            <el-input placeholder="验证码" style="width: 150px" v-model="formData.captcha" size="large"></el-input>
             <div class="captcha-img" @click="refreshCaptcha" v-html="captchaImgData"></div>
           </div>
         </el-form-item>
@@ -61,6 +52,15 @@
             登录
           </el-button>
         </el-form-item>
+        <div class="more-login-type-tip">
+          <span>更多登录方式</span>
+        </div>
+        <div class="more-login-type-wrapper">
+          <div class="kind-item" @click="googleLogin" >
+            <img class="img" src="/imgs/icons/google-icon.svg"/>
+            <div class="text">谷歌登录</div>
+          </div>
+        </div>
       </el-form>
     </div>
   </div>
@@ -75,10 +75,12 @@ import 'element-plus/theme-chalk/src/message.scss'
 
 import { debounce } from 'lodash-es'
 
-import { getPasswordStrength, login, register } from '@/management/api/auth'
+import { getPasswordStrength, login, register, externalAuth } from '@/management/api/auth'
 import { refreshCaptcha as refreshCaptchaApi } from '@/management/api/captcha'
 import { CODE_MAP } from '@/management/api/base'
 import { useUserStore } from '@/management/stores/user'
+import { nanoid } from 'nanoid'
+import { brandLogo } from '@/management/config/logo' 
 
 const route = useRoute()
 const router = useRouter()
@@ -155,8 +157,8 @@ const rules = {
   name: [
     { required: true, message: '请输入账号', trigger: 'blur' },
     {
-      min: 3,
-      max: 10,
+      min: 5,
+      max: 20,
       message: '长度在 3 到 10 个字符',
       trigger: 'blur'
     }
@@ -245,6 +247,16 @@ const refreshCaptcha = async () => {
     ElMessage.error('获取验证码失败')
   }
 }
+
+const googleLogin = async () => {
+  const state = nanoid(5);
+  const res: Record<string, any> = await externalAuth({ kind: 'google', state });
+  if (res.code === CODE_MAP.SUCCESS) {
+    location.href = res.data.authUrl
+  } else {
+    ElMessage.error('系统错误')
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -276,7 +288,7 @@ const refreshCaptcha = async () => {
 
   .login-form {
     border-radius: 8px;
-    padding: 60px 60px 60px 0;
+    padding: 70px 60px 60px 60px;
     background: #fff;
     box-shadow: 4px 0 20px 0 rgba(82, 82, 102, 0.15);
     margin-top: -150px;
@@ -295,6 +307,44 @@ const refreshCaptcha = async () => {
     .register-button {
       border-color: #faa600;
       color: #faa600;
+    }
+
+    .more-login-type-tip {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin:30px 0 20px 0;
+      color: #a6a6a6;
+      font-size: 12px;
+      &::before, &::after {
+        content: "";
+        display: inline-block;
+        box-sizing: border-box;
+        width: 36%;
+        height: 0;
+        border-top: 1px solid #e5e7eb;
+      }
+    }
+
+    .more-login-type-wrapper {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      .kind-item {
+        cursor: pointer;
+        .img {
+          width: 50px;
+          border-radius: 50%;
+          border: 1px solid #ddd;
+        }
+        .text {
+          margin-top: 8px;
+          font-size: 12px;
+          color: #A6A6A6;
+          line-height: 20px;
+        }
+      }
     }
   }
 

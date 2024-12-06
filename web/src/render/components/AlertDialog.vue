@@ -2,7 +2,7 @@
   <div class="mask" v-if="visible">
     <div class="box">
       <div class="title">{{ title }}</div>
-      <div class="btn btn-primary btn-base" @click="handleConfirm">{{ btnText }}</div>
+      <!-- <div class="btn btn-primary btn-base" @click="handleConfirm">{{ btnText }}</div> -->
     </div>
   </div>
 </template>

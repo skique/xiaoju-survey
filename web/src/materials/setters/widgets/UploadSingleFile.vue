@@ -4,7 +4,7 @@
       <el-upload
         ref="upload"
         class="upload-img"
-        action="/api/file/upload"
+        action="/xiaoju/api/file/upload"
         :accept="formConfig.accept"
         :limit="1"
         :show-file-list="false"

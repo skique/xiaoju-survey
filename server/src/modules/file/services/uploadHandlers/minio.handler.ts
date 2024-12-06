@@ -56,6 +56,7 @@ export class MinIOHandler implements FileUploadHandler {
     file: Express.Multer.File,
     options?: {
       pathPrefix?: string;
+      filename?: string;
     },
   ): Promise<{ key: string }> {
     const { pathPrefix } = options || {};

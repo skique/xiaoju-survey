@@ -159,15 +159,33 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../pages/create/CreatePage.vue')
   },
   {
-    path: '/login',
-    name: 'login',
-    component: () => import('../pages/login/LoginPage.vue'),
+    path: '/auth/callback',
+    name: 'loginCallback',
+    component: () => import('../pages/auth/LoginCallback.vue'),
     meta: {
       title: '登录'
     }
-  }
+  },
+  {
+    path: '/auth/bind',
+    name: 'loginBind',
+    component: () => import('../pages/auth/BindAccount.vue'),
+    meta: {
+      title: '绑定或注册账号'
+    }
+  },
 ]
 
+if(process.env.NODE_ENV === 'development') {
+  routes.push({
+    path: '/login',
+    name: 'login',
+    component: () => import('../pages/auth/LoginPage.vue'),
+    meta: {
+      title: '登录'
+    }
+  },)
+}
 const router = createRouter({
   history: createWebHistory('/management'),
   routes
@@ -200,10 +218,13 @@ async function handleLoginGuard(
   if (userStore?.hasLogin) {
     await handlePermissionsGuard(to, from, next)
   } else {
-    next({
-      name: 'login',
-      query: { redirect: encodeURIComponent(to.path) }
-    })
+    if(process.env.NODE_ENV === 'development') {
+      router.replace({
+        name: 'login'
+      })
+    } else {
+      window.location.href = location.origin + '/'
+    }
   }
 }
 

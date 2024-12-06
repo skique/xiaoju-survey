@@ -38,20 +38,20 @@ const ALI_OSS_CONFIG = {
 export const MINIO_CONFIG = {
   FILE_STORAGE_PROVIDER: 'minio',
   IS_PRIVATE_READ: false,
-  FILE_KEY_PREFIX: 'userUpload/{surveyPath}', // 文件key的前缀，会根据此处配置校验body的参数
+  FILE_KEY_PREFIX: 'surveyUpload', // 文件key的前缀，会根据此处配置校验body的参数
   NEED_AUTH: true, // 是否需要登录
   LINK_EXPIRY_TIME: '2h',
 
-  ACCESS_KEY: '', // your_access_key
-  SECRET_KEY: '', // your_secret_key
-  BUCKET: '', // your_bucket
-  REGION: '',
-  ENDPOINT: '', // endpoint
+  ACCESS_KEY: 'AKDD000000000011BXDJURJBBCNHUJ', // your_access_key
+  SECRET_KEY: 'ASDDLtlXpdVhsIkapFEevIjtGNDshnAxpNFtjHCJ', // your_secret_key
+  BUCKET: 'xiaojuwenjuan', // your_bucket
+  REGION: 'hangzhou',
+  ENDPOINT: 's3-gzpu.didistatic.com', // endpoint
   USE_SSL: true, // useSSL
 };
 
 export const channels = {
-  upload: 'SERVER_LOCAL_CONFIG',
+  upload: 'MINIO_CONFIG',
 };
 
 export const uploadConfig = {

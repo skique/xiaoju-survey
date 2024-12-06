@@ -1,0 +1,2 @@
+export const singleLogo = '//pt-starimg.didistatic.com/static/starimg/img/UgbyKCPj1u1557890936860.png'
+export const brandLogo = '//pt-starimg.didistatic.com/static/starimg/img/4RHOsmIyVh1628582237529.png'

@@ -34,6 +34,9 @@ import { PERMISSION as WORKSPACE_PERMISSION } from 'src/enums/workspace';
 import { SessionService } from '../services/session.service';
 import { UserService } from 'src/modules/auth/services/user.service';
 
+import { ApprovalService } from '../services/approval.service';
+import _ from 'lodash'
+
 @ApiTags('survey')
 @Controller('/api/survey')
 export class SurveyController {
@@ -46,6 +49,7 @@ export class SurveyController {
     private readonly logger: Logger,
     private readonly sessionService: SessionService,
     private readonly userService: UserService,
+    private readonly approvalService: ApprovalService
   ) {}
 
   @Get('/getBannerData')
@@ -221,15 +225,19 @@ export class SurveyController {
   @UseGuards(Authentication)
   async pausingSurvey(@Request() req) {
     const surveyMeta = req.surveyMeta;
-
-    await this.surveyMetaService.pausingSurveyMeta(surveyMeta);
-    await this.responseSchemaService.pausingResponseSchema({
-      surveyPath: surveyMeta.surveyPath,
-    });
+    this.pauseSurvey(surveyMeta)
+    
 
     return {
       code: 200,
     };
+  }
+
+  private async pauseSurvey(surveyMeta){
+    await this.surveyMetaService.pausingSurveyMeta(surveyMeta);
+    await this.responseSchemaService.pausingResponseSchema({
+      surveyPath: surveyMeta.surveyPath,
+    });
   }
 
   @Get('/getSurvey')
@@ -342,17 +350,23 @@ export class SurveyController {
     const surveyConf =
       await this.surveyConfService.getSurveyConfBySurveyId(surveyId);
 
-    const { text } = await this.surveyConfService.getSurveyContentByCode(
-      surveyConf.code,
-    );
+    // const auditInfo = await this.approvalService.getBySurveyId(surveyId)
+    // this.logger.info(`Publish-controller-publish-auditInfo: ${auditInfo}` )
+    
 
-    if (await this.contentSecurityService.isForbiddenContent({ text })) {
-      throw new HttpException(
-        '问卷存在非法关键字，不允许发布',
-        EXCEPTION_CODE.SURVEY_CONTENT_NOT_ALLOW,
-      );
+    const userId = username._id
+    const previewUrl = `${req.hostname}/management/preview/${surveyId}`
+   
+    const approvalResult = await this.approvalService.processApproval(surveyId, userId, { surveyConf, surveyMeta }, previewUrl)
+    if(approvalResult.auditInfo.switch) {
+      return {
+        code: 200,
+        success: false,
+        auditInfo: approvalResult.auditInfo,
+        message: '您的问卷需要经过人工审核后才能发布成功，请您耐心等待。'
+      };
     }
-
+    
     await this.surveyMetaService.publishSurveyMeta({
       surveyMeta,
     });
@@ -376,6 +390,79 @@ export class SurveyController {
     });
     return {
       code: 200,
+      success: true
     };
   }
+
+  @HttpCode(200)
+  @Post('/approvalStatus')
+  @UseGuards(SurveyGuard)
+  @SetMetadata('surveyId', 'body.surveyId')
+  @SetMetadata('surveyPermission', [SURVEY_PERMISSION.SURVEY_CONF_MANAGE])
+  @UseGuards(Authentication)
+  async approvalStatus(@Request() req) {
+    const surveyMeta = req.surveyMeta;
+
+    await this.surveyMetaService.auditSurveyMeta(surveyMeta);
+
+    return {
+      code: 200,
+    };
+  }
+
+  @Post('/approvalCallback')
+  @HttpCode(200)
+  async approvalCallback(@Body() reqBody) {
+    let { result, bizData } = reqBody;
+    this.logger.info('approvalCallback_response:'+JSON.stringify({result,bizData }))
+    if (typeof bizData === 'string') {
+      bizData = JSON.parse(bizData)
+    }
+    const surveyId = _.get(bizData, 'surveyId', '')
+    const auditId = _.get(bizData, 'auditId', '')
+
+    if (auditId) {
+
+      // 更新审核记录状态
+      await this.approvalService.updateConSecStatus({ id: auditId, status: result === 0 ? 'approved' : 'rejected' })
+    }
+    const surveyMeta = await this.surveyMetaService.getSurveyById({ surveyId })
+    const surveyConf = await this.surveyConfService.getSurveyConfBySurveyId(surveyId)
+    if (result === 0) {
+      if(surveyMeta.curStatus.status === 'auditing') {
+        await this.surveyMetaService.publishSurveyMeta({
+          surveyMeta,
+        });
+    
+        await this.responseSchemaService.publishResponseSchema({
+          title: surveyMeta.title,
+          surveyPath: surveyMeta.surveyPath,
+          code: surveyConf.code,
+          pageId: surveyId,
+        });
+      }
+      return {
+        errno: 0,
+        msg: 'Review succeed result received.',
+      };
+    } else if (result === 1) {
+      this.logger.error('security-failed')
+      
+
+      await this.surveyMetaService.rejectSurveyMeta(surveyMeta);
+      // 暂停c端问卷
+      await this.responseSchemaService.pausingResponseSchema({
+        surveyPath: surveyMeta.surveyPath,
+      });
+      return {
+        errno: 0,
+        msg: 'Review succeed result received.',
+      };
+    }
+    return {
+      code: 200,
+    };
+  }
+
+  
 }

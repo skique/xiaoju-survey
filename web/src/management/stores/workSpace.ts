@@ -64,8 +64,6 @@ export const useWorkSpaceStore = defineStore('workSpace', () => {
         workSpaceList.value = list
         workSpaceListTotal.value = count
         spaceMenus.value[1].children = workSpace
-      } else {
-        ElMessage.error('getSpaceList' + res.errmsg)
       }
     } catch (err) {
       ElMessage.error('getSpaceList' + err)
@@ -78,8 +76,6 @@ export const useWorkSpaceStore = defineStore('workSpace', () => {
       const res: any = await getSpaceDetailReq(_id)
       if (res.code === CODE_MAP.SUCCESS) {
         spaceDetail.value = res.data
-      } else {
-        ElMessage.error('getSpaceList' + res.errmsg)
       }
     } catch (err) {
       ElMessage.error('getSpaceList' + err)

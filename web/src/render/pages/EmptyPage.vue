@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <img src="/imgs/nodata.webp" alt="" class="ui-404" />
+    <img src="https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/nodata.webp" alt="" class="ui-404" />
     <div class="ui-title">问卷找不到啦~</div>
   </div>
 </template>

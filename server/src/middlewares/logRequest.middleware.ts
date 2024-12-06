@@ -8,7 +8,7 @@ export class LogRequestMiddleware implements NestMiddleware {
   constructor(private readonly logger: Logger) {}
 
   use(req: Request, res: Response, next: NextFunction) {
-    const { method, originalUrl, ip } = req;
+    const { method, baseUrl, ip } = req;
     const userAgent = req.get('user-agent') || '';
     const startTime = Date.now();
     const traceId = genTraceId({ ip });
@@ -16,18 +16,19 @@ export class LogRequestMiddleware implements NestMiddleware {
     const query = JSON.stringify(req.query);
     const body = JSON.stringify(req.body);
     this.logger.info(
-      `method=${method}||uri=${originalUrl}||ip=${ip}||ua=${userAgent}||query=${query}||body=${body}`,
+      `method=${method}||uri=${baseUrl}||ip=${ip}||ua=${userAgent}||query=${query}||body=${body}`,
       {
-        dltag: 'request_in',
+        dltag: '_com_request_in',
       },
     );
 
     res.once('finish', () => {
       const duration = Date.now() - startTime;
+      const { method, path, ip } = req;
       this.logger.info(
-        `status=${res.statusCode.toString()}||duration=${duration}ms`,
+        `method=${method}||uri=${path}||status=${res.statusCode.toString()}||proc_time=${duration}ms`,
         {
-          dltag: 'request_out',
+          dltag: '_com_request_out',
         },
       );
     });

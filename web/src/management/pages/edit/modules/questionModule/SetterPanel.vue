@@ -10,7 +10,7 @@
           class="no-select-question"
           v-if="editStore.currentEditOne === 'mainTitle' || editStore.currentEditOne === null"
         >
-          <img src="/imgs/icons/unselected.webp" />
+          <img src="https://s3-gz01.didistatic.com/xiaojuwenjuan/surveyUpload/dist/imgs/icons/unselected.webp" />
           <h4 class="tipFont">选中题型可以编辑</h4>
           <span class="tip">来！试试看～</span>
         </div>

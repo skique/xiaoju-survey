@@ -72,7 +72,7 @@ const token = _get(userStore, 'userInfo.token')
 // 图片
 editorConfig.MENU_CONF['uploadImage'] = {
   allowedFileTypes: ['image/jpeg', 'image/png'],
-  server: '/api/file/upload',
+  server: '/xiaoju/api/file/upload',
   fieldName: 'file',
   meta: {
     //! 此处的channel需要跟上传接口内配置的channel一致

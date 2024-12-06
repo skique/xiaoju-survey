@@ -88,3 +88,15 @@ export function filterQuestionPreviewData(data, currentEditOne = '') {
     return newData
   })
 }
+
+export const maskData = (data) => {
+  if(!data) return '*';
+
+  if (data.length === 1) {
+    return '*';
+  }
+  if (data.length === 2) {
+    return text[0] + '*';
+  }
+  return data[0] + '***' + data[data.length - 1];
+};

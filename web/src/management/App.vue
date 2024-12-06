@@ -21,7 +21,13 @@ const showConfirmBox = () => {
     callback: (action: Action) => {
       if (action === 'confirm') {
         userStore.logout()
-        router.replace({ name: 'login' })
+        if(process.env.NODE_ENV === 'development') {
+          router.replace({
+            name: 'login'
+          })
+        } else {
+          window.location.href = location.origin + '/'
+        }
       }
     }
   })

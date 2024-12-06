@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { LocalHandler } from './uploadHandlers/local.handler';
+// import { LocalHandler } from './uploadHandlers/local.handler';
 // import { QiniuHandler } from './uploadHandlers/qiniu.handler';
 // import { AliOssHandler } from './uploadHandlers/alioss.handler';
-// import { MinIOHandler } from './uploadHandlers/minio.handler';
+import { MinIOHandler } from './uploadHandlers/minio.handler';
 
 @Injectable()
 export class FileService {
@@ -51,7 +51,7 @@ export class FileService {
     if (!physicalRootPath) {
       physicalRootPath = 'public';
     }
-    return new LocalHandler({ physicalRootPath });
+    // return new LocalHandler({ physicalRootPath });
 
     // qiniu
     // return new QiniuHandler({
@@ -85,19 +85,19 @@ export class FileService {
     // });
 
     // minio
-    // return new MinIOHandler({
-    //   accessKey: this.configService.get<string>(`${configKey}.ACCESS_KEY`),
-    //   secretKey: this.configService.get<string>(`${configKey}.SECRET_KEY`),
-    //   bucket: this.configService.get<string>(`${configKey}.BUCKET`),
-    //   endPoint: this.configService.get<string>(`${configKey}.ENDPOINT`),
-    //   useSSL: this.configService.get<boolean>(`${configKey}.USE_SSL`),
-    //   isPrivateRead: this.configService.get<boolean>(
-    //     `${configKey}.IS_PRIVATE_READ`,
-    //   ),
-    //   expiryTime: this.configService.get<string>(
-    //     `${configKey}.LINK_EXPIRY_TIME`,
-    //   ),
-    //   region: this.configService.get<string>(`${configKey}.REGION`),
-    // });
+    return new MinIOHandler({
+      accessKey: this.configService.get<string>(`${configKey}.ACCESS_KEY`),
+      secretKey: this.configService.get<string>(`${configKey}.SECRET_KEY`),
+      bucket: this.configService.get<string>(`${configKey}.BUCKET`),
+      endPoint: this.configService.get<string>(`${configKey}.ENDPOINT`),
+      useSSL: this.configService.get<boolean>(`${configKey}.USE_SSL`),
+      isPrivateRead: this.configService.get<boolean>(
+        `${configKey}.IS_PRIVATE_READ`,
+      ),
+      expiryTime: this.configService.get<string>(
+        `${configKey}.LINK_EXPIRY_TIME`,
+      ),
+      region: this.configService.get<string>(`${configKey}.REGION`),
+    });
   }
 }

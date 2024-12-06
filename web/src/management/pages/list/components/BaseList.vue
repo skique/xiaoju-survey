@@ -131,6 +131,7 @@ import TextSearch from './TextSearch.vue'
 import TextSelect from './TextSelect.vue'
 import TextButton from './TextButton.vue'
 import { SurveyPermissions } from '@/management/utils/workSpace'
+import { maskData } from '@/management/utils/index'
 
 import {
   fieldConfig,

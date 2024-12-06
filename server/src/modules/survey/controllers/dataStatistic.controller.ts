@@ -54,7 +54,7 @@ export class DataStatisticController {
       this.logger.error(error.message);
       throw new HttpException('参数有误', EXCEPTION_CODE.PARAMETER_ERROR);
     }
-    const { surveyId, isMasked, page, pageSize } = value;
+    const { surveyId, page, pageSize } = value;
     const responseSchema =
       await this.responseSchemaService.getResponseSchemaByPageId(surveyId);
     const { total, listHead, listBody } =
@@ -65,12 +65,12 @@ export class DataStatisticController {
         pageSize,
       });
 
-    if (isMasked) {
-      // 脱敏
-      listBody.forEach((item) => {
-        this.pluginManager.triggerHook('maskData', item);
-      });
-    }
+    // if (isMasked) {
+    //   // 脱敏
+    //   listBody.forEach((item) => {
+    //     this.pluginManager.triggerHook('maskData', item);
+    //   });
+    // }
 
     return {
       code: 200,
@@ -112,6 +112,12 @@ export class DataStatisticController {
     const fieldList = responseSchema.code.dataConf.dataList
       .filter((item) => allowQuestionType.includes(item.type as QUESTION_TYPE))
       .map((item) => item.field);
+    if(!fieldList.length) {
+      return {
+        code: 200,
+        data: [],
+      };
+    }
     const dataMap = responseSchema.code.dataConf.dataList.reduce((pre, cur) => {
       pre[cur.field] = cur;
       return pre;

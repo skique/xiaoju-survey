@@ -14,7 +14,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, watch } from 'vue'
+import { onMounted, onUnmounted, watch } from 'vue'
 import { useEditStore } from '@/management/stores/edit'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
@@ -63,7 +63,7 @@ watch(
 onMounted(async () => {
   const surveyId = route.params.id as string
   setSurveyId(surveyId)
-
+  console.log("触发page/edit的onmounted")
   try {
     await init()
   } catch (err: any) {
@@ -73,6 +73,9 @@ onMounted(async () => {
       router.replace({ name: 'survey' })
     }, 1000)
   }
+})
+onUnmounted(() => {
+  editStore.resetSchema()
 })
 </script>
 <style lang="scss" scoped>

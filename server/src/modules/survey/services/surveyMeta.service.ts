@@ -99,6 +99,50 @@ export class SurveyMetaService {
     return this.surveyRepository.save(survey);
   }
 
+  async auditSurveyMeta(surveyMeta: SurveyMeta) {
+    if (surveyMeta?.curStatus?.status === RECORD_STATUS.AUDITING) {
+      throw new HttpException(
+        '问卷已在审核中，不允许进行状态修改',
+        EXCEPTION_CODE.SURVEY_STATUS_TRANSFORM_ERROR,
+      );
+    }
+    const curStatus = {
+      status: RECORD_STATUS.AUDITING,
+      date: Date.now(),
+    };
+    surveyMeta.curStatus = curStatus;
+    surveyMeta.subStatus = {
+      status: RECORD_SUB_STATUS.DEFAULT,
+      date: Date.now(),
+    };
+    if (Array.isArray(surveyMeta.statusList)) {
+      surveyMeta.statusList.push(curStatus);
+    } else {
+      surveyMeta.statusList = [curStatus];
+    }
+
+    return this.surveyRepository.save(surveyMeta);
+  }
+
+  async rejectSurveyMeta(surveyMeta: SurveyMeta) {
+    const curStatus = {
+      status: RECORD_STATUS.REJECTED,
+      date: Date.now(),
+    };
+    surveyMeta.curStatus = curStatus;
+    surveyMeta.subStatus = {
+      status: RECORD_SUB_STATUS.DEFAULT,
+      date: Date.now(),
+    };
+    if (Array.isArray(surveyMeta.statusList)) {
+      surveyMeta.statusList.push(curStatus);
+    } else {
+      surveyMeta.statusList = [curStatus];
+    }
+
+    return this.surveyRepository.save(surveyMeta);
+  }
+
   async editSurveyMeta({
     survey,
     operator,
@@ -215,7 +259,8 @@ export class SurveyMetaService {
         take: pageSize,
         order,
       });
-      return { data, count };
+      const newData = data.map(({ owner, ...rest }) => rest);
+      return { data: newData, count };
     } catch (error) {
       return { data: [], count: 0 };
     }

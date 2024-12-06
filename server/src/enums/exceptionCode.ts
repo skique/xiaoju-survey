@@ -1,4 +1,5 @@
 export enum EXCEPTION_CODE {
+  SYSTEM_ERROR = 1000, // 系统异常
   AUTHENTICATION_FAILED = 1001, // 未授权
   PARAMETER_ERROR = 1002, // 参数有误
   NO_PERMISSION = 1003, // 没有操作权限

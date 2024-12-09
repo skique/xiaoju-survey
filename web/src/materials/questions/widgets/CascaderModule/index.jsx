@@ -1,8 +1,8 @@
 import { defineComponent} from 'vue'
-import BaseMultilevel from './BaseMultilevel/index.vue'
+import BaseCascader from './BaseCascader/index.vue'
 
 export default defineComponent({
-  name: 'MultilevelModule',
+  name: 'CascaderModule',
   props: {
     field: {
       type: [String, Number],
@@ -16,7 +16,7 @@ export default defineComponent({
       type: Boolean,
       default: false
     },
-    multilevelData: {
+    cascaderData: {
       type: Object,
       default: () => {}
     },
@@ -39,7 +39,7 @@ export default defineComponent({
   render() { 
     const {  props } = this
     return (
-      <BaseMultilevel multilevelData={props.multilevelData} readonly={props.readonly} value={props.value} onChange={this.onChange}   />
+      <BaseCascader cascaderData={props.cascaderData} readonly={props.readonly} value={props.value} onChange={this.onChange}   />
     )
   }
 })

@@ -1,30 +1,30 @@
 <template>
   <div>
-    <span class="primary-color" @click="openMultiLevelConfig"> 选项编辑 > </span>
-    <el-dialog title="多级联动编辑" class="multiLevel-config-wrapper" v-model="configVisible" :append-to-body="true"
+    <span class="primary-color" @click="openCascaderConfig"> 选项编辑 > </span>
+    <el-dialog title="多级联动编辑" class="cascader-config-wrapper" v-model="configVisible" :append-to-body="true"
       width="706px">
       <div class="placeholder-wrapper">
-        <div class="placeholder-wrapper-item" v-for="(item, i) in multilevelData.placeholder" :key="item.hash">
+        <div class="placeholder-wrapper-item" v-for="(item, i) in cascaderData.placeholder" :key="item.hash">
           <div class="placeholder-wrapper-list">
-            <div class="placeholder-disable-edit multiLevel-input" @click="showPlaceholderEdit(item.hash)"
+            <div class="placeholder-disable-edit cascader-input" @click="showPlaceholderEdit(item.hash)"
               v-if="editMap[item.hash]">{{ item.text }}</div>
             <el-input placeholder="请输入内容" :id="`input-${item.hash}`" @blur="editMap[item.hash] = true"
-              v-model="item.text" v-else class="multiLevel-input" />
+              v-model="item.text" v-else class="cascader-input" />
           </div>
-          <i-ep-ArrowRight v-if="multilevelData.placeholder.length - 1 > i" style="font-size: 16px;margin:0px 4px;" />
+          <i-ep-ArrowRight v-if="cascaderData.placeholder.length - 1 > i" style="font-size: 16px;margin:0px 4px;" />
         </div>
       </div>
       <div class="options-wrapper">
-        <div class="options-wrapper-panel" v-for="(item, key) in multilevelVal" :key="key">
+        <div class="options-wrapper-panel" v-for="(item, key) in cascaderVal" :key="key">
           <template v-if="key == 0">
-            <draggable :list="multilevelData?.children" itemKey="hash">
+            <draggable :list="cascaderData?.children" itemKey="hash">
               <template #item="{ element, index }">
-                <div :class="`option-wrapper-item ${element.hash == multilevelVal[key]?.hash ? 'input-active' : ''}`"
-                  :key="element.hash" @click="setMultilevelVal(element, key)">
-                  <el-input v-model="element.text" class="multiLevel-input">
+                <div :class="`option-wrapper-item ${element.hash == cascaderVal[key]?.hash ? 'input-active' : ''}`"
+                  :key="element.hash" @click="setCascaderVal(element, key)">
+                  <el-input v-model="element.text" class="cascader-input">
                     <template #suffix>
-                      <i-ep-RemoveFilled v-if="element.hash == multilevelVal[key]?.hash" class="remove-icon"
-                        @click.stop="removeMultilevelNode(multilevelData, index,key)" />
+                      <i-ep-RemoveFilled v-if="element.hash == cascaderVal[key]?.hash" class="remove-icon"
+                        @click.stop="removeCascaderNode(cascaderData, index,key)" />
                     </template>
                   </el-input>
                 </div>
@@ -33,15 +33,15 @@
             </draggable>
           </template>
           <template v-else>
-            <div v-if="multilevelVal[key - 1]">
-              <draggable :list="multilevelVal[key - 1].children" itemKey="hash">
+            <div v-if="cascaderVal[key - 1]">
+              <draggable :list="cascaderVal[key - 1].children" itemKey="hash">
                 <template #item="{ element, index }">
-                  <div :class="`option-wrapper-item ${element.hash == multilevelVal[key]?.hash ? 'input-active' : ''}`"
-                    :key="element.hash" @click="setMultilevelVal(element, key)">
-                    <el-input v-model="element.text" class="multiLevel-input">
+                  <div :class="`option-wrapper-item ${element.hash == cascaderVal[key]?.hash ? 'input-active' : ''}`"
+                    :key="element.hash" @click="setCascaderVal(element, key)">
+                    <el-input v-model="element.text" class="cascader-input">
                       <template #suffix>
-                        <i-ep-RemoveFilled v-if="element.hash == multilevelVal[key]?.hash" class="remove-icon"
-                          @click.stop="removeMultilevelNode(multilevelVal[key - 1], index,key)" />
+                        <i-ep-RemoveFilled v-if="element.hash == cascaderVal[key]?.hash" class="remove-icon"
+                          @click.stop="removeCascaderNode(cascaderVal[key - 1], index,key)" />
                       </template>
                     </el-input>
                   </div>
@@ -53,8 +53,8 @@
       </div>
 
       <div class="add-node-wrapper">
-        <template v-for="(item, key) in multilevelVal" :key="key">
-          <div v-if="key == 0 || (multilevelVal[key - 1])" @click="addMultilevelNode(key)" class="add-node-item">
+        <template v-for="(item, key) in cascaderVal" :key="key">
+          <div v-if="key == 0 || (cascaderVal[key - 1])" @click="addCascaderNode(key)" class="add-node-item">
             <i-ep-Plus />
             添加选项
           </div>
@@ -63,7 +63,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="configVisible = false">取消</el-button>
-          <el-button type="primary" @click="multilevelConfigChange">确认</el-button>
+          <el-button type="primary" @click="cascaderConfigChange">确认</el-button>
         </span>
       </template>
     </el-dialog>
@@ -72,16 +72,16 @@
 <script setup>
 import { ref, nextTick } from 'vue'
 import { useEditStore } from '@/management/stores/edit'
-import { useMultilevelPull } from '@/management/hooks/useMultilevelPull'
+import { useCascaderPull } from '@/management/hooks/useCascaderPull'
 import draggable from 'vuedraggable'
 
 const emit = defineEmits(['handleChange'])
 
 const editStore = useEditStore()
-const { loadInitData, multilevelVal, multilevelData, addMultilevelNode, setMultilevelVal, removeMultilevelNode } = useMultilevelPull()
+const { loadInitData, cascaderVal, cascaderData, addCascaderNode, setCascaderVal, removeCascaderNode } = useCascaderPull()
 const configVisible = ref(false)
 const editMap = ref({})
-const openMultiLevelConfig = () => {
+const openCascaderConfig = () => {
   init();
   configVisible.value = true
 }
@@ -94,27 +94,27 @@ const showPlaceholderEdit = (hash) => {
 }
 
 const init = () => {
-  loadInitData(editStore.moduleConfig.multilevelData)
+  loadInitData(editStore.moduleConfig.cascaderData)
   editMap.value = [];
-  multilevelData.value.placeholder.map(v => {
+  cascaderData.value.placeholder.map(v => {
     editMap.value[v.hash] = true
   })
 }
 
-const multilevelConfigChange = () => {
-  emit('handleChange', { key: 'multilevelData', value: multilevelData.value })
+const cascaderConfigChange = () => {
+  emit('handleChange', { key: 'cascaderData', value: cascaderData.value })
   configVisible.value = false
 }
 
 
 </script>
 <style lang="scss" scoped>
-.multiLevel-config-wrapper {
+.cascader-config-wrapper {
   .placeholder-wrapper {
     display: flex;
   }
 
-  .multiLevel-input {
+  .cascader-input {
     width: 200px;
     height: 32px;
   }

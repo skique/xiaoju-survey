@@ -3,14 +3,14 @@ import basicConfig from '@materials/questions/common/config/basicConfig'
 
 const meta = {
   title: '多级联动',
-  type: 'multilevel',
-  componentName: 'MultilevelModule',
+  type: 'cascader',
+  componentName: 'CascaderModule',
   attrs: [
     {
       name: 'type',
       propType: 'String',
       description: '这是用于描述题目类型',
-      defaultValue: 'multilevel'
+      defaultValue: 'cascader'
     },
     {
       name: 'isRequired',
@@ -37,7 +37,7 @@ const meta = {
       defaultValue: true
     },
     {
-      name: 'multilevelData',
+      name: 'cascaderData',
       propType: Array,
       description: '这是用于描述选项',
       defaultValue:

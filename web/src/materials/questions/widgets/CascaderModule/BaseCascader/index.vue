@@ -1,9 +1,9 @@
 <template>
-  <div class="multilevel-wrapper">
-    <div class="multilevel-wrapper-mobile" v-if="isMobile">
-      <div v-for="(v, i) in valList" :key="v+i" class="multilevel-select-item">
+  <div class="cascader-wrapper">
+    <div class="cascader-wrapper-mobile" v-if="isMobile">
+      <div v-for="(v, i) in valList" :key="v+i" class="cascader-select-item">
         <template v-if="i == 0">
-          <div :class="`select-input ${i==pickIndex ? 'border-active' : ''}`" @click="showPickPop(props.multilevelData.children,i)">
+          <div :class="`select-input ${i==pickIndex ? 'border-active' : ''}`" @click="showPickPop(props.cascaderData.children,i)">
             <div class="select-input-left">
                 <div v-if="valList[i]" class="select-input-active">{{ valList[i].text }}</div>
                 <div v-else class="select-input-placeholder">{{ placeholderList[i].text }}</div>
@@ -26,13 +26,13 @@
       <Picker :list="listPop"
       :showToolbar="true"  v-model="pickPop" @confirm="onConfirm" @cancel="onCancel" />
     </div>
-    <div v-else class="multilevel-wrapper-pc">
-      <div v-for="(v, i) in valList" :key="v+i" class="multilevel-select-item">
+    <div v-else class="cascader-wrapper-pc">
+      <div v-for="(v, i) in valList" :key="v+i" class="cascader-select-item">
         <template v-if="i == 0">
-          <div v-if="props.readonly" class="multilevel-mask"></div>
+          <div v-if="props.readonly" class="cascader-mask"></div>
           <el-select v-model="valList[i]"  @change="(data)=>handleChange(data,i)" :placeholder="placeholderList[i].text" size="large" value-key="hash"
             style="width: 194px">
-            <el-option  v-for="item in props.multilevelData.children" :key="item.hash" :label="item.text"
+            <el-option  v-for="item in props.cascaderData.children" :key="item.hash" :label="item.text"
               :value="item" />
           </el-select>
         </template>
@@ -54,7 +54,7 @@ import { ref, nextTick, onMounted, computed,onBeforeUnmount } from 'vue'
 import Picker from '@/management/pages/edit/components/Picker/index.vue'
 import { isMobile as isInMobile } from '@/render/utils/index'
 const props = defineProps({
-  multilevelData: {
+  cascaderData: {
     type: Object,
     default: () => ({})
   },
@@ -76,7 +76,7 @@ const pickIndex = ref(-1)
 const isMobile = ref(isInMobile())
 
 const placeholderList = computed(() => {
-  return props.multilevelData.placeholder
+  return props.cascaderData.placeholder
 })
 
 
@@ -138,8 +138,8 @@ onBeforeUnmount(() => {
 
 </script>
 <style lang="scss" scoped>
-.multilevel-wrapper {
-  .multilevel-mask{
+.cascader-wrapper {
+  .cascader-mask{
     position: absolute;
     top: 0;
     bottom: 0;
@@ -149,13 +149,13 @@ onBeforeUnmount(() => {
   }
   &-pc {
     display: flex;
-    .multilevel-select-item{
+    .cascader-select-item{
       margin-right: 8px;
       position: relative;
     }
   }
   &-mobile {
-    .multilevel-select-item{
+    .cascader-select-item{
       margin-bottom: 8px;
     }
   }

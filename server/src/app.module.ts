@@ -1,7 +1,5 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 
-import { AppController } from './app.controller';
-
 import { ResponseSecurityPlugin } from './securityPlugin/responseSecurityPlugin';
 import { SurveyUtilPlugin } from './securityPlugin/surveyUtilPlugin';
 
@@ -29,6 +27,7 @@ import { SurveyHistory } from './models/surveyHistory.entity';
 import { ResponseSchema } from './models/responseSchema.entity';
 import { Counter } from './models/counter.entity';
 import { SurveyResponse } from './models/surveyResponse.entity';
+import { SurveyGroup } from './models/surveyGroup.entity';
 import { ClientEncrypt } from './models/clientEncrypt.entity';
 import { Word } from './models/word.entity';
 import { MessagePushingTask } from './models/messagePushingTask.entity';
@@ -59,18 +58,16 @@ import { Logger } from './logger';
         const authSource =
           (await configService.get<string>(
             'XIAOJU_SURVEY_MONGO_AUTH_SOURCE',
-          )) || 'admin';
-        const database = await configService.get<string>(
-          'XIAOJU_SURVEY_MONGO_DB_NAME',
-        );
-        return {
+          )) || '';
+        const database =
+          (await configService.get<string>('XIAOJU_SURVEY_MONGO_DB_NAME')) ||
+          '';
+        const ret: Record<string, any> = {
           type: 'mongodb',
           connectTimeoutMS: 10000,
           socketTimeoutMS: 10000,
           url,
-          authSource,
           useNewUrlParser: true,
-          database,
           entities: [
             Captcha,
             User,
@@ -78,6 +75,7 @@ import { Logger } from './logger';
             SurveyConf,
             SurveyHistory,
             SurveyResponse,
+            SurveyGroup,
             Counter,
             ResponseSchema,
             ClientEncrypt,
@@ -91,6 +89,13 @@ import { Logger } from './logger';
             Session,
           ],
         };
+        if (authSource) {
+          ret.authSource = authSource;
+        }
+        if (database) {
+          ret.database = database;
+        }
+        return ret;
       },
     }),
     AuthModule,
@@ -110,7 +115,7 @@ import { Logger } from './logger';
     WorkspaceModule,
     UpgradeModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [
     {
       provide: APP_FILTER,

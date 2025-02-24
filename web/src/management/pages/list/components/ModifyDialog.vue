@@ -21,6 +21,20 @@
       <el-form-item label="备注">
         <el-input v-model="current.remark" />
       </el-form-item>
+      <el-form-item prop="groupId" label="分组" v-if="menuType === MenuType.PersonalGroup && !current.isCollaborated">
+        <el-select
+          v-model="current.groupId"
+          placeholder="未分组"
+          clearable
+        >
+          <el-option
+            v-for="item in groupAllList"
+            :key="item._id"
+            :label="item.name"
+            :value="item._id"
+          />
+        </el-select>
+      </el-form-item>
     </el-form>
 
     <template #footer>
@@ -35,13 +49,13 @@
 
 <script>
 import { pick as _pick } from 'lodash-es'
-
 import { ElMessage } from 'element-plus'
 import 'element-plus/theme-chalk/src/message.scss'
 
 import { CODE_MAP } from '@/management/api/base'
 import { updateSurvey, createSurvey } from '@/management/api/survey'
 import { QOP_MAP } from '@/management/utils/constant'
+import { MenuType, GroupState } from '@/management/utils/workSpace'
 
 export default {
   name: 'ModifyDialog',
@@ -49,11 +63,14 @@ export default {
     type: String,
     questionInfo: Object,
     width: String,
-    visible: Boolean
+    visible: Boolean,
+    groupAllList: Array,
+    menuType: String,
   },
   data() {
     return {
       QOP_MAP,
+      MenuType,
       loadingInstance: null,
       rules: {
         title: [{ required: true, message: '请输入问卷标题', trigger: 'blur' }]
@@ -72,7 +89,8 @@ export default {
   methods: {
     getCurrent(val) {
       return {
-        ..._pick(val, ['title', 'remark'])
+        ..._pick(val, ['title', 'remark', 'isCollaborated']),
+        groupId: val.groupId === null ? '' : val.groupId
       }
     },
     onClose() {
@@ -91,7 +109,8 @@ export default {
       try {
         const res = await updateSurvey({
           surveyId: this.questionInfo._id,
-          ...this.current
+          ...this.current,
+          groupId: this.current.groupId === GroupState.All || this.current.groupId === GroupState.Not ? '' : this.current.groupId,
         })
 
         if (res.code === CODE_MAP.SUCCESS) {

@@ -22,6 +22,7 @@ services:
       - "8080:80" # API端口
     environment:
       XIAOJU_SURVEY_MONGO_URL: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@xiaoju-survey-mongo:27017 # docker-compose 会根据容器名称自动处理
+      TZ: Asia/Shanghai # 设置为中国上海时区
     links:
       - mongo:mongo
     depends_on:

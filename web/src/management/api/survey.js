@@ -1,13 +1,14 @@
 import axios from './base'
 
-export const getSurveyList = ({ curPage, filter, order, workspaceId }) => {
+export const getSurveyList = ({ curPage, filter, order, workspaceId, groupId }) => {
   return axios.get('/survey/getList', {
     params: {
       pageSize: 10,
       curPage,
       filter,
       order,
-      workspaceId
+      workspaceId,
+      groupId
     }
   })
 }
@@ -53,7 +54,7 @@ export const updateSurvey = (data) => {
   return axios.post('/survey/updateMeta', data)
 }
 
-export const pausingSurvey= (surveyId) => {
+export const pausingSurvey = (surveyId) => {
   return axios.post('/survey/pausingSurvey', {
     surveyId
   })

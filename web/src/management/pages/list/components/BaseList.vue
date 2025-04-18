@@ -42,7 +42,7 @@
         @row-click="onRowClick"
       >
         <el-table-column column-key="space" width="20" />
-       
+
         <el-table-column
           v-for="field in fieldList"
           :key="field.key"
@@ -85,6 +85,7 @@
         background
         layout="prev, pager, next"
         :total="total"
+        v-model:current-page="currentPage"
         @current-change="handleCurrentChange"
       >
       </el-pagination>
@@ -98,6 +99,8 @@
       :type="modifyType"
       :visible="showModify"
       :question-info="questionInfo"
+      :group-all-list="groupAllList"
+      :menu-type="menuType"
       @on-close-codify="onCloseModify"
     />
     <CooperModify :modifyId="cooperId" :visible="cooperModify" @on-close-codify="onCooperClose" />
@@ -118,7 +121,7 @@ import EmptyIndex from '@/management/components/EmptyIndex.vue'
 import CooperModify from '@/management/components/CooperModify/ModifyDialog.vue'
 import { CODE_MAP } from '@/management/api/base'
 import { QOP_MAP } from '@/management/utils/constant.ts'
-import { deleteSurvey,pausingSurvey } from '@/management/api/survey'
+import { deleteSurvey, pausingSurvey } from '@/management/api/survey'
 import { useWorkSpaceStore } from '@/management/stores/workSpace'
 import { useSurveyListStore } from '@/management/stores/surveyList'
 import ModifyDialog from './ModifyDialog.vue'
@@ -142,7 +145,7 @@ import {
 
 const surveyListStore = useSurveyListStore()
 const workSpaceStore = useWorkSpaceStore()
-const { workSpaceId } = storeToRefs(workSpaceStore)
+const { workSpaceId, groupAllList, menuType } = storeToRefs(workSpaceStore)
 const router = useRouter()
 const props = defineProps({
   loading: {
@@ -309,10 +312,13 @@ const getToolConfig = (row) => {
     funcList = permissionsBtn
   }
   const order = ['edit', 'analysis', 'release', 'pausing', 'delete', 'copy', 'cooper']
-  if (row.curStatus.status === curStatus.new.value || row.subStatus.status === subStatus.pausing.value) {
+  if (
+    row.curStatus.status === curStatus.new.value ||
+    row.subStatus.status === subStatus.pausing.value
+  ) {
     // 去掉暂停按钮
-    order.splice(3, 1) 
-    funcList = funcList.filter(item => item.key !== subStatus.pausing.value)
+    order.splice(3, 1)
+    funcList = funcList.filter((item) => item.key !== subStatus.pausing.value)
   }
   const result = funcList.sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key))
 
@@ -348,7 +354,7 @@ const handleClick = (key, data) => {
     case 'cooper':
       onCooper(data)
       return
-      case 'pausing':
+    case 'pausing':
       onPausing(data)
       return
     default:
@@ -363,7 +369,6 @@ const onDelete = async (row) => {
       type: 'warning'
     })
   } catch (error) {
-    console.log('取消删除')
     return
   }
 
@@ -371,6 +376,8 @@ const onDelete = async (row) => {
   if (res.code === CODE_MAP.SUCCESS) {
     ElMessage.success('删除成功')
     onRefresh()
+    workSpaceStore.getGroupList()
+    workSpaceStore.getSpaceList()
   } else {
     ElMessage.error(res.errmsg || '删除失败')
   }
@@ -409,6 +416,8 @@ const onCloseModify = (type) => {
   questionInfo.value = {}
   if (type === 'update') {
     onRefresh()
+    workSpaceStore.getGroupList()
+    workSpaceStore.getSpaceList()
   }
 }
 const onRowClick = (row) => {
@@ -444,6 +453,14 @@ const onCooper = async (row) => {
 const onCooperClose = () => {
   cooperModify.value = false
 }
+const resetCurrentPage = () => {
+  currentPage.value = 1
+  onRefresh()
+}
+
+defineExpose({
+  resetCurrentPage
+})
 </script>
 
 <style lang="scss" scoped>

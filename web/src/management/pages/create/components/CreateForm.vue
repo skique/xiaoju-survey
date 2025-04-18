@@ -26,6 +26,16 @@
         />
         <p class="form-item-tip">备注仅自己可见</p>
       </el-form-item>
+      <el-form-item prop="groupId" label="分组" v-if="menuType === MenuType.PersonalGroup">
+        <el-select v-model="form.groupId" placeholder="未分组" clearable>
+          <el-option
+            v-for="item in groupAllList"
+            :key="item?._id"
+            :label="item?.name"
+            :value="item?._id"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button class="create-btn" type="primary" @click="submit" :loading="!canSubmit">
           开始创建
@@ -37,11 +47,13 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, toRefs } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import 'element-plus/theme-chalk/src/message.scss'
 import { createSurvey } from '@/management/api/survey'
 import { SURVEY_TYPE_LIST } from '../types'
+import { MenuType, GroupState } from '@/management/utils/workSpace'
 import { useWorkSpaceStore } from '@/management/stores/workSpace'
 
 interface Props {
@@ -53,6 +65,9 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const workSpaceStore = useWorkSpaceStore()
+workSpaceStore.getGroupList()
+const { groupAllList, menuType, groupId, workSpaceId } = storeToRefs(workSpaceStore)
+
 const ruleForm = ref<any>(null)
 
 const state = reactive({
@@ -62,7 +77,9 @@ const state = reactive({
   canSubmit: true,
   form: {
     title: '问卷调研',
-    remark: '问卷调研'
+    remark: '问卷调研',
+    groupId:
+      groupId.value === GroupState.All || groupId.value === GroupState.Not ? '' : groupId.value
   }
 })
 const { rules, canSubmit, form } = toRefs(state)
@@ -90,10 +107,14 @@ const submit = () => {
     state.canSubmit = false
     const payload: any = {
       surveyType: selectType,
-      ...state.form
+      ...state.form,
+      groupId:
+        state.form.groupId === GroupState.All || state.form.groupId === GroupState.Not
+          ? ''
+          : state.form.groupId
     }
-    if (workSpaceStore.workSpaceId) {
-      payload.workspaceId = workSpaceStore.workSpaceId
+    if (workSpaceId.value) {
+      payload.workspaceId = workSpaceId.value
     }
     const res: any = await createSurvey(payload)
     if (res?.code === 200 && res?.data?.id) {

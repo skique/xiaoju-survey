@@ -34,6 +34,25 @@ export const spaceListConfig = {
   }
 }
 
+export const groupListConfig = {
+  name: {
+    title: '分组名称',
+    key: 'name',
+    width: 200
+  },
+  surveyTotal: {
+    title: '问卷数',
+    key: 'surveyTotal',
+    width: 150,
+    tip: true
+  },
+  createdAt: {
+    title: '创建时间',
+    key: 'createdAt',
+    minWidth: 200
+  }
+}
+
 export const fieldConfig = {
   type: {
     title: '类型',
@@ -92,6 +111,16 @@ export const noSpaceSearchDataConfig = {
   desc: '可以更换条件查询试试',
   img: '/imgs/icons/list-empty.webp'
 }
+export const noGroupDataConfig = {
+  title: '您还没有创建问卷分组',
+  desc: '赶快点击右上角立即创建问卷分组吧！',
+  img: '/imgs/icons/list-empty.webp'
+}
+export const noGroupSearchDataConfig = {
+  title: '没有满足该查询条件的问卷分组哦',
+  desc: '可以更换条件查询试试',
+  img: '/imgs/icons/list-empty.webp'
+}
 export const noSearchDataConfig = {
   title: '没有满足该查询条件的问卷',
   desc: '可以更换条件查询试试',
@@ -115,7 +144,7 @@ export const curStatus = {
   editing: {
     label: '修改中',
     value: 'editing'
-  },
+  }
 }
 
 // 子状态
@@ -127,12 +156,12 @@ export const subStatus = {
 }
 
 export const statusMaps = {
-  ...Object.fromEntries(Object.keys(curStatus).map(key => ([key, curStatus[key].label]))),
-  ...Object.fromEntries(Object.keys(subStatus).map(key => ([key, subStatus[key].label])))
+  ...Object.fromEntries(Object.keys(curStatus).map((key) => [key, curStatus[key].label])),
+  ...Object.fromEntries(Object.keys(subStatus).map((key) => [key, subStatus[key].label]))
 }
 
-export const curStatusKey = 'curStatus.status';
-export const subStatusKey = 'subStatus.status';
+export const curStatusKey = 'curStatus.status'
+export const subStatusKey = 'subStatus.status'
 
 // 问卷类型
 export const surveyTypeSelect = {
@@ -184,11 +213,11 @@ export const curStatusSelect = {
 
 export const selectOptionsDict = Object.freeze({
   surveyType: surveyTypeSelect,
-  status: curStatusSelect,
+  status: curStatusSelect
 })
 
 export const buttonOptionsDict = Object.freeze({
-  'updatedAt': {
+  updatedAt: {
     label: '更新时间',
     icons: [
       {

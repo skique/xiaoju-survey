@@ -26,6 +26,9 @@ export class CreateSurveyDto {
   @ApiProperty({ description: '题目列表', required: false })
   questionList?: Array<any>;
 
+  @ApiProperty({ description: '是否协作', required: false })
+  isCollaborated?: boolean;
+
   static validate(data) {
     return Joi.object({
       title: Joi.string().required(),
@@ -47,6 +50,7 @@ export class CreateSurveyDto {
       workspaceId: Joi.string().allow(null, ''),
       groupId: Joi.string().allow(null, ''),
       questionList: Joi.allow(null),
+      isCollaborated: Joi.boolean().allow(null),
     }).validate(data);
   }
 }

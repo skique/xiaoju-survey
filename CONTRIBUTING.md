@@ -18,13 +18,13 @@
 
 ## 验证入口
 
-从仓库根目录执行。开发/CI 的最低验证版本为 **Node 20.20.2**，默认版本保留在 `.nvmrc`；npm 固定为根 `package.json` 的 `packageManager` 所示 **10.9.9**。CI 使用 Node 20.20.2、22.x、24.x 矩阵验证前后端单元测试与构建，lint 和覆盖率使用最低验证版本。记录每次实际的 `node --version`、`npm --version`；这里不保证更早的 Node 20 小版本、奇数主版本或未来主版本均已验证。
+从仓库根目录执行。最低兼容版本为 **Node 18.20.8**；Node 20 系列从 **20.20.2** 起验证，`.nvmrc` 保留 Node 20.20.2 作为开发默认版本。npm 固定为根 `package.json` 的 `packageManager` 所示 **10.9.9**（Node 18 自带的 npm 10.8.2 需先升级）。CI 使用 Node 18.20.8、20.20.2、22.x、24.x 矩阵验证前后端单元测试与构建，lint 和覆盖率使用 `.nvmrc` 的默认版本。记录每次实际的 `node --version`、`npm --version`；这里不保证更早的 Node 18/20 小版本、奇数主版本或未来主版本均已验证。
 
-Node 20 已进入 [官方 EOL 阶段](https://nodejs.org/en/about/previous-releases)。保留 Node 20 兼容性不等于它仍获得上游安全维护；生产运行时的选择与升级需另行评审。本次开发/CI 验证不改变生产镜像。
+Node 18 和 Node 20 已进入 [官方 EOL 阶段](https://nodejs.org/en/about/previous-releases)。保留兼容性不等于它们仍获得上游安全维护。现有 Docker 运行时保留 Node 18，见下方镜像验证范围；后续升级仍需单独评审。
 
-为保持 Node 20 安装兼容，前端固定 `element-plus@2.14.5`（依赖 VueUse 14）和 `@vue/test-utils@2.4.11`（依赖 js-beautify 1）；后续版本分别引入了要求 Node 22 的 VueUse 15 和 nopt 10 / abbrev 5。更新这些版本或锁文件前，须重新通过最低版本的严格安装和完整 CI 矩阵，同时评估被暂缓版本的修复与安全影响；不能使用忽略 engines 的参数或改写第三方 engines 声明绕过验证。
+为保持 Node 18/20 安装兼容，前端固定 `element-plus@2.14.5`（依赖 VueUse 14）和 `@vue/test-utils@2.4.11`（依赖 js-beautify 1）；后续版本分别引入了要求 Node 22 的 VueUse 15 和 nopt 10 / abbrev 5。更新这些版本或锁文件前，须重新通过最低版本的严格安装和完整 CI 矩阵，同时评估被暂缓版本的修复与安全影响；不能使用忽略 engines 的参数或改写第三方 engines 声明绕过验证。
 
-锁文件中的 Rollup 可选包 `@napi-rs/lzma-linux-x64-gnu` 仅供其上游跨平台编译工具使用，Node 20 的 npm 会按该包的 engines 正常跳过安装；Rollup 的实际平台绑定仍正常安装。不要全局省略 optional 依赖来绕过检查，也不要据此声称锁文件中每个可选包都支持 Node 20。
+锁文件中的 Rollup 可选包 `@napi-rs/lzma-linux-x64-gnu` 仅供其上游跨平台编译工具使用，Node 18/20 的 npm 会按该包的 engines 正常跳过安装；Rollup 的实际平台绑定仍正常安装。不要全局省略 optional 依赖来绕过检查，也不要据此声称锁文件中每个可选包都支持 Node 18/20。
 
 ```bash
 node --version
@@ -33,7 +33,7 @@ npm run install:ci
 npm run verify
 ```
 
-- `install:ci` 使用前后端各自提交的锁文件执行 `npm ci --engine-strict`，CI 同样严格检查依赖的 Node/npm 要求。不要为通过安装删除锁文件或临时执行 `npm install` 改变依赖树；需要更新依赖时说明原因并评审 manifest/lockfile 差异。
+- `install:ci` 使用前后端各自提交的锁文件执行 `npm ci`。根目录、`web/`、`server/` 的项目级 `.npmrc` 统一设置 `engine-strict=true`，本地与 CI 均严格检查依赖的 Node/npm 要求，无需重复命令行参数。三个目录是独立 npm 项目；直接进入子目录或使用 `npm --prefix` 时，项目级配置取自目标项目，不自动继承根目录配置，因此三处均保留同一策略，不修改用户级/全局配置。不要为通过安装删除锁文件或临时执行 `npm install` 改变依赖树；需要更新依赖时说明原因并评审 manifest/lockfile 差异。
 - `verify` 是统一入口；`verify:web`、`verify:server` 可分别定位问题。各项以根目录和子项目 `package.json` 中的 scripts 为准。
 - 前端验证覆盖 lint、现有 Vitest 测试和 build（含类型检查），后端覆盖 lint、Jest 单元测试和 build。单独跑测试使用 `npm --prefix web run test:ci`、`npm --prefix server run test:ci`；前端沿用已提交的 `web/vitest.config.ts`，不重新安装测试框架或覆盖配置。
 - `lint` 只检查；`lint:fix` 是显式修复操作。构建可能生成产物，结束后用 `git status --short`、`git diff --check` 检查意外修改，不提交无关产物。
@@ -41,6 +41,14 @@ npm run verify
 - CI 与本地使用相同的分项检查，本地 `verify` 将这些检查顺序聚合。完整验证仍不等于浏览器端到端、数据库迁移、性能或生产部署已验证；涉及这些行为时补充相应隔离环境测试。
 - 后端 `npm --prefix server run test:e2e` 是单独的诊断入口，未纳入默认 `verify`/CI；其结果与单元测试分开报告。不能据默认门禁通过宣称已有 HTTP 集成用例也通过。
 - 纯文档改动至少检查链接、路径、示例命令与 `git diff --check`；未运行应用验证时说明理由，不能写“全部检查通过”。
+
+## Node 18 镜像验证
+
+`Dockerfile` 和 `Dockerfile.full` 分别固定使用 Node 18.20.8 的 Bookworm slim/完整变体；构建阶段和运行阶段均安装 npm 10.9.9。构建上下文保留前后端锁文件和项目 `.npmrc`，使用 `npm ci` 严格安装，避免浮动依赖重新解析后意外要求更高版本 Node。镜像基础标签仍可能收到重建，系统 apt 包也未逐项固定，因此这不是所有镜像层的位级可复现保证。
+
+`Docker Compatibility` 工作流在 Linux amd64 上分别构建两个完整镜像，不推送镜像或部署。它使用仅含合成服务端环境配置的临时构建上下文、隔离的内部网络和临时 MongoDB 4.4.29，检查镜像 Node/npm 与严格配置、nginx 静态页面、未登录 API 响应及验证码数据库写入；容器和临时数据在结束后删除。该冒烟测试不替代浏览器完整业务流程、现有 HTTP E2E 用例或生产验收，也不验证其他 CPU 架构。
+
+现有 `docker-compose.yaml` 仍引用已发布镜像，不能用它代表当前源码镜像已验证。本次不改变生产环境文件、数据库或启动协议；如需回滚，由维护者使用之前的镜像/提交，不自动执行部署。
 
 ## 复现和验收证据
 

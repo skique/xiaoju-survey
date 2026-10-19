@@ -18,7 +18,13 @@
 
 ## 验证入口
 
-从仓库根目录执行。开发/CI 的版本基线见 `.nvmrc` 与根 `package.json` 的 `packageManager`；使用相同 Node/npm 版本并在报告中记录 `node --version`、`npm --version`。固定版本用于复现现有检查，不代表依赖兼容性已解决；安装产生的 `engines` 警告/错误仍须记录与评估。此基线不表示升级或推荐生产运行时，生产镜像/运行时调整需另行评审。
+从仓库根目录执行。开发/CI 的最低验证版本为 **Node 20.20.2**，默认版本保留在 `.nvmrc`；npm 固定为根 `package.json` 的 `packageManager` 所示 **10.9.9**。CI 使用 Node 20.20.2、22.x、24.x 矩阵验证前后端单元测试与构建，lint 和覆盖率使用最低验证版本。记录每次实际的 `node --version`、`npm --version`；这里不保证更早的 Node 20 小版本、奇数主版本或未来主版本均已验证。
+
+Node 20 已进入 [官方 EOL 阶段](https://nodejs.org/en/about/previous-releases)。保留 Node 20 兼容性不等于它仍获得上游安全维护；生产运行时的选择与升级需另行评审。本次开发/CI 验证不改变生产镜像。
+
+为保持 Node 20 安装兼容，前端固定 `element-plus@2.14.5`（依赖 VueUse 14）和 `@vue/test-utils@2.4.11`（依赖 js-beautify 1）；后续版本分别引入了要求 Node 22 的 VueUse 15 和 nopt 10 / abbrev 5。更新这些版本或锁文件前，须重新通过最低版本的严格安装和完整 CI 矩阵，同时评估被暂缓版本的修复与安全影响；不能使用忽略 engines 的参数或改写第三方 engines 声明绕过验证。
+
+锁文件中的 Rollup 可选包 `@napi-rs/lzma-linux-x64-gnu` 仅供其上游跨平台编译工具使用，Node 20 的 npm 会按该包的 engines 正常跳过安装；Rollup 的实际平台绑定仍正常安装。不要全局省略 optional 依赖来绕过检查，也不要据此声称锁文件中每个可选包都支持 Node 20。
 
 ```bash
 node --version
@@ -27,7 +33,7 @@ npm run install:ci
 npm run verify
 ```
 
-- `install:ci` 使用前后端各自提交的锁文件执行 `npm ci`。不要为通过安装删除锁文件或临时执行 `npm install` 改变依赖树；需要更新依赖时说明原因并评审 manifest/lockfile 差异。
+- `install:ci` 使用前后端各自提交的锁文件执行 `npm ci --engine-strict`，CI 同样严格检查依赖的 Node/npm 要求。不要为通过安装删除锁文件或临时执行 `npm install` 改变依赖树；需要更新依赖时说明原因并评审 manifest/lockfile 差异。
 - `verify` 是统一入口；`verify:web`、`verify:server` 可分别定位问题。各项以根目录和子项目 `package.json` 中的 scripts 为准。
 - 前端验证覆盖 lint、现有 Vitest 测试和 build（含类型检查），后端覆盖 lint、Jest 单元测试和 build。单独跑测试使用 `npm --prefix web run test:ci`、`npm --prefix server run test:ci`；前端沿用已提交的 `web/vitest.config.ts`，不重新安装测试框架或覆盖配置。
 - `lint` 只检查；`lint:fix` 是显式修复操作。构建可能生成产物，结束后用 `git status --short`、`git diff --check` 检查意外修改，不提交无关产物。

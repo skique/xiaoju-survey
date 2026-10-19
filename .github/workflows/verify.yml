@@ -33,13 +33,14 @@ permissions:
 
 jobs:
   verify:
-    name: ${{ matrix.project }} tests and build
+    name: ${{ matrix.project }} / Node ${{ matrix.node }} tests and build
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
         project: [web, server]
+        node: [20.20.2, 22.x, 24.x]
     defaults:
       run:
         working-directory: ${{ matrix.project }}
@@ -50,7 +51,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version: ${{ matrix.node }}
           cache: npm
           cache-dependency-path: ${{ matrix.project }}/package-lock.json
 
@@ -59,7 +60,7 @@ jobs:
 
       - name: Install dependencies
         id: install
-        run: npm ci
+        run: npm ci --engine-strict
 
       - name: Unit tests
         run: npm run test:ci

@@ -5,9 +5,13 @@
   "description": "Shared verification commands for the independently installed web and server projects",
   "packageManager": "npm@10.9.9",
   "scripts": {
-    "install:ci": "npm ci --prefix web && npm ci --prefix server",
+    "install:ci": "npm ci --engine-strict --prefix web && npm ci --engine-strict --prefix server",
     "verify": "npm run verify:web && npm run verify:server",
     "verify:web": "npm run verify --prefix web",
     "verify:server": "npm run verify --prefix server"
+  },
+  "engines": {
+    "node": ">=20.20.2",
+    "npm": ">=10.9.9"
   }
 }
